@@ -1,0 +1,14 @@
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.start-screen__button {
+  width: 15rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}
