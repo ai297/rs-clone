@@ -1,5 +1,5 @@
 export enum CardTypes {
-  sourse,
+  source,
   quality,
   action,
 }
