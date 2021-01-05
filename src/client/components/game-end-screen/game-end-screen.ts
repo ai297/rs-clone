@@ -1,6 +1,6 @@
-import Screen from '../screen';
+import BaseComponent from '../base-component';
 
-class GameEndScreen extends Screen {
+class GameEndScreen extends BaseComponent {
 
 }
 

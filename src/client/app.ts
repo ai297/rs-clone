@@ -5,11 +5,11 @@ import GameScreen from './components/game-screen/game-screen';
 import GameEndScreen from './components/game-end-screen/game-end-screen';
 import SettingsScreen from './components/settings-screen/settings-screen';
 import TutorialScreen from './components/tutorial-screen/tutorial-screen';
-import Screen from './components/screen';
+import BaseComponent from './components/base-component';
 import { StaticScreens } from './enums/StaticScreen';
 
 class App {
-  private staticScreens: Record<StaticScreens, Screen>;
+  private staticScreens: Record<StaticScreens, BaseComponent>;
 
   constructor(private mainContainer: HTMLElement) {
     this.staticScreens = {

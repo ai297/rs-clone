@@ -1,4 +1,4 @@
-import Screen from '../screen';
+import BaseComponent from '../base-component';
 
 const SCREEN_BUTTONS = ['Новая игра', 'Присоединиться', 'Правила', 'Настройки'];
 
@@ -9,7 +9,7 @@ function createButtons(title: string): HTMLElement {
   return button;
 }
 
-class StartScreen extends Screen {
+class StartScreen extends BaseComponent {
   constructor() {
     super();
     this.container.classList.add('start-screen');
