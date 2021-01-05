@@ -5,46 +5,46 @@ import GameScreen from './components/game-screen/game-screen';
 import GameEndScreen from './components/game-end-screen/game-end-screen';
 import SettingsScreen from './components/settings-screen/settings-screen';
 import TutorialScreen from './components/tutorial-screen/tutorial-screen';
+import Screen from './components/screen';
+import { StaticScreens } from './enums/StaticScreen';
 
 class App {
-  private staticScreens: Record<string, any>;
-
-  private currentScreen: any;
+  private staticScreens: Record<StaticScreens, Screen>;
 
   constructor(private mainContainer: HTMLElement) {
     this.staticScreens = {
-      startScreen: new StartScreen(),
-      settingsScreen: new SettingsScreen(),
-      tutorialScreen: new TutorialScreen(),
+      [StaticScreens.Start]: new StartScreen(),
+      [StaticScreens.Tutorial]: new TutorialScreen(),
+      [StaticScreens.Settings]: new SettingsScreen(),
     };
   }
 
-  clear(): void {
+  private clear(): void {
     this.mainContainer.innerHTML = '';
   }
 
-  showStaticScreen(name: string): void {
+  showStaticScreen(type: StaticScreens): void {
     this.clear();
-    this.currentScreen = this.staticScreens[name];
-    this.mainContainer.append(this.currentScreen?.container);
+    const currentScreen = this.staticScreens[type];
+    this.mainContainer.append(currentScreen.container);
   }
 
   showLobbyScreen(/* params */): void {
     this.clear();
-    this.currentScreen = new LobbyScreen(/* params */);
-    this.mainContainer.append(this.currentScreen?.container);
+    const currentScreen = new LobbyScreen(/* params */);
+    this.mainContainer.append(currentScreen.container);
   }
 
   showGameScreen(/* params */): void {
     this.clear();
-    this.currentScreen = new GameScreen(/* params */);
-    this.mainContainer.append(this.currentScreen?.container);
+    const currentScreen = new GameScreen(/* params */);
+    this.mainContainer.append(currentScreen.container);
   }
 
   showGameEndScreen(/* params */): void {
     this.clear();
-    this.currentScreen = new GameEndScreen(/* params */);
-    this.mainContainer.append(this.currentScreen?.container);
+    const currentScreen = new GameEndScreen(/* params */);
+    this.mainContainer.append(currentScreen.container);
   }
 }
 

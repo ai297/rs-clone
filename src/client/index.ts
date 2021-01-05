@@ -1,8 +1,9 @@
-/* eslint-disable no-new */
 import './styles/style.scss';
 import App from './app';
+import { StaticScreens } from './enums/StaticScreen';
 
 const main = document.getElementById('main');
 if (main) {
-  new App(main);
+  const app = new App(main);
+  app.showStaticScreen(StaticScreens.Start);
 }
