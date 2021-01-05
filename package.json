@@ -7,7 +7,7 @@
     "build": "jest --passWithNoTests && webpack --config config/webpack.server.js && webpack --config config/webpack.prod.js",
     "lint": "eslint src --ext .ts,.js",
     "test": "jest",
-    "dev-server": "cross-env PUBLIC_PATH=../../public nodemon src/server/app.ts",
+    "dev-server": "cross-env PUBLIC_PATH=../../public nodemon src/server/index.ts",
     "dev-client": "webpack serve --config config/webpack.dev.js"
   },
   "jest": {

@@ -1,18 +1,24 @@
 import express from 'express';
-import http from 'http';
-import path from 'path';
+import { Server, createServer } from 'http';
 
-const app = express();
-const server = http.createServer(app);
-const PORT = process.env.PORT || 3000;
-const PUBLIC_PATH = process.env.PUBLIC_PATH ? path.resolve(__dirname, process.env.PUBLIC_PATH)
-  : path.resolve(__dirname, './public');
+export default class App {
+  private express;
 
-app.use(express.static(PUBLIC_PATH));
+  private server: Server;
 
-server.listen(PORT, () => {
-  /* eslint-disable */
-  console.log(`Server started on port ${PORT}`);
-  console.log(`Public path: ${PUBLIC_PATH}`);
-  /* eslint-enable */
-});
+  constructor(private publicPath: string) {
+    this.express = express();
+    this.server = createServer(this.express);
+
+    this.express.use(express.static(this.publicPath));
+  }
+
+  start(port: number): void {
+    this.server.listen(port, () => {
+      /* eslint-disable */
+      console.log(`Server started on port ${port}`);
+      console.log(`Public path: ${this.publicPath}`);
+      /* eslint-enable */
+    });
+  }
+}
