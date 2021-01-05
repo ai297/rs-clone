@@ -5,7 +5,8 @@ import path from 'path';
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
-const PUBLIC_PATH = path.resolve(__dirname, './public');
+const PUBLIC_PATH = process.env.PUBLIC_PATH ? path.resolve(__dirname, process.env.PUBLIC_PATH)
+  : path.resolve(__dirname, './public');
 
 app.use(express.static(PUBLIC_PATH));
 

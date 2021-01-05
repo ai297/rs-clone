@@ -7,7 +7,7 @@
     "build": "jest --passWithNoTests && webpack --config config/webpack.server.js && webpack --config config/webpack.prod.js",
     "lint": "eslint src --ext .ts,.js",
     "test": "jest",
-    "dev-server": "nodemon src/server/app.ts",
+    "dev-server": "cross-env PUBLIC_PATH=../../public nodemon src/server/app.ts",
     "dev-client": "webpack serve --config config/webpack.dev.js"
   },
   "jest": {
@@ -39,6 +39,7 @@
     "@typescript-eslint/parser": "^4.11.1",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^7.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
     "eslint": "^7.17.0",
     "eslint-config-airbnb-typescript": "^12.0.0",
