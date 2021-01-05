@@ -1,4 +1,4 @@
-abstract class Screen {
+abstract class BaseComponent {
   private screenContainer: HTMLElement;
 
   constructor() {
@@ -11,4 +11,4 @@ abstract class Screen {
   }
 }
 
-export default Screen;
+export default BaseComponent;
