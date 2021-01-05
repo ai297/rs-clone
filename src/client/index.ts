@@ -1,3 +1,8 @@
+/* eslint-disable no-new */
 import './styles/style.scss';
+import App from './app';
 
-console.log('Test');
+const main = document.getElementById('main');
+if (main) {
+  new App(main);
+}
