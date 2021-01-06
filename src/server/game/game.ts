@@ -14,7 +14,6 @@ export class Game {
   private usedCardsDeck: Array<ICard> = [];
 
   constructor(
-    public id: string,
     private cardDeck: Array<ICard>,
   ) {}
 
@@ -23,7 +22,7 @@ export class Game {
       this.playersValue = [...this.playersValue, player];
     } else {
       // потом можно иначе это сделать
-      alert('Мест нет');
+      console.log('Мест нет');
     }
   }
 
@@ -36,11 +35,11 @@ export class Game {
     const playerReadiness = this.playersValue.filter((cur) => cur.isReady).length === this.playersValue.length;
 
     if (!numberPlayers) {
-      alert('Мало людей для начала');
+      console.log('Мало людей для начала');
       return;
     }
     if (!playerReadiness) {
-      alert('Игроки не готовы');
+      console.log('Игроки не готовы');
       return;
     }
 

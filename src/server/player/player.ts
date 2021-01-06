@@ -7,7 +7,7 @@ export class Player {
 
   private isReadyValue = false;
 
-  public set handCards(cards: Array<ICard>) {
+  public addCardsHand(cards: Array<ICard>) {
     this.handCardsValue = [...this.handCardsValue, ...cards];
   }
 
@@ -15,16 +15,16 @@ export class Player {
     return this.handCardsValue;
   }
 
-  public set spellCards(cards: Array<ICard>) {
+  public addSpellCards(cards: Array<ICard>) {
     // убираем из руки
     this.handCardsValue = this.handCardsValue.filter((cardCurrent: ICard) => !cards.includes(cardCurrent));
 
     // ложим в активное заклинание
-    this.spellCardsValue = [...this.handCardsValue, ...cards];
+    this.spellCardsValue = [...cards];
   }
 
-  public get spellCards(): Array<ICard> {
-    // забирая закл в отработку чистим слот
+  public transferSpellCards(): Array<ICard> {
+    // передавая закл в отработку чистим слот
     const result: Array<ICard> = [...this.spellCardsValue];
     this.spellCardsValue = [];
     return result;

@@ -1,4 +1,4 @@
-export const shuffleArray = (array: Array<any>) => {
+export function shuffleArray<T>(array: Array<T>): Array<T> {
   const mixedArray = array.slice();
   for (let i = mixedArray.length - 1; i > 0; i -= 1) {
     const randomIndex = Math.floor(Math.random() * (i + 1));
@@ -7,4 +7,4 @@ export const shuffleArray = (array: Array<any>) => {
     mixedArray[randomIndex] = tempValue;
   }
   return mixedArray;
-};
+}
