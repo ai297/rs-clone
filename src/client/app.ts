@@ -7,6 +7,7 @@ import SettingsScreen from './components/settings-screen/settings-screen';
 import TutorialScreen from './components/tutorial-screen/tutorial-screen';
 import BaseComponent from './components/base-component';
 import { StaticScreens } from './enums/StaticScreen';
+import { ServerConnection } from './services';
 
 class App {
   private staticScreens: Record<StaticScreens, BaseComponent>;
@@ -17,6 +18,9 @@ class App {
       [StaticScreens.Tutorial]: new TutorialScreen(),
       [StaticScreens.Settings]: new SettingsScreen(),
     };
+
+    // create connection with server (demo)
+    const connection = new ServerConnection('http://localhost:8080');
   }
 
   private clear(): void {
