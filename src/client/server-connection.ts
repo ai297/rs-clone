@@ -1,11 +1,11 @@
 import io from 'socket.io-client';
-import { HubEventsServer, IHubResponse } from '../../common';
+import { HubEventsServer, IHubResponse } from '../common';
 
-export default class ConnectionService {
+export default class ServerConnection {
   private readonly socket: SocketIOClient.Socket;
 
   constructor(url: string) {
-    this.socket = ConnectionService.createSocket(url);
+    this.socket = ServerConnection.createSocket(url);
   }
 
   startNewGame(): Promise<string> {
@@ -31,7 +31,7 @@ export default class ConnectionService {
       path: '/hub',
       reconnectionDelayMax: 10000,
     });
-    // logging for test connection
+    // TODO: don't forget remove console log!
     socket.on('connect', () => {
       console.log('Connected to server', socket.id);
     });

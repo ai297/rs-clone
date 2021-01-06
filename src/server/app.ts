@@ -1,24 +1,22 @@
-import express from 'express';
-import { Server, createServer } from 'http';
+import { Server } from 'http';
+import ConnectionService from './services/connection-service';
 
 export default class App {
-  private express;
+  private readonly connectionService: ConnectionService;
 
-  private server: Server;
+  constructor(private server: Server) {
+    this.connectionService = new ConnectionService();
+    this.connectionService.attachToServer(this.server);
 
-  constructor(private publicPath: string) {
-    this.express = express();
-    this.server = createServer(this.express);
-
-    this.express.use(express.static(this.publicPath));
+    // TODO: don't forget delete next console logs
+    this.connectionService.onUserConnected = (con) => console.log(`a user connected with id ${con.id}`);
+    this.connectionService.onUserDisconnected = (con) => console.log(`a user connected with id ${con.id}`);
   }
 
   start(port: number): void {
     this.server.listen(port, () => {
-      /* eslint-disable */
+      // eslint-disable-next-line no-console
       console.log(`Server started on port ${port}`);
-      console.log(`Public path: ${this.publicPath}`);
-      /* eslint-enable */
     });
   }
 }

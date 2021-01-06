@@ -1,9 +1,13 @@
 import http from 'http';
 import { Server, Socket } from 'socket.io';
-// import { HubEventsServer } from '../../common';
+import ClientConnection from './client-connection';
 
 export default class ConnectionService {
   private readonly io: Server;
+
+  onUserConnected?: (connection: ClientConnection) => void;
+
+  onUserDisconnected?: (connection: ClientConnection) => void;
 
   constructor() {
     this.io = new Server({
@@ -12,10 +16,10 @@ export default class ConnectionService {
       transports: ['websocket', 'polling'],
     });
 
-    // logging for test...
     this.io.on('connection', (socket: Socket) => {
-      console.log(`a user connected with id ${socket.id}`);
-      // TODO: add handlers for current connection here
+      const connection = new ClientConnection(socket);
+      socket.on('disconnect', () => this.onUserDisconnected?.call(this, connection));
+      this.onUserConnected?.call(this, connection);
     });
   }
 

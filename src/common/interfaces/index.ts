@@ -1,2 +1,2 @@
 export { ICard } from './ICard';
-export * from './DTO/hub-response';
+export { IHubResponse } from './DTO/hub-response';
