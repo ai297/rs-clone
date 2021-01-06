@@ -33,7 +33,7 @@ export class ServerConnection {
     });
     // TODO: don't forget remove console log!
     socket.on('connect', () => {
-      console.log('Connected to server', socket.id);
+      console.log('Connected to server with id -', socket.id);
     });
     // TODO: add handlers to socket here
     return socket;

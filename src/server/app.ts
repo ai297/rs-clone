@@ -10,7 +10,7 @@ export default class App {
 
     // TODO: don't forget delete next console logs
     this.connectionService.onUserConnected = (con) => console.log(`a user connected with id ${con.id}`);
-    this.connectionService.onUserDisconnected = (con) => console.log(`a user connected with id ${con.id}`);
+    this.connectionService.onUserDisconnected = (con) => console.log(`a user with id ${con.id} disconnected`);
   }
 
   start(port: number): void {
