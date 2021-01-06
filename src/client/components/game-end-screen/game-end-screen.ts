@@ -1,7 +1,5 @@
-import BaseComponent from '../base-component';
+import { BaseComponent } from '../base-component';
 
-class GameEndScreen extends BaseComponent {
+export class GameEndScreen extends BaseComponent {
 
 }
-
-export default GameEndScreen;
