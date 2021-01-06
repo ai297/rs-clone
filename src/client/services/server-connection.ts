@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
-import { HubEventsServer, IHubResponse } from '../common';
+import { HubEventsServer, IHubResponse } from '../../common';
 
-export default class ServerConnection {
+export class ServerConnection {
   private readonly socket: SocketIOClient.Socket;
 
   constructor(url: string) {

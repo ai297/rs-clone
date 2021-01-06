@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { IHubResponse, HubEventsServer } from '../../common';
 
-export default class ClientConnection {
+export class ClientConnection {
   constructor(private readonly socket: Socket) { }
 
   get id(): string { return this.socket.id; }

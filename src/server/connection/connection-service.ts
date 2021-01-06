@@ -1,8 +1,8 @@
 import http from 'http';
 import { Server, Socket } from 'socket.io';
-import ClientConnection from './client-connection';
+import { ClientConnection } from './client-connection';
 
-export default class ConnectionService {
+export class ConnectionService {
   private readonly io: Server;
 
   onUserConnected?: (connection: ClientConnection) => void;

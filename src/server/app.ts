@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import ConnectionService from './services/connection-service';
+import { ConnectionService } from './connection';
 
 export default class App {
   private readonly connectionService: ConnectionService;
