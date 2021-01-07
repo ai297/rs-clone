@@ -1,5 +1,5 @@
 import { BaseComponent } from '../base-component';
-import { CSSClasses } from '../../enums/css-classes';
+import { CSSClasses } from '../../enums';
 
 const SCREEN_BUTTONS = ['Новая игра', 'Присоединиться', 'Правила', 'Настройки'];
 

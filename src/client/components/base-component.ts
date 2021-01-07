@@ -1,4 +1,4 @@
-import { CSSClasses } from '../enums/css-classes';
+import { CSSClasses } from '../enums';
 
 export abstract class BaseComponent {
   private componentContainer: HTMLElement;

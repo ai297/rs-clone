@@ -7,9 +7,9 @@ import
   GameEndScreen,
   SettingsScreen,
   TutorialScreen,
-} from './components/index';
-import { BaseComponent } from './components/base-component';
-import { StaticScreens } from './enums/static-screens';
+  BaseComponent,
+} from './components';
+import { StaticScreens } from './enums';
 import { ServerConnection } from './services';
 
 class App {
