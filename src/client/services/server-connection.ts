@@ -1,4 +1,4 @@
-import io from 'socket.io-client';
+import { Manager } from 'socket.io-client';
 import { HubEventsServer, IHubResponse } from '../../common';
 
 export class ServerConnection {
@@ -11,7 +11,7 @@ export class ServerConnection {
   startNewGame(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.socket.emit(HubEventsServer.NewGame, (response: IHubResponse): void => {
-        if (response.isSuccess) resolve(response.message);
+        if (response.isSuccess) resolve(response.message || '');
         else reject(Error(response.message));
       });
     });
@@ -20,17 +20,29 @@ export class ServerConnection {
   joinToGame(gameId: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.socket.emit(HubEventsServer.JoinGame, gameId, (response: IHubResponse): void => {
-        if (response.isSuccess) resolve(response.message);
+        if (response.isSuccess) resolve(response.message || '');
         else reject(Error(response.message));
       });
     });
   }
 
   private static createSocket(url: string): SocketIOClient.Socket {
-    const socket = io(url, {
+    const manager = new Manager(url, {
       path: '/hub',
-      reconnectionDelayMax: 10000,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 1000,
+      transports: ['websocket', 'polling'],
     });
+    // TODO: implement connection error handlers
+    manager.on('error', () => {
+      console.log('Connection fail');
+    });
+    manager.on('reconnect_failed', () => {
+      console.log('All connection attempts is failed');
+    });
+
+    const socket = manager.socket('game-hub');
     // TODO: don't forget remove console log!
     socket.on('connect', () => {
       console.log('Connected to server with id -', socket.id);

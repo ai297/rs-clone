@@ -1,16 +1,26 @@
 import { Server } from 'http';
-import { ConnectionService } from './connection';
+import { HubEventsServer, IHubResponse } from '../common';
+import { ClientConnection, ConnectionService } from './connection';
+import { GameService } from './game/game-service';
 
 export default class App {
   private readonly connectionService: ConnectionService;
 
+  private readonly gameService: GameService;
+
   constructor(private server: Server) {
     this.connectionService = new ConnectionService();
-    this.connectionService.attachToServer(this.server);
+    this.gameService = new GameService(() => []);
 
     // TODO: don't forget delete next console logs
-    this.connectionService.onUserConnected = (con) => console.log(`a user connected with id ${con.id}`);
+    this.connectionService.onUserConnected = (con) => this.userConnected(con);
     this.connectionService.onUserDisconnected = (con) => console.log(`a user with id ${con.id} disconnected`);
+    this.connectionService.attachToServer(this.server);
+  }
+
+  private userConnected(client: ClientConnection): void {
+    console.log(`a user connected with id ${client.id}`);
+    this.gameService.configureConnection(client);
   }
 
   start(port: number): void {
