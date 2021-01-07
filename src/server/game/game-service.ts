@@ -1,4 +1,5 @@
 import { ICard, IHubResponse } from '../../common';
+import { Player } from '../player';
 import { Game } from './game';
 
 const MAX_GAMES = 100;
@@ -13,10 +14,8 @@ export class GameService {
   }
 
   newGame(id: string): IHubResponse {
-    if (this.games.size >= MAX_GAMES) {
-      return { isSuccess: false, message: 'Max games limit is reached. Please, try agane later' };
-    }
-    if (this.games.has(id)) return { isSuccess: false, message: 'The game is already exists' };
+    if (this.games.size >= MAX_GAMES) return GameService.error('Max games limit is reached. Please, try agane later');
+    if (this.games.has(id)) return GameService.error('The game is already exists');
     const game = new Game(this.getCards());
     this.games.set(id, game);
     console.log(`Create a new game with id ${id}. Games now: ${this.games.size}`);
@@ -27,18 +26,25 @@ export class GameService {
     if (this.games.has(id)) {
       return { isSuccess: true, message: id };
     }
-    return { isSuccess: false, message: 'Game not found' };
+    return GameService.notFound();
   }
 
   startGame(id: string): IHubResponse {
-    if (!this.games.has(id)) return { isSuccess: false, message: 'Game not found' };
+    if (!this.games.has(id)) return GameService.notFound();
     // const game = this.games.get(gameId);
     // game.startGame();
     // return { isSuccess: true };
-    return { isSuccess: false, message: 'Not implemented' };
+    return GameService.error('Not implemented');
   }
 
-  getGame(id: string): Game | null {
-    return this.games.get(id) || null;
+  addPlayer(gameId: string, player: Player): IHubResponse {
+    if (!this.games.has(gameId)) return GameService.notFound();
+    const game = <Game> this.games.get(gameId);
+    game.addPlayer(player);
+    return { isSuccess: true };
   }
+
+  private static error = (message?: string): IHubResponse => ({ isSuccess: false, message });
+
+  private static notFound = (): IHubResponse => GameService.error('Game not found');
 }
