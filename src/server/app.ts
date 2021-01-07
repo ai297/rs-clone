@@ -12,15 +12,23 @@ export default class App {
     this.connectionService = new ConnectionService();
     this.gameService = new GameService(() => []);
 
-    // TODO: don't forget delete next console logs
-    this.connectionService.onUserConnected = (con) => this.userConnected(con);
+    // TODO: don't forget delete console logs
+    this.connectionService.onUserConnected = (con) => this.configureConnection(con);
     this.connectionService.onUserDisconnected = (con) => console.log(`a user with id ${con.id} disconnected`);
     this.connectionService.attachToServer(this.server);
   }
 
-  private userConnected(client: ClientConnection): void {
-    console.log(`a user connected with id ${client.id}`);
-    this.gameService.configureConnection(client);
+  private configureConnection(connection: ClientConnection): void {
+    console.log(`a user connected with id ${connection.id}`);
+    connection.addEventListener(
+      HubEventsServer.NewGame, (): IHubResponse => this.gameService.newGame(connection.id),
+    );
+    connection.addEventListener(
+      HubEventsServer.JoinGame, (gameId: string): IHubResponse => this.gameService.joinGame(gameId),
+    );
+    connection.addEventListener(
+      HubEventsServer.StartGame, (gameId: string): IHubResponse => this.gameService.startGame(gameId),
+    );
   }
 
   start(port: number): void {
