@@ -1,14 +1,14 @@
-abstract class BaseComponent {
-  private screenContainer: HTMLElement;
+import { CSSClasses } from '../enums';
+
+export abstract class BaseComponent {
+  private componentContainer: HTMLElement;
 
   constructor() {
-    this.screenContainer = document.createElement('div');
-    this.screenContainer.classList.add('screen-container');
+    this.componentContainer = document.createElement('div');
+    this.componentContainer.classList.add(CSSClasses.ComponentContainer);
   }
 
   public get container(): HTMLElement {
-    return this.screenContainer;
+    return this.componentContainer;
   }
 }
-
-export default BaseComponent;

@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import StartScreen from './components/start-screen/start-screen';
-import LobbyScreen from './components/lobby-screen/lobby-screen';
-import GameScreen from './components/game-screen/game-screen';
-import GameEndScreen from './components/game-end-screen/game-end-screen';
-import SettingsScreen from './components/settings-screen/settings-screen';
-import TutorialScreen from './components/tutorial-screen/tutorial-screen';
-import BaseComponent from './components/base-component';
-import { StaticScreens } from './enums/StaticScreen';
+import
+{
+  StartScreen,
+  LobbyScreen,
+  GameScreen,
+  GameEndScreen,
+  SettingsScreen,
+  TutorialScreen,
+  BaseComponent,
+} from './components';
+import { StaticScreens } from './enums';
 import { ServerConnection } from './services';
 
 class App {

@@ -1,7 +1,5 @@
-import BaseComponent from '../base-component';
+import { BaseComponent } from '../base-component';
 
-class TutorialScreen extends BaseComponent {
+export class TutorialScreen extends BaseComponent {
 
 }
-
-export default TutorialScreen;

@@ -1,6 +1,6 @@
 import './styles/style.scss';
 import App from './app';
-import { StaticScreens } from './enums/StaticScreen';
+import { StaticScreens } from './enums';
 
 const main = document.getElementById('main');
 if (main) {
