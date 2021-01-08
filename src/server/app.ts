@@ -1,18 +1,22 @@
-import express from 'express';
-import http from 'http';
-import path from 'path';
+import { Server } from 'http';
+import { ConnectionService } from './connection';
 
-const app = express();
-const server = http.createServer(app);
-const PORT = process.env.PORT || 3000;
-const PUBLIC_PATH = process.env.PUBLIC_PATH ? path.resolve(__dirname, process.env.PUBLIC_PATH)
-  : path.resolve(__dirname, './public');
+export default class App {
+  private readonly connectionService: ConnectionService;
 
-app.use(express.static(PUBLIC_PATH));
+  constructor(private server: Server) {
+    this.connectionService = new ConnectionService();
+    this.connectionService.attachToServer(this.server);
 
-server.listen(PORT, () => {
-  /* eslint-disable */
-  console.log(`Server started on port ${PORT}`);
-  console.log(`Public path: ${PUBLIC_PATH}`);
-  /* eslint-enable */
-});
+    // TODO: don't forget delete next console logs
+    this.connectionService.onUserConnected = (con) => console.log(`a user connected with id ${con.id}`);
+    this.connectionService.onUserDisconnected = (con) => console.log(`a user with id ${con.id} disconnected`);
+  }
+
+  start(port: number): void {
+    this.server.listen(port, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Server started on port ${port}`);
+    });
+  }
+}

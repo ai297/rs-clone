@@ -1,6 +1,5 @@
-import BaseComponent from '../base-component';
+import { BaseComponent } from '../base-component';
 
-class SettingsScreen extends BaseComponent {
+export class SettingsScreen extends BaseComponent {
+
 }
-
-export default SettingsScreen;

@@ -6,7 +6,7 @@ module.exports = {
   mode: 'production',
   context: paths.server_dir,
   entry: {
-    app: './app.ts',
+    app: './index.ts',
   },
   output: {
     filename: '[name].js',
