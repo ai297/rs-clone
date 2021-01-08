@@ -31,7 +31,7 @@ export class GameService {
 
   startGame(id: string): IHubResponse {
     if (!this.games.has(id)) return GameService.notFound();
-    const game = this.games.get(id);
+    const game = <Game>(this.games.get(id));
     try {
       game.startGame();
       return { isSuccess: true };
