@@ -1,14 +1,18 @@
 import { CSSClasses } from '../enums';
 
-export abstract class BaseComponent {
-  private componentContainer: HTMLElement;
+export interface IComponent {
+  readonly element: HTMLElement;
+}
 
-  constructor() {
-    this.componentContainer = document.createElement('div');
-    this.componentContainer.classList.add(CSSClasses.ComponentContainer);
+export abstract class BaseComponent implements IComponent {
+  private el: HTMLElement;
+
+  constructor(className?: string) {
+    this.el = document.createElement('div');
+    this.el.className = `${CSSClasses.Component} ${className || ''}`;
   }
 
-  public get container(): HTMLElement {
-    return this.componentContainer;
+  public get element(): HTMLElement {
+    return this.el;
   }
 }
