@@ -19,14 +19,14 @@ test('joinGame(id).isSuccess should be false if game not exists.', () => {
   expect(target.joinGame('123').isSuccess).toBe(false);
 });
 
-test('joinGame(id).isSuccess should be true if game is exists.', () => {
+test('joinGame(id).isSuccess should be true if game exists.', () => {
   const target = new GameService(deckFactoryMock);
   const id = 'abc';
   target.newGame(id);
   expect(target.joinGame(id).isSuccess).toBe(true);
 });
 
-test('startGame(id).isSuccess should be false if game is not exists', () => {
+test('startGame(id).isSuccess should be false if game not exists', () => {
   const target = new GameService(deckFactoryMock);
   expect(target.startGame('id').isSuccess).toBe(false);
 });
