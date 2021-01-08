@@ -1,5 +1,5 @@
 import cards from './public/cards.json';
-import { ICard } from '../../common/interfaces/ICard';
+import { ICard } from '../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../common/enums';
 
 class CardRepository {
