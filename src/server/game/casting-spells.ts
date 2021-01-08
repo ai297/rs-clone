@@ -29,7 +29,7 @@ export class CastingSpells {
     });
   }
 
-  castSpell() {
+  castSpells() {
     console.log('magic');
     console.log(this);
   }

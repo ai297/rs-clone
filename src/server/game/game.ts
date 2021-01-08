@@ -24,8 +24,7 @@ export class Game {
     if (this.playersValue.length < MAX_SIZE_GAME) {
       this.playersValue = [...this.playersValue, player];
     } else {
-      // потом можно иначе это сделать
-      console.log('Мест нет');
+      throw new Error('There are no places in the game');
     }
   }
 
@@ -35,15 +34,9 @@ export class Game {
 
   public startGame(): void {
     const numberPlayers = this.playersValue.length < MIN_SIZE_GAME;
-    const playerReadiness = this.playersValue.filter((cur) => cur.isReady).length === this.playersValue.length;
 
     if (numberPlayers) {
-      console.log('Мало людей для начала');
-      return;
-    }
-    if (!playerReadiness) {
-      console.log('Игроки не готовы');
-      return;
+      throw new Error('Few players to start the game');
     }
 
     this.activeDeck = shuffleArray([...this.cardDeck]);
@@ -87,10 +80,7 @@ export class Game {
 
     casting.calculateInitiative();
 
-    for (let i = 0; i < this.players.length; i += 1) {
-      if (this.isEndGame) break;
-      casting.castSpell();
-    }
+    casting.castSpells();
 
     if (!this.isEndGame) {
       // пока закомичено иначе GameLoop бесконечен.

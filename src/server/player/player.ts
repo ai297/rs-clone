@@ -9,8 +9,6 @@ export class Player {
 
   private callback: { [name: string]: () => void } = {};
 
-  private isReadyValue = false;
-
   public isSpellReady = false;
 
   private hitPointsValue = STARTING_HEALTH;
@@ -45,14 +43,6 @@ export class Player {
     const result: Array<ICard> = [...this.spellCardsValue];
     this.spellCardsValue = [];
     return result;
-  }
-
-  public set isReady(status: boolean) {
-    this.isReadyValue = status;
-  }
-
-  public get isReady(): boolean {
-    return this.isReadyValue;
   }
 
   public setChooseCardsHandler(callback: () => void): void {
