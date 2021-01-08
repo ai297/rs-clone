@@ -1,2 +1,2 @@
-export { CardTypes } from './CardTypes';
-export { MagicSigns } from './MagicSigns';
+export { CardTypes } from './card-types';
+export { MagicSigns } from './magic-signs';
