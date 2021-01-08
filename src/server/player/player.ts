@@ -15,7 +15,7 @@ export class Player {
 
   private hitPointsValue = STARTING_HEALTH;
 
-  public addCardsHand(cards: Array<ICard>) {
+  public addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
   }
 
@@ -23,12 +23,12 @@ export class Player {
     return this.handCardsValue;
   }
 
-  public addSpellCards(cards: Array<ICard>) {
+  public addSpellCards(cards: Array<ICard>): void {
     this.isSpellReady = true;
     // убираем из руки
     this.handCardsValue = this.handCardsValue.filter((cardCurrent: ICard) => !cards.includes(cardCurrent));
 
-    // ложим в активное заклинание
+    // кладем в активное заклинание
     this.spellCardsValue = [...cards];
 
     this.callback.cardSelectionHandler();
@@ -55,11 +55,11 @@ export class Player {
     return this.isReadyValue;
   }
 
-  public setChooseCardsHandler(callback: () => void) {
+  public setChooseCardsHandler(callback: () => void): void {
     this.callback.cardSelectionHandler = callback;
   }
 
-  public get hitPoints() {
+  public get hitPoints(): number {
     return this.hitPointsValue;
   }
 }

@@ -31,5 +31,6 @@ export class CastingSpells {
 
   castSpell() {
     console.log('magic');
+    console.log(this);
   }
 }

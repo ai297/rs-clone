@@ -63,10 +63,6 @@ export class Game {
       player.addCardsHand(tempCards);
 
       player.setChooseCardsHandler(this.cardSelectionHandler);
-
-      // тестовая выдача карт она будет происходить не отсюда \\\\\\\
-      // обязательно удалить!!!!!
-      player.addSpellCards(player.handCards.slice(0, 3));
     });
   }
 
