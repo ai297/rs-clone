@@ -1,4 +1,4 @@
-import cards from './public/cards.json';
+import cards from '../../../public/cards.json';
 import { ICard } from '../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../common/enums';
 

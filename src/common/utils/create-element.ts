@@ -9,7 +9,7 @@ export function createElement(
   const classes: string = cssClass.join(' ');
 
   element.classList.add(...classes.split(' '));
-  element.innerText = title;
+  element.innerText = title || '';
 
   return element;
 }
