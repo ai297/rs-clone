@@ -12,11 +12,10 @@ function createButtons(title: string): HTMLElement {
 
 export class StartScreen extends BaseComponent {
   constructor() {
-    super();
-    this.container.classList.add(CSSClasses.StartScreen);
+    super(CSSClasses.StartScreen);
     SCREEN_BUTTONS.forEach((title) => {
       const button = createButtons(title);
-      this.container.append(button);
+      this.element.append(button);
     });
   }
 }

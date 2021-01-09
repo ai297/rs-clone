@@ -1,5 +1,5 @@
 export enum CSSClasses {
-  ComponentContainer = 'component-container',
+  Component = 'component',
   StartScreen = 'start-screen',
   StartScreenButton = 'start-screen__button',
 }

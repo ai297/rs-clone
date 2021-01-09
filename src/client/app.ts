@@ -1,57 +1,39 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import
 {
+  IComponent,
   StartScreen,
   LobbyScreen,
   GameScreen,
-  GameEndScreen,
-  SettingsScreen,
-  TutorialScreen,
-  BaseComponent,
 } from './components';
 import { StaticScreens } from './enums';
 import { ServerConnection } from './services';
 
 class App {
-  private staticScreens: Record<StaticScreens, BaseComponent>;
+  private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
 
   constructor(private mainContainer: HTMLElement) {
-    this.staticScreens = {
-      [StaticScreens.Start]: new StartScreen(),
-      [StaticScreens.Tutorial]: new TutorialScreen(),
-      [StaticScreens.Settings]: new SettingsScreen(),
-    };
+    this.staticScreens.set(StaticScreens.Start, new StartScreen());
 
     // create connection with server (demo)
     const connection = new ServerConnection('http://localhost:8080');
   }
 
-  private clear(): void {
+  show(component: IComponent): void {
     this.mainContainer.innerHTML = '';
+    this.mainContainer.append(component.element);
   }
 
-  showStaticScreen(type: StaticScreens): void {
-    this.clear();
-    const currentScreen = this.staticScreens[type];
-    this.mainContainer.append(currentScreen.container);
+  showStatic(type: StaticScreens): void {
+    const nextScreen = this.staticScreens.get(type);
+    if (nextScreen) this.show(<IComponent>nextScreen);
   }
 
-  showLobbyScreen(/* params */): void {
-    this.clear();
-    const currentScreen = new LobbyScreen(/* params */);
-    this.mainContainer.append(currentScreen.container);
+  showLobby(/* params */): void {
+    this.show(new LobbyScreen(/* params */));
   }
 
-  showGameScreen(/* params */): void {
-    this.clear();
-    const currentScreen = new GameScreen(/* params */);
-    this.mainContainer.append(currentScreen.container);
-  }
-
-  showGameEndScreen(/* params */): void {
-    this.clear();
-    const currentScreen = new GameEndScreen(/* params */);
-    this.mainContainer.append(currentScreen.container);
+  showGame(/* params */): void {
+    this.show(new GameScreen(/* params */));
   }
 }
 
