@@ -1,26 +1,39 @@
 import http from 'http';
 import { Server, Socket } from 'socket.io';
+import { CONNECTION_PATH } from '../../common';
+import { ConnectionEvents } from './connection-events';
 import { ClientConnection } from './client-connection';
 
+type ConnectionHandler = (connection: ClientConnection) => void;
+
 export class ConnectionService {
-  private readonly io: Server;
+  readonly io: Server;
 
-  onUserConnected?: (connection: ClientConnection) => void;
+  private readonly onConnect: Set<ConnectionHandler> = new Set<ConnectionHandler>();
 
-  onUserDisconnected?: (connection: ClientConnection) => void;
+  private readonly onDisconnect: Set<ConnectionHandler> = new Set<ConnectionHandler>();
 
   constructor() {
     this.io = new Server({
-      path: '/hub',
+      path: CONNECTION_PATH,
       cookie: false,
-      transports: ['websocket', 'polling'],
     });
 
-    this.io.on('connection', (socket: Socket) => {
+    this.io.on(ConnectionEvents.Connect, (socket: Socket) => {
       const connection = new ClientConnection(socket);
-      socket.on('disconnect', () => this.onUserDisconnected?.call(this, connection));
-      this.onUserConnected?.call(this, connection);
+      this.onConnect.forEach((handler) => handler(connection));
+      socket.on(ConnectionEvents.Disconnect, () => this.onDisconnect.forEach((handler) => handler(connection)));
     });
+  }
+
+  addEventListener(event: ConnectionEvents, handler: ConnectionHandler): void {
+    if (event === ConnectionEvents.Connect) this.onConnect.add(handler);
+    else this.onDisconnect.add(handler);
+  }
+
+  removeEventListener(event: ConnectionEvents, handler: ConnectionHandler): void {
+    if (event === ConnectionEvents.Connect) this.onConnect.delete(handler);
+    else this.onDisconnect.delete(handler);
   }
 
   attachToServer(server: http.Server): void {
