@@ -1,7 +1,7 @@
 import { ICard } from '../../common';
 import { PlayerSpell } from './player-spell';
 
-const STARTING_HEALTH = 20;
+const MAX_HEALTH = 20;
 
 export class Player {
   private handCardsValue: Array<ICard> = [];
@@ -12,7 +12,7 @@ export class Player {
 
   public isSpellReady = false;
 
-  private hitPointsValue = STARTING_HEALTH;
+  private hitPointsValue = MAX_HEALTH;
 
   public addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
@@ -40,7 +40,9 @@ export class Player {
   public transferSpellCards(): Array<ICard> {
     this.isSpellReady = false;
     // передавая закл в отработку чистим слот
-    const result: Array<ICard> = [...this.currentSpell];
+    const result: Array<ICard> = [...this.spell];
+    // вот тут очищать
+    this.currentSpell = null;
     return result;
   }
 
@@ -61,5 +63,13 @@ export class Player {
     if (this.hitPointsValue > 25) {
       this.hitPointsValue = 25;
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public makeDiceRoll(number: number): number {
+    const lower = 1;
+    const upper = number * 6;
+
+    return Math.floor(lower + Math.random() * (upper - lower + 1));
   }
 }

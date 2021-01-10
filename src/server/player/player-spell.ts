@@ -27,6 +27,6 @@ export class PlayerSpell {
   * [Symbol.iterator](): Generator<ICard> {
     if (this.cards.has(CardTypes.source)) yield this.cards.get(CardTypes.source);
     if (this.cards.has(CardTypes.quality)) yield this.cards.get(CardTypes.quality);
-    if (this.cards.has(CardTypes.action)) yield this.cards.get(CardTypes.quality);
+    if (this.cards.has(CardTypes.action)) yield this.cards.get(CardTypes.action);
   }
 }

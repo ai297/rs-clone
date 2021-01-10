@@ -2,20 +2,7 @@ import { Player } from '../../player';
 import { ICard } from '../../../common';
 import { CardHandler } from './type';
 
-// const FASTEST_SPELL_INDEX = 1;
-// const FASTEST_SPELL = 200;
-
-// const QUICK_SPELL_INDEX = 2;
-// const QUICK_SPELL = 100;
-
 const numberLivingPlayersForEnd = 1;
-
-const rollDice = (amount: number): number => {
-  const lower = 1;
-  const upper = amount * 6;
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
 
 export class CastingSpells {
   private numberPlayers: number = this.players.length;
@@ -33,36 +20,18 @@ export class CastingSpells {
       .set('fountain_youth', this.useFountainYouthCard);
   }
 
-  private calculateInitiative(): Array<Player> {
-    // const orderSpells = this.players.map((player) => {
-    //   // не забыть обработать когда меньше трех карт с 0 инициативой через кубик
-    //   if (player.spellCards.length === FASTEST_SPELL_INDEX) {
-    //     return FASTEST_SPELL;
-    //   }
-    //   if (player.spellCards.length === QUICK_SPELL_INDEX) {
-    //     return QUICK_SPELL;
-    //   }
-    //   return player.spellCards.reduce((acc, cur): number => acc + cur.initiative, 0);
-    // });
-    return this.players.sort((a, b) => a.spell.initiative - b.spell.initiative);
-    // .map((player: Player, index: number): [Player, number] => (
-    //   [player, orderSpells[index]]
-    // ))
-    // .sort((a, b) => b[1] - a[1])
-    // .map((current: [Player, number]): Player => current[0]);
-  }
-
   public castSpells(): void {
-    const queue: Array<Player> = this.calculateInitiative();
+    const queue: Array<Player> = this.players.slice().sort((a, b) => a.spell.initiative - b.spell.initiative);
 
     queue.forEach((player) => {
-      // с фронтенда карты приходят в нужном порядке [source, quality, action]
       const cards: Array<ICard> = [...player.spell];
       const positionPlayer: number = this.players.findIndex((current) => player === current);
       cards.forEach((currentCard: ICard) => {
         console.log('name spell', currentCard.id);
         const handler = this.handlers.get(currentCard.id);
-        if (handler) handler(positionPlayer, currentCard);
+        if (handler) (handler as CardHandler)(positionPlayer, currentCard);
+
+        this.players = this.players.filter((current: Player) => current.hitPoints > 0);
         this.checkForEndGame();
       });
       const usedCards: Array<ICard> = player.transferSpellCards();
@@ -90,19 +59,23 @@ export class CastingSpells {
 
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
-    const throwResult = rollDice(amountDice);
+    const throwResult = player.makeDiceRoll(amountDice);
+
+    const weakThrow = throwResult < 5;
+    const averageThrow = throwResult > 4 && throwResult < 10;
+    const strongThrow = throwResult > 9;
 
     let damage = 0;
-    if (throwResult < 5) {
+
+    if (weakThrow) {
       damage = 1;
     }
-    if (throwResult > 4 && throwResult < 10) {
+    if (averageThrow) {
       damage = 3;
     }
-    if (throwResult > 9) {
+    if (strongThrow) {
       damage = 4;
     }
-
     target.makeDamage(damage);
   };
 
@@ -116,16 +89,20 @@ export class CastingSpells {
 
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
-    const throwResult = rollDice(amountDice);
+    const throwResult = player.makeDiceRoll(amountDice);
+
+    const weakThrow = throwResult < 5;
+    const averageThrow = throwResult > 4 && throwResult < 10;
+    const strongThrow = throwResult > 9;
 
     let damage = 0;
-    if (throwResult < 5) {
+    if (weakThrow) {
       damage = 1;
     }
-    if (throwResult > 4 && throwResult < 10) {
+    if (averageThrow) {
       damage = 2;
     }
-    if (throwResult > 9) {
+    if (strongThrow) {
       damage = 4;
     }
     target.makeDamage(damage);
@@ -137,13 +114,16 @@ export class CastingSpells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
 
-    const throwResult = rollDice(amountDice);
+    const throwResult = player.makeDiceRoll(amountDice);
+
+    const averageThrow = throwResult > 4 && throwResult < 10;
+    const strongThrow = throwResult > 9;
 
     let heal = 0;
-    if (throwResult > 4 && throwResult < 10) {
+    if (averageThrow) {
       heal = 2;
     }
-    if (throwResult > 9) {
+    if (strongThrow) {
       heal = 4;
     }
     player.makeHeal(heal);

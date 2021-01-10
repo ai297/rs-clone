@@ -60,14 +60,8 @@ export class Game {
   }
 
   private cardSelectionHandler = (): void => {
-    const SPELLS_READY = true;
+    const isMagicReady = this.playersValue.every((player) => player.isSpellReady);
 
-    const isMagicReady = this.playersValue.reduce((acc: boolean, player: Player) => {
-      if (acc) {
-        return player.isSpellReady;
-      }
-      return acc;
-    }, SPELLS_READY);
     if (isMagicReady) {
       this.castSpells();
     }
