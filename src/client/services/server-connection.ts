@@ -1,38 +1,22 @@
 import { Manager } from 'socket.io-client';
-import { HubEventsServer, IHubResponse } from '../../common';
+import {
+  BaseConnection,
+  CONNECTION_ATTEMPTS,
+  CONNECTION_NAMESPACE,
+  CONNECTION_PATH,
+  HubEventsServer,
+  HubEventsClient,
+} from '../../common';
 
-export class ServerConnection {
-  private readonly socket: SocketIOClient.Socket;
-
+export class ServerConnection extends BaseConnection<HubEventsServer, HubEventsClient> {
   constructor(url: string) {
-    this.socket = ServerConnection.createSocket(url);
-  }
-
-  startNewGame(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.socket.emit(HubEventsServer.NewGame, (response: IHubResponse): void => {
-        if (response.isSuccess) resolve(response.message || '');
-        else reject(Error(response.message));
-      });
-    });
-  }
-
-  joinToGame(gameId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.socket.emit(HubEventsServer.JoinGame, gameId, (response: IHubResponse): void => {
-        if (response.isSuccess) resolve(response.message || '');
-        else reject(Error(response.message));
-      });
-    });
+    super(ServerConnection.createSocket(url));
   }
 
   private static createSocket(url: string): SocketIOClient.Socket {
     const manager = new Manager(url, {
-      path: '/hub',
-      reconnectionAttempts: 3,
-      reconnectionDelay: 500,
-      reconnectionDelayMax: 1000,
-      transports: ['websocket', 'polling'],
+      path: CONNECTION_PATH,
+      reconnectionAttempts: CONNECTION_ATTEMPTS,
     });
     // TODO: implement connection error handlers
     manager.on('error', () => {
@@ -42,7 +26,7 @@ export class ServerConnection {
       console.log('All connection attempts is failed');
     });
 
-    const socket = manager.socket('game-hub');
+    const socket = manager.socket(CONNECTION_NAMESPACE);
     // TODO: don't forget remove console log!
     socket.on('connect', () => {
       console.log('Connected to server with id -', socket.id);
