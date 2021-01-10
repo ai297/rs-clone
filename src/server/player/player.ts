@@ -33,7 +33,6 @@ export class Player {
   }
 
   public get spellCards(): Array<ICard> {
-    // этот метод только отдает карты, нужен будет для расчета инициативы.
     return this.spellCardsValue;
   }
 
@@ -51,5 +50,16 @@ export class Player {
 
   public get hitPoints(): number {
     return this.hitPointsValue;
+  }
+
+  public makeDamage(damage: number): void {
+    this.hitPointsValue -= damage;
+  }
+
+  makeHeal(heal: number): void {
+    this.hitPointsValue += heal;
+    if (this.hitPointsValue > 25) {
+      this.hitPointsValue = 25;
+    }
   }
 }

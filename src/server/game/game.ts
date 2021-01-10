@@ -60,15 +60,14 @@ export class Game {
   }
 
   private cardSelectionHandler = (): void => {
-    const SPELLS_NOT_READY = false;
+    const SPELLS_READY = true;
 
     const isMagicReady = this.playersValue.reduce((acc: boolean, player: Player) => {
-      if (!acc) {
+      if (acc) {
         return player.isSpellReady;
       }
       return acc;
-    }, SPELLS_NOT_READY);
-
+    }, SPELLS_READY);
     if (isMagicReady) {
       this.castSpells();
     }
@@ -76,9 +75,7 @@ export class Game {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this.checkEndGameHandler);
-
-    casting.calculateInitiative();
+    const casting = new CastingSpells(this.players, this.checkEndGameHandler, this.usedCardHandler);
 
     casting.castSpells();
 
@@ -89,6 +86,10 @@ export class Game {
       this.isEndGame = false;
     }
   }
+
+  private usedCardHandler = (cardUsed: Array<ICard>) => {
+    this.usedCardsDeck.push(...cardUsed);
+  };
 
   private checkEndGameHandler = (): void => {
     // рубильник для остановки GameLoop
