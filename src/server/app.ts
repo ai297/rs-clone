@@ -1,12 +1,9 @@
 import { Server } from 'http';
 import {
-  HubEventsServer, ICard, IHubResponse, shuffleArray,
+  HubEventsServer, IHubResponse,
 } from '../common';
 import { ClientConnection, ConnectionService } from './connection';
 import { GameService } from './game/game-service';
-import { Player } from './player';
-import { Game } from './game';
-import { cards } from './test2';
 
 export default class App {
   private readonly connectionService: ConnectionService;
@@ -43,28 +40,3 @@ export default class App {
     });
   }
 }
-
-const game = new Game(shuffleArray(cards));
-
-const player1 = new Player();
-const player2 = new Player();
-const player3 = new Player();
-
-game.addPlayer(player1);
-game.addPlayer(player2);
-game.addPlayer(player3);
-
-game.startGame();
-
-// тестовая выдача карт она будет происходить не отсюда \\\\\\\
-// обязательно удалить!!!!!
-const fistNature = cards.find((card: ICard) => card.id === 'fist_nature');
-const fountain_youth = cards.find((card: ICard) => card.id === 'fountain_youth');
-
-player1.addSpellCards(player3.handCards.slice(0, 1));
-player2.addSpellCards([fountain_youth as ICard]);
-player3.addSpellCards(player3.handCards.slice(0, 1));
-
-// cards.forEach((cur) => {
-//   console.log(cur.id);
-// });

@@ -1,5 +1,5 @@
 import { Player } from '../../player';
-import { CardTypes, ICard } from '../../../common';
+import { ICard } from '../../../common';
 import { CardHandler } from './type';
 
 const FASTEST_SPELL_INDEX = 1;
@@ -60,7 +60,7 @@ export class CastingSpells {
       const cards: Array<ICard> = player.spellCards;
       const positionPlayer: number = this.players.findIndex((current) => player === current);
       cards.forEach((currentCard: ICard) => {
-        console.log(currentCard.id);
+        console.log('name spell', currentCard.id);
         const handler = this.handlers.get(currentCard.id);
         if (handler) handler(positionPlayer, currentCard);
         this.checkForEndGame();
@@ -72,7 +72,7 @@ export class CastingSpells {
   }
 
   private checkForEndGame(): void {
-    this.players.forEach((cur, index) => console.log(index, cur.hitPoints));
+    this.players.forEach((cur, index) => console.log('pozit player', index, 'hit point', cur.hitPoints));
     const numberLivingPlayers: number = this.players.filter((player: Player) => player.hitPoints > 0).length;
     if (numberLivingPlayers === numberLivingPlayersForEnd) {
       this.callbackEndGame();
