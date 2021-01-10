@@ -2,11 +2,11 @@ import { Player } from '../../player';
 import { ICard } from '../../../common';
 import { CardHandler } from './type';
 
-const FASTEST_SPELL_INDEX = 1;
-const FASTEST_SPELL = 200;
+// const FASTEST_SPELL_INDEX = 1;
+// const FASTEST_SPELL = 200;
 
-const QUICK_SPELL_INDEX = 2;
-const QUICK_SPELL = 100;
+// const QUICK_SPELL_INDEX = 2;
+// const QUICK_SPELL = 100;
 
 const numberLivingPlayersForEnd = 1;
 
@@ -34,22 +34,22 @@ export class CastingSpells {
   }
 
   private calculateInitiative(): Array<Player> {
-    const orderSpells = this.players.map((player) => {
-      // не забыть обработать когда меньше трех карт с 0 инициативой через кубик
-      if (player.spellCards.length === FASTEST_SPELL_INDEX) {
-        return FASTEST_SPELL;
-      }
-      if (player.spellCards.length === QUICK_SPELL_INDEX) {
-        return QUICK_SPELL;
-      }
-      return player.spellCards.reduce((acc, cur): number => acc + cur.initiative, 0);
-    });
-    return this.players
-      .map((player: Player, index: number): [Player, number] => (
-        [player, orderSpells[index]]
-      ))
-      .sort((a, b) => b[1] - a[1])
-      .map((current: [Player, number]): Player => current[0]);
+    // const orderSpells = this.players.map((player) => {
+    //   // не забыть обработать когда меньше трех карт с 0 инициативой через кубик
+    //   if (player.spellCards.length === FASTEST_SPELL_INDEX) {
+    //     return FASTEST_SPELL;
+    //   }
+    //   if (player.spellCards.length === QUICK_SPELL_INDEX) {
+    //     return QUICK_SPELL;
+    //   }
+    //   return player.spellCards.reduce((acc, cur): number => acc + cur.initiative, 0);
+    // });
+    return this.players.sort((a, b) => a.spell.initiative - b.spell.initiative);
+    // .map((player: Player, index: number): [Player, number] => (
+    //   [player, orderSpells[index]]
+    // ))
+    // .sort((a, b) => b[1] - a[1])
+    // .map((current: [Player, number]): Player => current[0]);
   }
 
   public castSpells(): void {
@@ -57,7 +57,7 @@ export class CastingSpells {
 
     queue.forEach((player) => {
       // с фронтенда карты приходят в нужном порядке [source, quality, action]
-      const cards: Array<ICard> = player.spellCards;
+      const cards: Array<ICard> = [...player.spell];
       const positionPlayer: number = this.players.findIndex((current) => player === current);
       cards.forEach((currentCard: ICard) => {
         console.log('name spell', currentCard.id);
@@ -88,7 +88,7 @@ export class CastingSpells {
 
     const target = this.players[targetIndex];
 
-    const amountDice = player.spellCards
+    const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = rollDice(amountDice);
 
@@ -114,7 +114,7 @@ export class CastingSpells {
     }
     const target = this.players[targetIndex];
 
-    const amountDice = player.spellCards
+    const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = rollDice(amountDice);
 
@@ -134,7 +134,7 @@ export class CastingSpells {
   private useFountainYouthCard = (positionPlayer: number, cardCurrent: ICard) => {
     const player = this.players[positionPlayer];
 
-    const amountDice = player.spellCards
+    const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
 
     const throwResult = rollDice(amountDice);

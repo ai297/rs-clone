@@ -1,11 +1,12 @@
 import { ICard } from '../../common';
+import { PlayerSpell } from './player-spell';
 
 const STARTING_HEALTH = 20;
 
 export class Player {
   private handCardsValue: Array<ICard> = [];
 
-  private spellCardsValue: Array<ICard> = [];
+  private currentSpell: PlayerSpell;
 
   private callback: { [name: string]: () => void } = {};
 
@@ -27,20 +28,19 @@ export class Player {
     this.handCardsValue = this.handCardsValue.filter((cardCurrent: ICard) => !cards.includes(cardCurrent));
 
     // кладем в активное заклинание
-    this.spellCardsValue = [...cards];
+    this.currentSpell = new PlayerSpell(cards);
 
     this.callback.cardSelectionHandler();
   }
 
-  public get spellCards(): Array<ICard> {
-    return this.spellCardsValue;
+  public get spell(): PlayerSpell {
+    return this.currentSpell;
   }
 
   public transferSpellCards(): Array<ICard> {
     this.isSpellReady = false;
     // передавая закл в отработку чистим слот
-    const result: Array<ICard> = [...this.spellCardsValue];
-    this.spellCardsValue = [];
+    const result: Array<ICard> = [...this.currentSpell];
     return result;
   }
 
