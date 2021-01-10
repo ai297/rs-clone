@@ -14,9 +14,9 @@ export abstract class BaseConnection<TRequest, TEvent> {
 
   get id(): string { return this.socket.id; }
 
-  dispatch<T>(command: TRequest): Promise<T | undefined> {
-    return new Promise<T | undefined>((resolve, reject) => {
-      this.socket.emit(String(command), (response: IHubResponse<T>): void => {
+  dispatch<T>(command: TRequest, ...args: any[]): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      this.socket.emit(String(command), ...args, (response: IHubResponse<T>): void => {
         if (response.isSuccess) resolve(response.data);
         else reject(Error(String(response.data)));
       });

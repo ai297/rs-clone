@@ -1,2 +1,3 @@
 export { ICard } from './card';
-export { IHubResponse } from './DTO/hub-response';
+export { IPlayerInfo } from './player-info';
+export * from './DTO';

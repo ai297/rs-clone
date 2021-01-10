@@ -1,5 +1,12 @@
-import { HubEventsServer, ICard, IHubResponse } from '../../common';
+/* eslint-disable no-param-reassign */
+import {
+  HubEventsServer,
+  ICard,
+  IHubResponse,
+  IPlayerInfo,
+} from '../../common';
 import { ClientConnection } from '../connection';
+import { Player } from '../player';
 import { Game } from './game';
 
 const MAX_GAMES = 100;
@@ -19,38 +26,55 @@ export class GameService {
 
   configureConnection(connection: ClientConnection): void {
     connection.addEventListener(HubEventsServer.NewGame, () => this.newGame(connection.id));
-    connection.addEventListener(HubEventsServer.JoinGame, (id: string) => this.joinGame(id));
-    connection.addEventListener(HubEventsServer.StartGame, (id: string) => this.startGame(id));
+    connection.addEventListener(HubEventsServer.JoinGame, (gameId: string) => this.joinGame(gameId));
+    connection.addEventListener(HubEventsServer.StartGame, () => this.startGame(connection));
+    connection.addEventListener(HubEventsServer.AddPlayer, (gameId: string) => this.createPlayer(gameId));
   }
 
-  newGame(id: string): IHubResponse<string> {
+  newGame(gameId: string): IHubResponse<string> {
     if (this.games.size >= MAX_GAMES) return GameService.error('Max games limit is reached. Please, try again later');
-    if (this.games.has(id)) return GameService.error('The game is already exists');
+    if (this.games.has(gameId)) return GameService.error('The game is already exists');
     const game = new Game(this.getCards());
-    this.games.set(id, game);
-    console.log(`Create a new game with id ${id}. Games now: ${this.games.size}`);
-    return { isSuccess: true, data: id };
+    this.games.set(gameId, game);
+    console.log(`Create a new game with id ${gameId}. Games now: ${this.games.size}`);
+    return GameService.success(gameId);
   }
 
-  joinGame(id: string): IHubResponse<string> {
-    if (this.games.has(id)) {
-      return { isSuccess: true, data: id };
+  joinGame(gameId: string): IHubResponse<IPlayerInfo[] | string> {
+    if (this.games.has(gameId)) {
+      // TODO: get playerInfo object from players in game
+      // return GameService.success<IPlayerInfo[]>([]);
+      return GameService.error('Not implemented');
     }
     return GameService.notFound();
   }
 
-  startGame(id: string): IHubResponse<string> {
-    if (!this.games.has(id)) return GameService.notFound();
-    const game = <Game>(this.games.get(id));
+  startGame(connection: ClientConnection): IHubResponse<string | null> {
+    if (!this.games.has(connection.currentGameId)) return GameService.notFound();
+    const game = <Game>(this.games.get(connection.currentGameId));
     try {
       game.startGame();
-      return { isSuccess: true };
+      // TODO: return any data about game?
+      return GameService.success<null>(null);
     } catch (err: unknown) {
       return GameService.error((<Error> err)?.message);
     }
   }
 
-  private static error = (message?: string): IHubResponse<string> => ({ isSuccess: false, data: message });
+  createPlayer(gameId: string /* connection: ClientConnection */): IHubResponse<IPlayerInfo | string> {
+    if (!this.games.has(gameId)) return GameService.notFound();
+    const game = <Game>(this.games.get(gameId));
+    // TODO: replace to call method of PlayerService
+    const player = new Player();
+    game.addPlayer(player);
+    // TODO: get playerInfo object from player
+    // return GameService.success<IPlayerInfo>(...);
+    return GameService.error('Not implemented');
+  }
+
+  private static success<T>(data: T): IHubResponse<T> { return { isSuccess: true, data }; }
+
+  private static error = (message?: string): IHubResponse<string> => ({ isSuccess: false, data: message || '' });
 
   private static notFound = (): IHubResponse<string> => GameService.error('Game not found');
 }

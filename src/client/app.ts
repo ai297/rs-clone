@@ -6,16 +6,22 @@ import
   GameScreen,
 } from './components';
 import { StaticScreens } from './enums';
-import { ServerConnection } from './services';
+import { createConnectionFactory, GameService, ServerConnection } from './services';
+
+const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
 
 class App {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
 
-  constructor(private mainContainer: HTMLElement) {
-    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+  private readonly connectionFactory: () => Promise<ServerConnection>;
 
-    // create connection with server (demo)
-    const connection = new ServerConnection('http://localhost:8080');
+  private readonly gameService: GameService;
+
+  constructor(private mainContainer: HTMLElement) {
+    this.connectionFactory = createConnectionFactory(SERVER_URL);
+    this.gameService = new GameService(this.connectionFactory);
+
+    this.staticScreens.set(StaticScreens.Start, new StartScreen());
   }
 
   show(component: IComponent): void {
