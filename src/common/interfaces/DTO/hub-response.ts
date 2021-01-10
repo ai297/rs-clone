@@ -1,4 +1,4 @@
-export interface IHubResponse {
+export interface IHubResponse<T> {
   isSuccess: boolean,
-  message?: string
+  data?: T
 }

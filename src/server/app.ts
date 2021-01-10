@@ -1,34 +1,27 @@
 import { Server } from 'http';
-import { HubEventsServer, IHubResponse } from '../common';
-import { ClientConnection, ConnectionService } from './connection';
+import { ConnectionEvents, ConnectionService } from './connection';
+import CardRepository from './services/card-repository';
 import { GameService } from './game/game-service';
 
 export default class App {
-  private readonly connectionService: ConnectionService;
-
-  private readonly gameService: GameService;
-
   constructor(private server: Server) {
-    this.connectionService = new ConnectionService();
-    this.gameService = new GameService(() => []);
+    const cardsRepository = new CardRepository();
+    const connectionService = new ConnectionService();
+    const gameService = new GameService(cardsRepository);
 
     // TODO: don't forget delete console logs
-    this.connectionService.onUserConnected = (con) => this.configureConnection(con);
-    this.connectionService.onUserDisconnected = (con) => console.log(`a user with id ${con.id} disconnected`);
-    this.connectionService.attachToServer(this.server);
-  }
-
-  private configureConnection(connection: ClientConnection): void {
-    console.log(`a user connected with id ${connection.id}`);
-    connection.addEventListener(
-      HubEventsServer.NewGame, (): IHubResponse => this.gameService.newGame(connection.id),
+    connectionService.addEventListener(
+      ConnectionEvents.Connect,
+      (con) => {
+        console.log(`a user connected with id ${con.id}`);
+        gameService.configureConnection(con);
+      },
     );
-    connection.addEventListener(
-      HubEventsServer.JoinGame, (gameId: string): IHubResponse => this.gameService.joinGame(gameId),
+    connectionService.addEventListener(
+      ConnectionEvents.Disconnect,
+      (con) => console.log(`a user with id ${con.id} disconnected`),
     );
-    connection.addEventListener(
-      HubEventsServer.StartGame, (gameId: string): IHubResponse => this.gameService.startGame(gameId),
-    );
+    connectionService.attachToServer(this.server);
   }
 
   start(port: number): void {
