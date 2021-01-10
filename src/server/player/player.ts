@@ -1,17 +1,18 @@
 import { ICard } from '../../common';
+import { PlayerSpell } from './player-spell';
 
-const STARTING_HEALTH = 20;
+const MAX_HEALTH = 20;
 
 export class Player {
   private handCardsValue: Array<ICard> = [];
 
-  private spellCardsValue: Array<ICard> = [];
+  private currentSpell: PlayerSpell;
 
   private callback: { [name: string]: () => void } = {};
 
   public isSpellReady = false;
 
-  private hitPointsValue = STARTING_HEALTH;
+  private hitPointsValue = MAX_HEALTH;
 
   public addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
@@ -27,21 +28,21 @@ export class Player {
     this.handCardsValue = this.handCardsValue.filter((cardCurrent: ICard) => !cards.includes(cardCurrent));
 
     // кладем в активное заклинание
-    this.spellCardsValue = [...cards];
+    this.currentSpell = new PlayerSpell(cards);
 
     this.callback.cardSelectionHandler();
   }
 
-  public get spellCards(): Array<ICard> {
-    // этот метод только отдает карты, нужен будет для расчета инициативы.
-    return this.spellCardsValue;
+  public get spell(): PlayerSpell {
+    return this.currentSpell;
   }
 
   public transferSpellCards(): Array<ICard> {
     this.isSpellReady = false;
     // передавая закл в отработку чистим слот
-    const result: Array<ICard> = [...this.spellCardsValue];
-    this.spellCardsValue = [];
+    const result: Array<ICard> = [...this.spell];
+    // вот тут очищать
+    this.currentSpell = null;
     return result;
   }
 
@@ -51,5 +52,24 @@ export class Player {
 
   public get hitPoints(): number {
     return this.hitPointsValue;
+  }
+
+  public makeDamage(damage: number): void {
+    this.hitPointsValue -= damage;
+  }
+
+  makeHeal(heal: number): void {
+    this.hitPointsValue += heal;
+    if (this.hitPointsValue > 25) {
+      this.hitPointsValue = 25;
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public makeDiceRoll(number: number): number {
+    const lower = 1;
+    const upper = number * 6;
+
+    return Math.floor(lower + Math.random() * (upper - lower + 1));
   }
 }
