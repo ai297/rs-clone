@@ -1,21 +1,17 @@
 import { BaseComponent } from '../base-component';
-// import heroesData from '../../../../public/heroes.json';
 import { createElement } from '../../../common';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { IHero } from '../../../common/interfaces';
-import { callbackify } from 'util';
 
 export class HeroSelection extends BaseComponent {
-  private markedHero: HTMLElement | null;
+  private selectedHero: HTMLElement | null;
 
-  private heroes: Record<string, HTMLElement>;
+  private heroes: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 
   constructor(private onSelect: (heroId: string) => void) {
     super([CSSClasses.HeroSelection]);
-    this.heroes = {};
-    this.markedHero = null;
+    this.selectedHero = null;
     this.createMarkup();
-    this.onSelect('fff');
   }
 
   createMarkup() : void {
@@ -29,7 +25,7 @@ export class HeroSelection extends BaseComponent {
                           <img src="${ImagesPaths.HeroesAvatars}${elem.image}.png" alt="${elem.id}">
                         </div>
                         <div class="${CSSClasses.HeroName}">${elem.name}</div>`;
-          this.heroes[elem.id] = hero;
+          this.heroes.set(elem.id, hero);
           this.element.append(hero);
         });
       });
@@ -37,16 +33,16 @@ export class HeroSelection extends BaseComponent {
   }
 
   public makeDisabled(id: string): void {
-    this.heroes[id]?.classList.add(CSSClasses.HeroDisabled);
+    this.heroes.get(id)?.classList.add(CSSClasses.HeroDisabled);
   }
 
   private selectHero(event: Event): void {
-    this.markedHero?.classList.remove(CSSClasses.HeroSelected);
+    this.selectedHero?.classList.remove(CSSClasses.HeroSelected);
     const target: HTMLElement | null = (<HTMLElement>event.target).closest(`.${CSSClasses.Hero}`);
     if (target) {
-      this.markedHero = target;
-      this.markedHero.classList.add(CSSClasses.HeroSelected);
+      this.selectedHero = target;
+      this.selectedHero.classList.add(CSSClasses.HeroSelected);
     }
-    this.onSelect(String(this.markedHero?.id));
+    this.onSelect(String(this.selectedHero?.id));
   }
 }

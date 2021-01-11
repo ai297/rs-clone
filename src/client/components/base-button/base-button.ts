@@ -8,7 +8,7 @@ export class BaseButton implements IComponent {
   constructor(private title: string, private callback: () => void, private cssClass?: Array<CSSClasses>) {
     this.el = createElement(Tags.Button, [CSSClasses.Button, ...cssClass || []]);
     this.el.innerText = title;
-    this.el.setAttribute('type', Tags.Button);
+    this.el.setAttribute('type', 'button');
     this.el.addEventListener('click', callback);
   }
 
