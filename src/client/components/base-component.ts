@@ -1,15 +1,19 @@
-import { CSSClasses } from '../enums';
+import { createElement } from '../../common';
+import { CSSClasses, Tags } from '../enums';
 
 export interface IComponent {
   readonly element: HTMLElement;
+  beforeAppend?: () => Promise<void>;
+  onAppended?: () => Promise<void>;
+  beforeRemove?: () => Promise<void>;
+  onRemoved?: () => Promise<void>;
 }
 
 export abstract class BaseComponent implements IComponent {
   private el: HTMLElement;
 
-  constructor(className?: string) {
-    this.el = document.createElement('div');
-    this.el.className = `${CSSClasses.Component} ${className || ''}`;
+  constructor(classList?: Array<CSSClasses>) {
+    this.el = createElement(Tags.Div, [CSSClasses.Component, ...(classList || [])]);
   }
 
   public get element(): HTMLElement {
