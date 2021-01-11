@@ -10,7 +10,7 @@ export class CardSpell extends BaseComponent {
   private IMG_PATHES = './images/cards/spells/';
 
   constructor(private card: ICard) {
-    super(CSSClasses.СardСontainer);
+    super([CSSClasses.СardСontainer]);
 
     const {
       id, title, type, magicSign, src, text, initiative,
