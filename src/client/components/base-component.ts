@@ -9,7 +9,7 @@ export abstract class BaseComponent implements IComponent {
   private el: HTMLElement;
 
   constructor(className?: Array<CSSClasses>) {
-    this.el = createElement(Tags.Div, [CSSClasses.Component, ...className || []]);
+    this.el = createElement(Tags.Div, [CSSClasses.Component, ...(className || [])]);
   }
 
   public get element(): HTMLElement {
