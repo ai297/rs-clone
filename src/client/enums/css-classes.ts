@@ -1,18 +1,21 @@
 export enum CSSClasses {
+  // base
   Component = 'component',
+  Button = 'button',
+  // start screen
   StartScreen = 'start-screen',
   StartScreenButton = 'start-screen__button',
-
+  // player list
   PlayerList = 'player-list',
   PlayerListItem = 'player-list__item',
   PlayerAvatar = 'player__avatar',
   PlayerName = 'player__name',
   PlayerHero = 'player__hero',
+  // hero selection
   HeroSelection = 'hero-selection',
-  HeroesContainer = 'heroes-container',
   Hero = 'hero',
   HeroImage = 'hero__image',
   HeroName = 'hero__name',
   HeroDisabled = 'hero__disabled',
-  HeroMarked = 'hero__marked',
+  HeroSelected = 'hero__selected',
 }

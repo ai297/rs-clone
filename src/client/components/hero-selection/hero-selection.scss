@@ -1,15 +1,16 @@
-.heroes-container {
-  height: fit-content;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 5px;
-}
-
 .hero {
   cursor: pointer;
   
-  &__marked {
+  &-selection {
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+
+  &__selected {
     border: 3px green solid;
   }
 

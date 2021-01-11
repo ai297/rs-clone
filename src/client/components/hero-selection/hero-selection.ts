@@ -1,60 +1,52 @@
-/* eslint-disable class-methods-use-this */
 import { BaseComponent } from '../base-component';
-import heroesData from '../../../../public/heroes.json';
+// import heroesData from '../../../../public/heroes.json';
 import { createElement } from '../../../common';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
-import { BaseButton } from '../base-button/base-button';
+import { IHero } from '../../../common/interfaces';
+import { callbackify } from 'util';
 
 export class HeroSelection extends BaseComponent {
   private markedHero: HTMLElement | null;
 
   private heroes: Record<string, HTMLElement>;
 
-  constructor() {
-    super(CSSClasses.HeroSelection);
+  constructor(private onSelect: (heroId: string) => void) {
+    super([CSSClasses.HeroSelection]);
     this.heroes = {};
     this.markedHero = null;
     this.createMarkup();
+    this.onSelect('fff');
   }
 
   createMarkup() : void {
-    const heroesContainer = createElement(Tags.Div, [CSSClasses.HeroesContainer], '');
-    heroesData.forEach((elem) => {
-      const hero = createElement(Tags.Div, [CSSClasses.Hero]);
-      hero.setAttribute('id', elem.id);
-      hero.innerHTML = `<div class="${CSSClasses.HeroImage}">
-                          <img src="${ImagesPaths.Avatars}${elem.id}.png" alt="${elem.id}">
+    fetch('./heroes.json')
+      .then((response) => response.json())
+      .then((data) => {
+        data.forEach((elem: IHero) => {
+          const hero = createElement(Tags.Div, [CSSClasses.Hero]);
+          hero.setAttribute('id', elem.id);
+          hero.innerHTML = `<div class="${CSSClasses.HeroImage}">
+                          <img src="${ImagesPaths.HeroesAvatars}${elem.image}.png" alt="${elem.id}">
                         </div>
                         <div class="${CSSClasses.HeroName}">${elem.name}</div>`;
-      this.heroes[elem.id] = hero;
-      heroesContainer.append(hero);
-    });
-    const heroSelectionButton = new BaseButton('Готово', this.setHero);
-    this.element.append(heroesContainer, heroSelectionButton.element);
-    heroesContainer.addEventListener('click', this.switchHero);
+          this.heroes[elem.id] = hero;
+          this.element.append(hero);
+        });
+      });
+    this.element.addEventListener('click', (event) => this.selectHero(event));
   }
 
   public makeDisabled(id: string): void {
     this.heroes[id]?.classList.add(CSSClasses.HeroDisabled);
   }
 
-  private switchHero(event: Event): void {
-    this.markedHero?.classList.remove(CSSClasses.HeroMarked);
+  private selectHero(event: Event): void {
+    this.markedHero?.classList.remove(CSSClasses.HeroSelected);
     const target: HTMLElement | null = (<HTMLElement>event.target).closest(`.${CSSClasses.Hero}`);
     if (target) {
       this.markedHero = target;
-      this.markedHero.classList.add(CSSClasses.HeroMarked);
+      this.markedHero.classList.add(CSSClasses.HeroSelected);
     }
-  }
-
-  // пока не заработал диспач ивента
-  private setHero() : void {
-    if (this.markedHero) {
-      this.element.dispatchEvent(new CustomEvent('hero-selected', {
-        detail: this.markedHero.getAttribute('id'),
-        bubbles: true,
-        composed: true,
-      }));
-    }
+    this.onSelect(String(this.markedHero?.id));
   }
 }
