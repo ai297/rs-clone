@@ -6,7 +6,7 @@ const MAX_HEALTH = 20;
 export class Player {
   private handCardsValue: Array<ICard> = [];
 
-  private currentSpell: PlayerSpell;
+  private currentSpell: PlayerSpell = PlayerSpell.Empty;
 
   private callback: { [name: string]: () => void } = {};
 
@@ -42,7 +42,7 @@ export class Player {
     // передавая закл в отработку чистим слот
     const result: Array<ICard> = [...this.spell];
     // вот тут очищать
-    this.currentSpell = null;
+    this.currentSpell = PlayerSpell.Empty;
     return result;
   }
 
