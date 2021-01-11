@@ -1,0 +1,21 @@
+.heroes-container {
+  height: fit-content;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.hero {
+  cursor: pointer;
+  
+  &__marked {
+    border: 3px green solid;
+  }
+
+  &__disabled{
+    opacity: .5;
+    pointer-events: none;
+  }
+
+}
