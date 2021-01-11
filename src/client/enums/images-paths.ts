@@ -1,4 +1,4 @@
 export enum ImagesPaths {
-  Avatars = './images/avatars/',
-  Heroes = './images/heroes/',
+  HeroesAvatars = './images/heroes/avatars/',
+  HeroesFullSize = './images/heroes/full-size/',
 }
