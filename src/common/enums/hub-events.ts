@@ -7,4 +7,6 @@ export enum HubEventsServer {
 
 export enum HubEventsClient {
   GoOut = 'go-out',
+  AddPlayer = 'add-player',
+  RemovePlayer = 'remove-player',
 }

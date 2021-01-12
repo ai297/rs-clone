@@ -1,3 +1,4 @@
+export * from './DTO';
 export { ICard } from './card';
-export { IHubResponse } from './DTO/hub-response';
+export { IPlayerInfo } from './player-info';
 export { IHero } from './hero';
