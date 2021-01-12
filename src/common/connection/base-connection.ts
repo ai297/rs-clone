@@ -25,9 +25,10 @@ export abstract class BaseConnection<TRequest, TEvent> {
 
   addEventListener<T>(event: TEvent, handler: (...args: any[]) => IHubResponse<T>): void {
     this.socket.on(String(event), (...args: any[]): void => {
-      if (args.length < 1 || typeof args[args.length - 1] !== 'function') return;
-      const callback = args.splice(-1, 1)[0];
-      callback(handler(...args));
+      let callback;
+      if (args.length >= 1 && typeof args[args.length - 1] === 'function') callback = args[args.length - 1];
+      const result = handler(...(args.slice(0, -1)));
+      if (callback) callback(result);
     });
   }
 }

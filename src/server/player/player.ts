@@ -1,4 +1,5 @@
-import { ICard } from '../../common';
+import { HubEventsClient, ICard } from '../../common';
+import { ClientConnection } from '../connection';
 import { PlayerSpell } from './player-spell';
 
 const MAX_HEALTH = 20;
@@ -14,8 +15,23 @@ export class Player {
 
   private hitPointsValue = MAX_HEALTH;
 
+  constructor(private connection: ClientConnection) {
+    // this.configureConnection();
+  }
+
   public addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
+  }
+
+  // private configureConnection(): void {
+
+  // }
+
+  public changeConnection(connection: ClientConnection): void {
+    if (connection.id === this.connection.id) return;
+    this.connection.dispatch(HubEventsClient.GoOut);
+    this.connection = connection;
+    // this.configureConnection();
   }
 
   public get handCards(): Array<ICard> {
