@@ -1,21 +1,14 @@
 import { BaseComponent } from '../base-component';
 import { CSSClasses } from '../../enums';
-
-const SCREEN_BUTTONS = ['Новая игра', 'Присоединиться', 'Правила', 'Настройки'];
-
-function createButtons(title: string): HTMLElement {
-  const button = document.createElement('button');
-  button.innerText = title;
-  button.classList.add(CSSClasses.StartScreenButton);
-  return button;
-}
+import { BaseButton } from '../base-button/base-button';
 
 export class StartScreen extends BaseComponent {
   constructor() {
-    super(CSSClasses.StartScreen);
-    SCREEN_BUTTONS.forEach((title) => {
-      const button = createButtons(title);
-      this.element.append(button);
-    });
+    super([CSSClasses.StartScreen]);
+    const newGameButton = new BaseButton('Новая игра', () => console.log('New'), [CSSClasses.StartScreenButton]);
+    const joinButton = new BaseButton('Присоединиться', () => console.log('Join'), [CSSClasses.StartScreenButton]);
+    const rulesButton = new BaseButton('Правила', () => console.log('Rules'), [CSSClasses.StartScreenButton]);
+    const settingsButton = new BaseButton('Настройки', () => console.log('Settings'), [CSSClasses.StartScreenButton]);
+    this.element.append(newGameButton.element, joinButton.element, rulesButton.element, settingsButton.element);
   }
 }
