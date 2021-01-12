@@ -1,13 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&display=swap');
-@font-face {
-    font-family: 'VNI-Canun';
-    //src: url('./fonts/VNI-Canun.ttf');
-}
-
 /*
-    необходимо поправить пути к картинкам и шрифту,
-    подкорректировать размер шрифта относительно html,
-    добавить цветовые стили и иконки для всех элементов (аналогично стр.170-171)
+    необходимо подкорректировать размер шрифта относительно html (стр.8),
+    добавить цветовые стили и иконки для всех элементов (аналогично стр.163-164)
 */
 
 html {
@@ -51,7 +44,7 @@ html {
     position: relative;
     width: 100%;
     height: 100%;
-    //background: #dddee0 center / 14px 14px repeat url('./images/cards/accessories/background-lines.svg');
+    background: #dddee0 center / 14px 14px repeat url('../assets/cards/background-lines.svg');
     border: .2em solid;
 }
 .card-type--source .card__content {
@@ -98,7 +91,7 @@ html {
     height: 22%;
     font-family: 'VNI-Canun', sans-serif;
     font-size: 1em;
-    //background-image: url('./images/cards/accessories/card-spell-background.svg');
+    background-image: url('../assets/cards/card-spell-background.svg');
     background-repeat: no-repeat;
     background-size: 300%;
     background-position: center;
@@ -168,7 +161,7 @@ html {
     overflow: hidden;
 }
 .card-element--mystery .card-element--label { color: #ff007c; }
-//.card-element--mystery .card-element--label::before { content: url('./images/cards/accessories/mystery-sign-icon.svg'); }
+.card-element--mystery .card-element--label::before { content: url('../assets/cards/mystery-sign-icon.svg'); }
 
 .card-type--label {
     position: absolute;
@@ -222,5 +215,5 @@ html {
     font-family: 'VNI-Canun', sans-serif;
     font-size: .9em;
     line-height: 1.8em;
-    //background: center no-repeat url('./images/cards/accessories/initiative-icon.svg');
+    background: center no-repeat url('../assets/cards/initiative-icon.svg');
 }
