@@ -12,4 +12,9 @@ export class ClientConnection extends BaseConnection<HubEventsClient, HubEventsS
     this.gameId = gameId;
     socket.join(this.gameId);
   }
+
+  removeListeners(event: HubEventsServer): void {
+    const socket = <Socket> this.socket;
+    socket.removeAllListeners(event);
+  }
 }

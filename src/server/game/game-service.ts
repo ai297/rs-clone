@@ -6,9 +6,11 @@ import {
   HubResponse,
   IPlayerInfo,
   ICreatePlayerRequest,
+  ISpellSelected,
+  IHealthUpdate,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
-import { Player, PlayerService } from '../player';
+import { Player, PlayerEvents, PlayerService } from '../player';
 import { Game } from './game';
 
 const MAX_GAMES = 100;
@@ -99,6 +101,7 @@ export class GameService {
     const player = new Player(connection, playerId, request.userName, request.heroId);
     try {
       game.addPlayer(player);
+      this.addPlayerListeners(player, request.gameId);
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
@@ -108,6 +111,21 @@ export class GameService {
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
     }
+  }
+
+  private addPlayerListeners(player: Player, gameId: string): void {
+    player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.SelectSpell, message);
+    });
+    player.addListener(PlayerEvents.TakeDamage, (message: IHealthUpdate) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
+    });
+    player.addListener(PlayerEvents.TakeHeal, (message: IHealthUpdate) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
+    });
+    player.addListener(PlayerEvents.MakeDiceRoll, (rolls: Array<number>) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, rolls);
+    });
   }
 
   private static notFound = (): IHubResponse<string> => HubResponse.Error('Game not found');
