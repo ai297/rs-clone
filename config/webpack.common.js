@@ -10,9 +10,10 @@ module.exports = {
     app: './index.ts'
   },
   output: {
-    filename: 'js/[name].[contenthash].js',
+    filename: '[name].[contenthash].js',
     path: paths.build_dir,
     publicPath: '/',
+    assetModuleFilename: 'assets/[hash][ext]',
   },
   module: {
     rules: [
@@ -69,7 +70,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].[contenthash].css',
+      filename: '[name].[contenthash].css',
     }),
     new HtmlWebpackPlugin({
       template: './index.html'
@@ -87,4 +88,7 @@ module.exports = {
   resolve: {
     extensions: [ '.ts', '.js' ],
   },
+  experiments: {
+    asset: true
+  }
 };
