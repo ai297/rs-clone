@@ -26,6 +26,30 @@ class App {
       () => console.log('Cannot connect to server...'),
     );
     this.gameService = new GameService(connection);
+    setTimeout(async () => {
+      console.log('Try to create new game...');
+      const gameId = await this.gameService.newGame();
+      console.log('New game created!', gameId);
+      this.gameService.onPlayerJoined = (playerInfo) => console.log('New player join to game', playerInfo);
+      setTimeout(async () => {
+        console.log('Try to create new player...');
+        const playerInfo = await this.gameService.createHero({
+          gameId,
+          heroId: 'hero-123',
+          userName: 'Vasya',
+        });
+        console.log('Player created!', playerInfo);
+        setTimeout(async () => {
+          console.log('Try to create second user...');
+          const anotherPlayerInfo = await this.gameService.createHero({
+            gameId,
+            heroId: 'pam-pararam!',
+            userName: 'Ivan Ivanov',
+          });
+          console.log('Player created!', anotherPlayerInfo);
+        }, 5000);
+      }, 5000);
+    }, 10000);
 
     this.staticScreens.set(StaticScreens.Start, new StartScreen());
   }

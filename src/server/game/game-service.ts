@@ -1,13 +1,13 @@
 import {
   HubEventsServer,
+  HubEventsClient,
   ICard,
   IHubResponse,
   HubResponse,
   IPlayerInfo,
   ICreatePlayerRequest,
-  // HubEventsClient,
 } from '../../common';
-import { ClientConnection } from '../connection';
+import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
 import { Player, PlayerService } from '../player';
 import { Game } from './game';
 
@@ -22,35 +22,51 @@ export class GameService {
 
   private games: Map<string, Game> = new Map<string, Game>();
 
-  constructor(cardRepo: ICardRepository, private readonly playerService: PlayerService) {
+  constructor(
+    cardRepo: ICardRepository,
+    private readonly connectionService: ConnectionService,
+    private readonly playerService: PlayerService,
+  ) {
     this.getCards = cardRepo.getData.bind(cardRepo);
+    this.connectionService.addEventListener(
+      ConnectionEvents.Connect,
+      (connection) => {
+        this.configureConnection(connection);
+      },
+    );
   }
 
-  configureConnection(connection: ClientConnection): void {
-    connection.addEventListener(HubEventsServer.NewGame, () => this.newGame(connection.id));
-    connection.addEventListener(HubEventsServer.JoinGame, (gameId: string) => this.joinGame(gameId));
+  private configureConnection(connection: ClientConnection): void {
+    connection.addEventListener(HubEventsServer.NewGame, () => this.newGame(connection));
+    connection.addEventListener(HubEventsServer.JoinGame, (gameId: string) => this.joinGame(gameId, connection));
     connection.addEventListener(HubEventsServer.StartGame, () => this.startGame(connection.currentGameId));
     connection.addEventListener(
       HubEventsServer.AddPlayer, (req: ICreatePlayerRequest) => this.createPlayer(req, connection),
     );
   }
 
-  newGame(gameId: string): IHubResponse<string> {
+  newGame(connection: ClientConnection): IHubResponse<string> {
+    const gameId = connection.id;
     if (this.games.size >= MAX_GAMES) return HubResponse.Error('Max games limit is reached. Please, try again later');
     if (this.games.has(gameId)) return HubResponse.Error('The game is already exists');
+
+    // TODO: add onGameEndCallback to Game constructor here
     const game = new Game(this.getCards());
     this.games.set(gameId, game);
-    console.log(`Create a new game with id ${gameId}. Games now: ${this.games.size}`);
+    connection.setGameId(gameId);
+
+    console.log(`New game was created with id ${gameId}. Games now: ${this.games.size}`);
     return HubResponse.Success(gameId);
   }
 
-  joinGame(gameId: string): IHubResponse<IPlayerInfo[] | string> {
-    if (this.games.has(gameId)) {
-      const game = <Game> this.games.get(gameId);
-      const playersInfo = game.players.map(GameService.getPlayerInfo);
-      return HubResponse.Success(playersInfo);
-    }
-    return GameService.notFound();
+  joinGame(gameId: string, connection: ClientConnection): IHubResponse<IPlayerInfo[] | string> {
+    if (!this.games.has(gameId)) return GameService.notFound();
+
+    const game = <Game> this.games.get(gameId);
+    const playersInfo = game.players.map(GameService.getPlayerInfo);
+    connection.setGameId(gameId);
+
+    return HubResponse.Success(playersInfo);
   }
 
   startGame(gameId: string): IHubResponse<string | null> {
@@ -59,6 +75,7 @@ export class GameService {
     try {
       game.startGame();
       // TODO: return any data about game?
+      this.connectionService.dispatch(gameId, HubEventsClient.StartGame);
       return HubResponse.Ok();
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
@@ -84,7 +101,10 @@ export class GameService {
       game.addPlayer(player);
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
-      return HubResponse.Success<IPlayerInfo>(GameService.getPlayerInfo(player, playerPosition));
+      const playerInfo = GameService.getPlayerInfo(player, playerPosition);
+      console.log('new Player created', playerInfo);
+      this.connectionService.dispatch(request.gameId, HubEventsClient.AddPlayer, playerInfo);
+      return HubResponse.Success<IPlayerInfo>(playerInfo);
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
     }

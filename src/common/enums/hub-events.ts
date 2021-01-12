@@ -9,4 +9,5 @@ export enum HubEventsClient {
   GoOut = 'go-out',
   AddPlayer = 'add-player',
   RemovePlayer = 'remove-player',
+  StartGame = 'start-game',
 }

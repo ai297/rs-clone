@@ -30,6 +30,12 @@ export class Player {
 
   get hero(): string { return this.heroId; }
 
+  public get handCards(): Array<ICard> { return this.handCardsValue; }
+
+  public get spell(): PlayerSpell { return this.currentSpell; }
+
+  public get hitPoints(): number { return this.hitPointsValue; }
+
   addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
   }
@@ -45,10 +51,6 @@ export class Player {
     // this.configureConnection();
   }
 
-  public get handCards(): Array<ICard> {
-    return this.handCardsValue;
-  }
-
   public addSpellCards(cards: Array<ICard>): void {
     this.isSpellReady = true;
     // убираем из руки
@@ -58,10 +60,6 @@ export class Player {
     this.currentSpell = new PlayerSpell(cards);
 
     this.callback.cardSelectionHandler();
-  }
-
-  public get spell(): PlayerSpell {
-    return this.currentSpell;
   }
 
   public transferSpellCards(): Array<ICard> {
@@ -75,10 +73,6 @@ export class Player {
 
   public setChooseCardsHandler(callback: () => void): void {
     this.callback.cardSelectionHandler = callback;
-  }
-
-  public get hitPoints(): number {
-    return this.hitPointsValue;
   }
 
   public makeDamage(damage: number): void {

@@ -5,25 +5,30 @@ import { GameService } from './game/game-service';
 import { PlayerService } from './player';
 
 export default class App {
+  private readonly connectionService: ConnectionService;
+
+  private readonly playerService: PlayerService;
+
+  private readonly gameService: GameService;
+
   constructor(private server: Server) {
     const cardsRepository = new CardRepository();
-    const connectionService = new ConnectionService();
-    const playerService = new PlayerService();
-    const gameService = new GameService(cardsRepository, playerService);
+    this.connectionService = new ConnectionService();
+    this.playerService = new PlayerService();
+    this.gameService = new GameService(cardsRepository, this.connectionService, this.playerService);
 
     // TODO: don't forget delete console logs
-    connectionService.addEventListener(
+    this.connectionService.addEventListener(
       ConnectionEvents.Connect,
       (con) => {
         console.log(`a user connected with id ${con.id}`);
-        gameService.configureConnection(con);
       },
     );
-    connectionService.addEventListener(
+    this.connectionService.addEventListener(
       ConnectionEvents.Disconnect,
       (con) => console.log(`a user with id ${con.id} disconnected`),
     );
-    connectionService.attachToServer(this.server);
+    this.connectionService.attachToServer(this.server);
   }
 
   start(port: number): void {
