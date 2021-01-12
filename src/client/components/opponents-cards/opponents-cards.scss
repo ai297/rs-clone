@@ -1,0 +1,18 @@
+// styles for test
+.opponents-cards {
+  display: flex;
+  justify-content: space-evenly;
+  width: 150px;
+  height: 60px;
+  padding: 3px;
+  background-color: lightslategray;
+
+  &__item {
+    width: 40px;
+    background-image: url('../assets/cards/cover-card.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 5px;
+  }
+}
