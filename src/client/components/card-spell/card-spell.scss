@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&display=swap');
 @font-face {
     font-family: 'VNI-Canun';
-    src: url('./fonts/VNI-Canun.ttf');
+    //src: url('./fonts/VNI-Canun.ttf');
 }
 
 html {
@@ -45,7 +45,7 @@ html {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #dddee0 center / 14px 14px repeat url('./images/cards/accessories/background-lines.svg');
+    //background: #dddee0 center / 14px 14px repeat url('./images/cards/accessories/background-lines.svg');
     border: .2em solid;
 }
 .card-type--source .card__content {
@@ -92,7 +92,7 @@ html {
     height: 22%;
     font-family: 'VNI-Canun', sans-serif;
     font-size: 1em;
-    background-image: url('./images/cards/accessories/card-spell-background.svg');
+    //background-image: url('./images/cards/accessories/card-spell-background.svg');
     background-repeat: no-repeat;
     background-size: 300%;
     background-position: center;
@@ -141,14 +141,14 @@ html {
 .card__text ul { list-style: none; }
 .card__text span { margin: 0 .5em; }
 
-.card-element {
+.card-element--label {
     position: absolute;
     bottom: .4em;
     left: 1em;
     font-size: .9em;
     text-transform: uppercase;
 }
-.card-element::before {
+.card-element--label::before {
     width: 2em;
     height: 2em;
     padding: .3em;
@@ -161,10 +161,10 @@ html {
     vertical-align: bottom;
     overflow: hidden;
 }
-.card-element--mystery .card-element { color: #ff007c; }
-.card-element--mystery .card-element::before { content: url('./images/cards/accessories/mystery-sign-icon.svg'); }
+.card-element--mystery .card-element--label { color: #ff007c; }
+//.card-element--mystery .card-element--label::before { content: url('./images/cards/accessories/mystery-sign-icon.svg'); }
 
-.card-type {
+.card-type--label {
     position: absolute;
     bottom: .4em;
     right: 1em;
@@ -172,7 +172,7 @@ html {
     text-transform: uppercase;
 }
 
-.card-type::after {
+.card-type--label::after {
     width: 1.6em;
     height: 1.6em;
     margin-left: .2em;
@@ -188,18 +188,18 @@ html {
     overflow: hidden;
 }
 
-.card-type--source .card-type { color: #ffd100; }
-.card-type--source .card-type::after {
+.card-type--source .card-type--label { color: #ffd100; }
+.card-type--source .card-type--label::after {
     content: 'И';
     background-color: #ffd100;
 }
-.card-type--quality .card-type { color: #ff6200; }
-.card-type--quality .card-type::after {
+.card-type--quality .card-type--label { color: #ff6200; }
+.card-type--quality .card-type--label::after {
     content: 'К';
     background-color: #ff6200;
 }
-.card-type--action .card-type { color: #fc1c3f; }
-.card-type--action .card-type::after {
+.card-type--action .card-type--label { color: #fc1c3f; }
+.card-type--action .card-type--label::after {
     content: 'Д';
     background-color: #fc1c3f;
 }
@@ -216,5 +216,5 @@ html {
     font-family: 'VNI-Canun', sans-serif;
     font-size: .9em;
     line-height: 1.8em;
-    background: center no-repeat url('./images/cards/accessories/initiative-icon.svg');
+    //background: center no-repeat url('./images/cards/accessories/initiative-icon.svg');
 }
