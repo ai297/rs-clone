@@ -6,4 +6,6 @@ export enum HubEventsServer {
 }
 
 export enum HubEventsClient {
+  AddPlayer = 'add-player',
+  RemovePlayer = 'remove-player',
 }
