@@ -4,7 +4,7 @@ import { createElement } from '../../../common/utils';
 
 export class PlayerListItem extends BaseComponent {
   constructor(private name: string, private heroName: string, private avatar: string) {
-    super(CSSClasses.PlayerListItem);
+    super([CSSClasses.PlayerListItem]);
 
     const playerName = createElement(Tags.Div, [CSSClasses.PlayerName], this.name);
     const playerHero = createElement(Tags.Div, [CSSClasses.PlayerHero], this.heroName);

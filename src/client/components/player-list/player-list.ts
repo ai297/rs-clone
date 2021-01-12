@@ -1,12 +1,12 @@
 import { BaseComponent } from '../base-component';
 import { CSSClasses } from '../../enums';
-import { PlayerListItem } from '../player-list-item/player-list-item';
+import { PlayerListItem } from './player-list-item';
 
 export class PlayerList extends BaseComponent {
   private players: Record<string, PlayerListItem>;
 
   constructor() {
-    super(CSSClasses.PlayerList);
+    super([CSSClasses.PlayerList]);
     this.players = {};
   }
 
