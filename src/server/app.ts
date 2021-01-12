@@ -2,12 +2,14 @@ import { Server } from 'http';
 import { ConnectionEvents, ConnectionService } from './connection';
 import CardRepository from './services/card-repository';
 import { GameService } from './game/game-service';
+import { PlayerService } from './player';
 
 export default class App {
   constructor(private server: Server) {
     const cardsRepository = new CardRepository();
     const connectionService = new ConnectionService();
-    const gameService = new GameService(cardsRepository);
+    const playerService = new PlayerService();
+    const gameService = new GameService(cardsRepository, playerService);
 
     // TODO: don't forget delete console logs
     connectionService.addEventListener(

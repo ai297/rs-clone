@@ -15,11 +15,22 @@ export class Player {
 
   private hitPointsValue = MAX_HEALTH;
 
-  constructor(private connection: ClientConnection) {
+  constructor(
+    private connection: ClientConnection,
+    private readonly playerId: string,
+    private readonly userName: string,
+    private readonly heroId: string,
+  ) {
     // this.configureConnection();
   }
 
-  public addCardsHand(cards: Array<ICard>): void {
+  get id(): string { return this.playerId; }
+
+  get name(): string { return this.userName; }
+
+  get hero(): string { return this.heroId; }
+
+  addCardsHand(cards: Array<ICard>): void {
     this.handCardsValue = [...this.handCardsValue, ...cards];
   }
 
