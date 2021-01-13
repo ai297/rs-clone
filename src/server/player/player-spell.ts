@@ -8,20 +8,26 @@ export class PlayerSpell {
 
   private spellSpeed = 0;
 
+  private spellLength = 0;
+
   constructor(cards: Array<ICard>) {
     // здесь при попытке добавить в заклинание карты того типа, который там уже есть - лишние карты просто игнорируются
     cards.forEach((card) => {
-      if (!this.cards.has(card.type)) this.cards.set(card.type, card);
-      this.spellSpeed += card.initiative;
+      if (!this.cards.has(card.type)) {
+        this.cards.set(card.type, card);
+        this.spellSpeed += card.initiative;
+        this.spellLength++;
+      }
     });
 
     // считаем инициативу заклинания
-    const cardsCount = [...this.cards.keys()].length;
-    if (cardsCount === 1) this.spellSpeed += FASTEST_SPELL;
-    if (cardsCount === 2) this.spellSpeed += QUICK_SPELL;
+    if (this.spellLength === 1) this.spellSpeed += FASTEST_SPELL;
+    if (this.spellLength === 2) this.spellSpeed += QUICK_SPELL;
   }
 
   get initiative(): number { return this.spellSpeed; }
+
+  get length(): number { return this.spellLength; }
 
   // это итератор. благодаря ему можно перебрать PlayerSpell как массив или использовать спред
   * [Symbol.iterator](): Generator<ICard> {

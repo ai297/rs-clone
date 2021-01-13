@@ -1,4 +1,4 @@
-import { Player } from '../player';
+import { Player, PlayerEvents } from '../player';
 import { ICard, shuffleArray } from '../../common';
 import { CastingSpells } from './casting-spells';
 
@@ -55,7 +55,7 @@ export class Game {
       const tempCards = this.activeDeck.splice(startIndex);
       player.addCardsHand(tempCards);
 
-      player.setChooseCardsHandler(this.cardSelectionHandler);
+      player.addListener(PlayerEvents.CardsSelected, this.cardSelectionHandler);
     });
   }
 
