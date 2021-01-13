@@ -1,4 +1,4 @@
-import { ILobbyLocalization } from './lobby-localization';
+import { ILobbyLocalization } from './interface-lobby-localization';
 
 export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
   EnterYourName: 'Введите имя',

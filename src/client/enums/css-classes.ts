@@ -16,10 +16,17 @@ export enum CSSClasses {
   Hero = 'hero',
   HeroImage = 'hero__image',
   HeroName = 'hero__name',
-  HeroDisabled = 'hero__disabled',
-  HeroSelected = 'hero__selected',
+  HeroDisabled = 'hero--disabled',
+  HeroSelected = 'hero--selected',
   // opponents cards
   OpponentsCards = 'opponents-cards',
   OpponentsCardsEmpty = 'opponents-cards--empty',
   OpponentCardItem = 'opponents-cards__item',
+  // lobby
+  Lobby = 'lobby',
+  GameLink = 'lobby__game-link',
+  NameInput = 'lobby__name-input',
+  SelectHeroButton = 'lobby__select-hero',
+  StartGameButton = 'lobby__start-game',
+  StartGameButtonDisabled = 'lobby__start-game--disabled',
 }
