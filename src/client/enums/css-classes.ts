@@ -13,6 +13,7 @@ export enum CSSClasses {
   PlayerHero = 'player__hero',
   // hero selection
   HeroSelection = 'hero-selection',
+  HeroSelectionDisabled = 'hero-selection--disabled',
   Hero = 'hero',
   HeroImage = 'hero__image',
   HeroName = 'hero__name',

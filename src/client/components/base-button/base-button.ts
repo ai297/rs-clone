@@ -16,17 +16,14 @@ export class BaseButton implements IComponent {
     return this.el;
   }
 
-  public get isDisabled(): boolean {
-    if (this.el.hasAttribute('disabled')) {
-      return true;
-    }
-    return false;
+  public get disabled(): boolean {
+    return (this.el.hasAttribute('disabled'));
   }
 
-  public set disableButton(value: boolean) {
-    if (value && !this.isDisabled) {
+  public set disabled(value: boolean) {
+    if (value) {
       this.el.setAttribute('disabled', '');
-    } else if (!value && this.isDisabled) {
+    } else {
       this.el.removeAttribute('disabled');
     }
   }

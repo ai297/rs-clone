@@ -9,7 +9,7 @@ export class HeroSelection extends BaseComponent {
 
   private heroes: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 
-  private isInactive = false;
+  private isActive = true;
 
   constructor(private heroesRepository: HeroesRepository, private onSelect: (hero: IHero) => void) {
     super([CSSClasses.HeroSelection]);
@@ -43,15 +43,20 @@ export class HeroSelection extends BaseComponent {
   }
 
   public get isDisabled():boolean {
-    return this.isInactive;
+    return !this.isActive;
   }
 
   public set isDisabled(value: boolean) {
-    this.isInactive = value;
+    if (value) {
+      this.element.classList.add(CSSClasses.HeroSelectionDisabled);
+    } else {
+      this.element.classList.remove(CSSClasses.HeroSelectionDisabled);
+    }
+    this.isActive = !value;
   }
 
   private selectHero(event: Event, hero: IHero): void {
-    if (!this.isDisabled) {
+    if (this.isActive) {
       this.selectedHero?.classList.remove(CSSClasses.HeroSelected);
       const target: HTMLElement | null = (<HTMLElement>event.target).closest(`.${CSSClasses.Hero}`);
       if (target) {
