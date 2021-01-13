@@ -1,3 +1,4 @@
+@import './fonts.scss';
 @import './constants.scss';
 
 * {
@@ -14,5 +15,6 @@ main {
 }
 
 @import '../components/start-screen/start-screen.scss';
+@import '../components/card-spell/card-spell.scss';
 @import '../components/hero-selection/hero-selection.scss';
 @import '../components/opponents-cards/opponents-cards.scss';

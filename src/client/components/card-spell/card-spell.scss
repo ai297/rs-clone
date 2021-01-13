@@ -1,0 +1,219 @@
+/*
+    необходимо подкорректировать размер шрифта относительно html (стр.8),
+    добавить цветовые стили и иконки для всех элементов (аналогично стр.163-164)
+*/
+
+html {
+  font-family: 'Yanone Kaffeesatz', sans-serif;
+  font-size: 30px;
+}
+
+.card__container {
+    perspective: 30rem;
+    margin: 1rem;
+}
+
+.card {
+    position: relative;
+    width: 15em;
+    height: 21em;
+    padding: .75em;
+    padding-bottom: 1.4em;
+    border-radius: .6em;
+    font-size: .75rem;
+    background-color: #1a1a1a;
+    box-shadow: 0 0 .25em rgba(0, 0, 0, 0.75);
+    transform-style: preserve-3d;
+    transition: all .5s ease-in-out
+}
+
+.card:hover {
+    cursor: pointer;
+    transform: translateZ(3em);
+    box-shadow: 0 1em 1em rgba(0, 0, 0, 0.5);
+}
+
+//.card:hover p {text-align: right;}
+.card-type--source { padding-right: 0; }
+.card-type--quality {
+    padding-right: 0;
+    padding-left: 0;
+}
+.card-type--action { padding-left: 0; }
+.card__content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #dddee0 center / 14px 14px repeat url('../assets/cards/background-lines.svg');
+    border: .2em solid;
+}
+.card-type--source .card__content {
+    border-color: #ffd100;
+    border-radius: .5em 0 0 .5em;
+    border-right: none;
+}
+.card-type--quality .card__content {
+    border-color: #ff6200;
+    border-right: none;
+    border-left: 0;
+}
+.card-type--action .card__content {
+    border-color: #fc1c3f;
+    border-radius: 0 .5em .5em 0;
+    border-left: none;
+}
+
+.card__image {
+    height: 65%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-size: cover;
+    background-position: center; */
+    overflow: hidden;
+}
+.card__image > img {
+    width: 100%;
+    line-height: 0;
+    transition: transform .5s ease-in-out;
+}
+.card-type--source .card__image { border-radius: .25em 0 0 0; }
+.card-type--action .card__image { border-radius: 0 .25em 0 0; }
+.card:hover .card__image > img {
+    transform: scale(1.1);
+}
+
+.card__title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 54%;
+    height: 22%;
+    font-family: 'VNI-Canun', sans-serif;
+    font-size: 1em;
+    background-image: url('../assets/cards/card-spell-background.svg');
+    background-repeat: no-repeat;
+    background-size: 300%;
+    background-position: center;
+}
+.card__title > div {
+    /* -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: white; */
+    text-shadow:
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px 1px 0 white,
+        1px 1px 0 white;
+    white-space: nowrap;
+    line-height: 2em;
+    overflow: hidden;
+}
+.card-type--source .card__title { background-position: left top; }
+.card-type--source .card__title > div {
+    padding-right: .75em;
+    text-align: right;
+    transform: rotate(-2deg) translateY(.3em);
+}
+.card-type--quality .card__title { background-position: center top;}
+.card-type--quality .card__title > div {
+    text-align: center;
+}
+.card-type--action .card__title { background-position: 104% top;}
+.card-type--action .card__title > div {
+    padding-left: .75em;
+    transform: rotate(2deg) translateY(.3em);
+}
+
+.card__text {
+    height: 40%;
+    padding: .75em;
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    font-size: .8em;
+    overflow: hidden;
+}
+
+.card__text p { text-align: center; }
+.card__text ul { list-style: none; }
+.card__text span { margin: 0 .5em; }
+
+.card-element--label {
+    position: absolute;
+    bottom: .4em;
+    left: 1em;
+    font-size: .9em;
+    text-transform: uppercase;
+}
+.card-element--label::before {
+    width: 2em;
+    height: 2em;
+    padding: .3em;
+    margin-right: .2em;
+    box-sizing: border-box;
+    display: inline-block;
+    border: 2px solid #1a1a1a;
+    border-radius: 50%;
+    background-color: currentColor;
+    vertical-align: bottom;
+    overflow: hidden;
+}
+.card-element--mystery .card-element--label { color: #ff007c; }
+.card-element--mystery .card-element--label::before { content: url('../assets/cards/mystery-sign-icon.svg'); }
+
+.card-type--label {
+    position: absolute;
+    bottom: .4em;
+    right: 1em;
+    font-size: .9em;
+    text-transform: uppercase;
+}
+
+.card-type--label::after {
+    width: 1.6em;
+    height: 1.6em;
+    margin-left: .2em;
+    padding: .3em;
+    box-sizing: border-box;
+    display: inline-block;
+    font-family: 'VNI-Canun', sans-serif;
+    font-size: 1.2em;
+    line-height: .6em;
+    color: #1a1a1a;
+    vertical-align: bottom;
+    border: 2px solid #1a1a1a;
+    overflow: hidden;
+}
+
+.card-type--source .card-type--label { color: #ffd100; }
+.card-type--source .card-type--label::after {
+    content: 'И';
+    background-color: #ffd100;
+}
+.card-type--quality .card-type--label { color: #ff6200; }
+.card-type--quality .card-type--label::after {
+    content: 'К';
+    background-color: #ff6200;
+}
+.card-type--action .card-type--label { color: #fc1c3f; }
+.card-type--action .card-type--label::after {
+    content: 'Д';
+    background-color: #fc1c3f;
+}
+
+.card-type-icon {
+    position: absolute;
+    width: 15%;
+    height: 22%;
+    right: -.2em;
+    top: 52%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-family: 'VNI-Canun', sans-serif;
+    font-size: .9em;
+    line-height: 1.8em;
+    background: center no-repeat url('../assets/cards/initiative-icon.svg');
+}
