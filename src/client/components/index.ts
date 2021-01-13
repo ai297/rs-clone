@@ -5,3 +5,4 @@ export { GameEndScreen } from './game-end-screen/game-end-screen';
 export { SettingsScreen } from './settings-screen/settings-screen';
 export { TutorialScreen } from './tutorial-screen/tutorial-screen';
 export { IComponent } from './base-component';
+export { HeroSelection } from './hero-selection/hero-selection';

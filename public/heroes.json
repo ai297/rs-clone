@@ -1,0 +1,42 @@
+[
+  {
+    "id": "princess_holiday",
+    "name": "Выходная принцесса и ее бешенорог",
+    "image": "princess_holiday"
+  },
+  {
+    "id": "fey_ticklebottom",
+    "name": "Чародей чудила щекотун",
+    "image": "fey_ticklebottom"
+  },
+  {
+    "id": "hogs_house",
+    "name": "Свинопуз",
+    "image": "hogs_house"
+  },
+  {
+    "id": "zanzabart",
+    "name": "Занзабарт шлаковый джин",
+    "image": "zanzabart"
+  },
+  {
+    "id": "jung_jung",
+    "name": "Джунг Джунг повелитель душ",
+    "image": "jung_jung"
+  },
+  {
+    "id": "pisster",
+    "name": "Злющий пьяный маг",
+    "image": "pisster"
+  },
+  {
+    "id": "krazztar",
+    "name": "Кразтор крово-держец",
+    "image": "krazztar"
+  },
+  {
+    "id": "lady_lazervere",
+    "name": "Лазерная леди из космоцарства",
+    "image": "lady_lazervere"
+  }
+]

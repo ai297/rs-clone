@@ -1,4 +1,4 @@
-import { Player } from '../player';
+import { Player, PlayerEvents } from '../player';
 import { ICard, shuffleArray } from '../../common';
 import { CastingSpells } from './casting-spells';
 
@@ -55,19 +55,12 @@ export class Game {
       const tempCards = this.activeDeck.splice(startIndex);
       player.addCardsHand(tempCards);
 
-      player.setChooseCardsHandler(this.cardSelectionHandler);
+      player.addListener(PlayerEvents.CardsSelected, this.cardSelectionHandler);
     });
   }
 
   private cardSelectionHandler = (): void => {
-    const SPELLS_NOT_READY = false;
-
-    const isMagicReady = this.playersValue.reduce((acc: boolean, player: Player) => {
-      if (!acc) {
-        return player.isSpellReady;
-      }
-      return acc;
-    }, SPELLS_NOT_READY);
+    const isMagicReady = this.playersValue.every((player) => player.isSpellReady);
 
     if (isMagicReady) {
       this.castSpells();
@@ -76,9 +69,7 @@ export class Game {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this.checkEndGameHandler);
-
-    casting.calculateInitiative();
+    const casting = new CastingSpells(this.players, this.checkEndGameHandler, this.usedCardHandler);
 
     casting.castSpells();
 
@@ -89,6 +80,10 @@ export class Game {
       this.isEndGame = false;
     }
   }
+
+  private usedCardHandler = (cardUsed: Array<ICard>) => {
+    this.usedCardsDeck.push(...cardUsed);
+  };
 
   private checkEndGameHandler = (): void => {
     // рубильник для остановки GameLoop

@@ -1,0 +1,22 @@
+.hero {
+  cursor: pointer;
+  
+  &-selection {
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+
+  &__selected {
+    border: 3px green solid;
+  }
+
+  &__disabled{
+    opacity: .5;
+    pointer-events: none;
+  }
+
+}

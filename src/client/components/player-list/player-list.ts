@@ -1,26 +1,26 @@
 import { BaseComponent } from '../base-component';
 import { CSSClasses } from '../../enums';
-import { PlayerListItem } from '../player-list-item/player-list-item';
+import { PlayerListItem } from './player-list-item';
 
 export class PlayerList extends BaseComponent {
   private players: Record<string, PlayerListItem>;
 
   constructor() {
-    super(CSSClasses.PlayerList);
+    super([CSSClasses.PlayerList]);
     this.players = {};
   }
 
-  addPlayer(name: string, hero: string, avatar: string): HTMLElement {
-    const newPlayer: PlayerListItem = new PlayerListItem(name, hero, avatar);
+  addPlayer(id: string, name: string, hero: string, avatar: string): HTMLElement {
+    const newPlayer: PlayerListItem = new PlayerListItem(id, name, hero, avatar);
 
-    this.players[name] = newPlayer;
+    this.players[id] = newPlayer;
     this.element.append(newPlayer.element);
 
     return this.element;
   }
 
-  removePlayer(name: string): void {
-    this.players[name]?.element.remove();
-    delete this.players[name];
+  removePlayer(id: string): void {
+    this.players[id]?.element.remove();
+    delete this.players[id];
   }
 }
