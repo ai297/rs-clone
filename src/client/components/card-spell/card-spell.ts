@@ -1,16 +1,15 @@
 import { BaseComponent } from '../base-component';
-import { CSSClasses } from '../../enums';
+import { CSSClasses, ImagesPaths } from '../../enums';
 import { ICard } from '../../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../../common';
 
 const LOCALE_TYPES = ['источник', 'качество', 'действие'];
 const LOCALE_ELEMENTS = ['тайна', 'тьма', 'природа', 'стихия', 'иллюзия'];
+const IMG_PATH = ImagesPaths.CardsSpells;
 
 export class CardSpell extends BaseComponent {
-  private IMG_PATHES = './images/cards/spells/';
-
   constructor(private card: ICard) {
-    super([CSSClasses.СardСontainer]);
+    super(CSSClasses.СardСontainer);
 
     const {
       id, title, type, magicSign, src, text, initiative,
@@ -23,7 +22,7 @@ export class CardSpell extends BaseComponent {
 
     let initiativeElem = '';
 
-    if (typeCard === 'action') {
+    if (type === CardTypes.action) {
       initiativeElem = `<div class="${CSSClasses.СardType}-icon">${initiative}</div>`;
     }
 
@@ -31,7 +30,7 @@ export class CardSpell extends BaseComponent {
       <div class="${CSSClasses.Сard} ${CSSClasses.СardType}--${typeCard} ${CSSClasses.СardElement}--${magicSignCard}">
         <div class="${CSSClasses.СardContent}">
           <div class="${CSSClasses.СardImage}">
-            <img src="${this.IMG_PATHES}${typeCard}/${src}.png" alt="${id} image">
+            <img src="${IMG_PATH}${typeCard}/${src}.jpg" alt="${id} image">
           </div>
           <div class="${CSSClasses.СardTitle}">
             <div>${title}</div>
@@ -41,11 +40,15 @@ export class CardSpell extends BaseComponent {
               ${text}
             </div>
         </div>
-        <div class="${CSSClasses.СardElement}">${LOCALE_ELEMENTS[magicSign]}</div>
-        <div class="${CSSClasses.СardType}">${LOCALE_TYPES[type]}</div>
+        <div class="${CSSClasses.СardElement}--label">${LOCALE_ELEMENTS[magicSign]}</div>
+        <div class="${CSSClasses.СardType}--label">${LOCALE_TYPES[type]}</div>
       </div>
     `;
 
     this.element.innerHTML = cardTemplate;
+  }
+
+  get id(): string {
+    return this.card.id;
   }
 }
