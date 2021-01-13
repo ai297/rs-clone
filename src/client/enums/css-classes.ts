@@ -18,4 +18,8 @@ export enum CSSClasses {
   HeroName = 'hero__name',
   HeroDisabled = 'hero__disabled',
   HeroSelected = 'hero__selected',
+  // opponents cards
+  OpponentsCards = 'opponents-cards',
+  OpponentsCardsEmpty = 'opponents-cards--empty',
+  OpponentCardItem = 'opponents-cards__item',
 }
