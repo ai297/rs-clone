@@ -5,6 +5,7 @@ import {
   HubResponse,
   IPlayerInfo,
   ICreatePlayerRequest,
+  ISpellSelected,
 } from '../../common';
 import { ServerConnection } from './server-connection';
 
@@ -18,6 +19,10 @@ export class GameService {
   constructor(private readonly connection: ServerConnection) {
     connection.addEventListener(HubEventsClient.AddPlayer, (player: IPlayerInfo) => this.addPlayer(player));
     connection.addEventListener(HubEventsClient.RemovePlayer, (playerId: string) => this.removePlayer(playerId));
+    connection.addEventListener(HubEventsClient.SpellSelected, (message: ISpellSelected) => {
+      if (this.onPlayerSelectSpell) this.onPlayerSelectSpell(message.playerId, message.spellCards);
+      return HubResponse.Ok();
+    });
   }
 
   get currentGameId(): string { return this.gameId; }
@@ -53,6 +58,12 @@ export class GameService {
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerLeaved?: (playerId: string) => void;
+
+  onPlayerSelectSpell?: (playerId: string, cardsInSpell: number) => void;
+
+  onPlayerTakeDamage?: (playerId: string, damage: number) => Promise<void>;
+
+  onPlayerTakeHeal?: (playerId: string, heal: number) => Promise<void>;
 
   /**
    * This method returns promise, that resolve with gameId: string as argument

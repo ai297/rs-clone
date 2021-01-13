@@ -14,5 +14,5 @@ export enum HubEventsClient {
   GetCards = 'get-cards',
   DiceRoll = 'dice-roll',
   UpdateHealath = 'update-haalth',
-  SelectSpell = 'spell-selected',
+  SpellSelected = 'spell-selected',
 }

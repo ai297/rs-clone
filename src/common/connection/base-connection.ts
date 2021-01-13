@@ -23,7 +23,7 @@ export abstract class BaseConnection<TRequest, TEvent> {
     });
   }
 
-  addEventListener<T>(event: TEvent, handler: (...args: any[]) => IHubResponse<T>): void {
+  addEventListener<T>(event: TEvent, handler: (...args: any[]) => IHubResponse<T> | Promise<IHubResponse<T>>): void {
     this.socket.on(String(event), (...args: any[]): void => {
       let callback;
       let data = args;
@@ -32,7 +32,11 @@ export abstract class BaseConnection<TRequest, TEvent> {
         data = args.slice(0, -1);
       }
       const result = handler(...data);
-      if (callback) callback(result);
+      if (result instanceof Promise) {
+        (<Promise<IHubResponse<T>>> result).then((response) => {
+          if (callback) callback(response);
+        });
+      } else if (callback) callback(result);
     });
   }
 }

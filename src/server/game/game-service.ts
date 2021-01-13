@@ -115,7 +115,7 @@ export class GameService {
 
   private addPlayerListeners(player: Player, gameId: string): void {
     player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.SelectSpell, message);
+      this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
     });
     player.addListener(PlayerEvents.TakeDamage, (message: IHealthUpdate) => {
       this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
