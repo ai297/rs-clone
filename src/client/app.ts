@@ -6,7 +6,7 @@ import
   GameScreen,
 } from './components';
 import { StaticScreens } from './enums';
-import { GameService, ServerConnection } from './services';
+import { GameService, HeroesRepository, ServerConnection } from './services';
 
 const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
 
@@ -14,6 +14,8 @@ class App {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
 
   private readonly gameService: GameService;
+
+  private readonly heroesRepository: HeroesRepository;
 
   constructor(private mainContainer: HTMLElement) {
     // TODO: show preloader before connect to server here
@@ -26,6 +28,7 @@ class App {
       () => console.log('Cannot connect to server...'),
     );
     this.gameService = new GameService(connection);
+    this.heroesRepository = new HeroesRepository();
 
     this.staticScreens.set(StaticScreens.Start, new StartScreen());
   }
