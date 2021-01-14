@@ -4,5 +4,6 @@ export { GameScreen } from './game-screen/game-screen';
 export { GameEndScreen } from './game-end-screen/game-end-screen';
 export { SettingsScreen } from './settings-screen/settings-screen';
 export { TutorialScreen } from './tutorial-screen/tutorial-screen';
-export { IComponent } from './base-component';
+export { IComponent } from './component';
 export { HeroSelection } from './hero-selection/hero-selection';
+export { Overlay } from './overlay/overlay';
