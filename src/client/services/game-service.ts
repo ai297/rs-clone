@@ -60,8 +60,8 @@ export class GameService {
   }
 
   private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
-    const player: IPlayerInfo = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
-    if (player) player.health = message.currentHealth;
+    const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
+    if (player) (<IPlayerInfo> player).health = message.currentHealth;
     if (message.isDamage && this.onPlayerTakeDamage) {
       await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
     }
