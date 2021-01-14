@@ -1,6 +1,6 @@
 import { createElement } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
-import { IComponent } from '../base-component';
+import { IComponent } from '../component';
 
 export class BaseButton implements IComponent {
   private el: HTMLElement;

@@ -49,4 +49,8 @@ export enum CSSClasses {
   GameOpponentSection = 'game-screen__opponent-section',
   GamePlayerInfo = 'game-screen__player-info-container',
   GameControls = 'game-screen__game-buttons-container',
+  // overlay
+  Overlay = 'overlay',
+  BeforeAppend = 'overlay--before-append',
+  BeforeRemove = 'overlay--before-remove',
 }

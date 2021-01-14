@@ -1,0 +1,20 @@
+.overlay {
+  opacity: 1;
+  position: fixed;
+  transition: 1s ease-in-out;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color:rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 10;
+
+  &.overlay--before-append {
+    opacity: 0;
+  }
+
+  &.overlay--before-remove {
+    opacity: 0;
+  }
+}
