@@ -43,8 +43,8 @@ class App {
     if (nextScreen) this.show(<IComponent>nextScreen);
   }
 
-  showLobby(/* params */): void {
-    this.show(new LobbyScreen(/* params */));
+  showLobby(gameCreator: boolean): void {
+    this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
   }
 
   showGame(/* params */): void {

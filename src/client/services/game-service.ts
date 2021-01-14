@@ -48,8 +48,8 @@ export class GameService {
   private removePlayer(playerId: string): IHubResponse<null> {
     const removingPlayerIndex = this.players.findIndex((player) => player.id === playerId);
     if (removingPlayerIndex >= 0) {
-      this.players.splice(removingPlayerIndex, 1);
-      this.onPlayerLeaved?.call(this, playerId);
+      const removingPlayer = this.players.splice(removingPlayerIndex, 1)[0];
+      this.onPlayerLeaved?.call(this, removingPlayer);
     }
     return HubResponse.Ok();
   }
@@ -73,7 +73,7 @@ export class GameService {
 
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
-  onPlayerLeaved?: (playerId: string) => void;
+  onPlayerLeaved?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerSelectSpell?: (playerId: string, cardsInSpell: number) => Promise<void>;
 
