@@ -1,13 +1,14 @@
 import { Player, PlayerEvents } from '../player';
 import { ICard, shuffleArray } from '../../common';
 import { CastingSpells } from './casting-spells';
+import { IGameForCasting } from './interface';
 
 const MAX_SIZE_GAME = 4;
 const MIN_SIZE_GAME = 2;
 
 const MAX_CARDS_HAND = 8;
 
-export class Game {
+export class Game implements IGameForCasting {
   private playersValue: Array<Player> = [];
 
   private activeDeck: Array<ICard> = [];
@@ -69,7 +70,7 @@ export class Game {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this.checkEndGameHandler, this.usedCardHandler);
+    const casting = new CastingSpells(this.players, this);
 
     casting.castSpells();
 
@@ -81,11 +82,16 @@ export class Game {
     }
   }
 
-  private usedCardHandler = (cardUsed: Array<ICard>) => {
+  getCardsActiveDeck = (number: number): Array<ICard> => {
+    const startIndex = this.activeDeck.length - number;
+    return this.activeDeck.splice(startIndex);
+  };
+
+  usedCardHandler = (cardUsed: Array<ICard>): void => {
     this.usedCardsDeck.push(...cardUsed);
   };
 
-  private checkEndGameHandler = (): void => {
+  checkEndGameHandler = (): void => {
     // рубильник для остановки GameLoop
     this.isEndGame = true;
 
