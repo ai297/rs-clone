@@ -1,6 +1,7 @@
 import { createElement } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
-import { BaseComponent, IComponent } from '../base-component';
+import { IComponent } from '../component';
+import { BaseComponent } from '../base-component';
 
 export class GameScreen extends BaseComponent {
   private opponentsCardsContainer!: HTMLElement;

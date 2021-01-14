@@ -7,17 +7,20 @@ import
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
+import { IRootComponent } from './root-component';
+import { BaseComponent } from './components/base-component';
 
 const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
 
-class App {
+class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
 
   private readonly gameService: GameService;
 
   private readonly heroesRepository: HeroesRepository;
 
-  constructor(private mainContainer: HTMLElement) {
+  constructor(private readonly mainContainer: HTMLElement) {
+    BaseComponent.setRoot(this);
     // TODO: show preloader before connect to server here
     // TODO: don't forget remove console.logs
     const connection = new ServerConnection(
@@ -32,6 +35,8 @@ class App {
 
     this.staticScreens.set(StaticScreens.Start, new StartScreen());
   }
+
+  get rootElement(): HTMLElement { return this.mainContainer; }
 
   show(component: IComponent): void {
     this.mainContainer.innerHTML = '';
