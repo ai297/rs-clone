@@ -31,4 +31,10 @@ export enum CSSClasses {
   OpponentsCards = 'opponents-cards',
   OpponentsCardsEmpty = 'opponents-cards--empty',
   OpponentCardItem = 'opponents-cards__item',
+  // player display (game screen)
+  GamePlayerDisplayContainer = 'game-player__container',
+  GamePlayerName = 'game-player__name',
+  GamePlayerHero = 'game-player__hero',
+  GamePlayerAvatar = 'game-player__avatar',
+  GamePlayerHealth = 'game-player__health',
 }
