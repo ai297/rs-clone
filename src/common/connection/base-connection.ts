@@ -1,13 +1,12 @@
 import { ICallbackHandler } from '../interfaces';
 import { IHubResponse } from '../interfaces/DTO/hub-response';
 
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface ISocket {
   id: string,
-  on: Function,
-  emit: Function,
+  on: ICallbackHandler,
+  emit: ICallbackHandler,
 }
 
 export abstract class BaseConnection<TRequest, TEvent> {
