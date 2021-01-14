@@ -48,7 +48,7 @@ export class LobbyScreen extends BaseComponent {
     this.gameService.onPlayerLeaved = this.onPlayerLeaved.bind(this);
   }
 
-  private onPlayerJoined(playerInfo: IPlayerInfo) {
+  private onPlayerJoined(playerInfo: IPlayerInfo): void {
     this.heroSelection.makeDisabled(playerInfo.heroId, true);
     this.addPlayer(playerInfo);
     if (this.currentHero?.id === playerInfo.heroId) {
@@ -60,7 +60,7 @@ export class LobbyScreen extends BaseComponent {
     }
   }
 
-  private onPlayerLeaved(playerInfo: IPlayerInfo) {
+  private onPlayerLeaved(playerInfo: IPlayerInfo): void {
     this.playerList.removePlayer(playerInfo.id);
     this.heroSelection.makeDisabled(playerInfo.heroId, false);
     if (this.gameService.currentPlayers.length < MIN_PLAYERS_NUMBER && this.startGameButton) {
@@ -68,7 +68,7 @@ export class LobbyScreen extends BaseComponent {
     }
   }
 
-  private addPlayer(playerInfo: IPlayerInfo) {
+  private addPlayer(playerInfo: IPlayerInfo): void {
     this.heroesRepository.getHero(playerInfo.heroId).then((hero) => {
       if (hero) {
         this.playerList.addPlayer(
@@ -81,7 +81,7 @@ export class LobbyScreen extends BaseComponent {
     });
   }
 
-  createMarkup(): void {
+  private createMarkup(): void {
     const gameLink = `${SERVER_URL}/${this.gameService.currentGameId}`;
     const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
 
@@ -130,7 +130,7 @@ export class LobbyScreen extends BaseComponent {
     }
   }
 
-  private disableLobby(value: boolean) {
+  private disableLobby(value: boolean): void {
     this.isDisabled = value;
     if (value) {
       this.nameInput.setAttribute('readonly', '');
