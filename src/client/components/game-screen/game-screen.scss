@@ -1,0 +1,81 @@
+.game-screen {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__opponent-cards {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 35%;
+    max-height: 22rem;
+    min-height: 15rem;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-around;
+    background-color: yellow;
+  }
+
+  &__play-section {
+    position: relative;
+    z-index: 3;
+    flex: 1 0 65%;
+    min-height: 22rem;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    background-color: steelblue;
+  }
+
+  &__opponent-section {
+    flex: 0 0 30%;
+    min-width: 20rem;
+    background-color: tomato;
+    text-align: center;
+  }
+
+  &__card-section {
+    flex: 0 0 50%;
+    min-width: 40rem;
+    background-color: violet;
+    text-align: center;
+  }
+
+  &__ui-layer {
+    position: fixed;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &__opponents-info-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: royalblue;
+  }
+
+  &__player-info-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30%;
+    min-width: 22rem;
+    background-color: salmon;
+  }
+
+  &__game-buttons-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30%;
+    min-width: 22rem;
+    background-color: sandybrown;
+  }
+}

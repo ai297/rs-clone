@@ -1,10 +1,15 @@
+@import './fonts.scss';
 @import './constants.scss';
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    &:active, &:focus { outline: none; }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  &:active, &:focus { outline: none; }
+}
+
+html {
+  font-size: 16px;
 }
 
 main {
@@ -14,5 +19,7 @@ main {
 }
 
 @import '../components/start-screen/start-screen.scss';
+@import '../components/card-spell/card-spell.scss';
 @import '../components/hero-selection/hero-selection.scss';
 @import '../components/opponents-cards/opponents-cards.scss';
+@import '../components/game-screen//game-screen.scss';
