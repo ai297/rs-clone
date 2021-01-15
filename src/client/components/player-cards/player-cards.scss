@@ -1,0 +1,19 @@
+.player-cards {
+  display: flex;
+  flex-direction: column;
+
+  &__selected-cards-container {
+    flex: 0 0 50%;
+    min-height: 14rem;
+    background-color: red;
+  }
+
+  &__hand-container {
+    flex: 1 1 50%;
+    max-width: 100%;
+    background-color: blue;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}

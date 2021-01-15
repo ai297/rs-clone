@@ -20,6 +20,8 @@ export enum CSSClasses {
   СardImage = 'card__image',
   СardTitle = 'card__title',
   СardText = 'card__text',
+  CardTakeHandAnimation = 'card--take-hand-animation',
+  CardSelectAnimation = 'card--select-animation',
   // hero selection
   HeroSelection = 'hero-selection',
   HeroSelectionDisabled = 'hero-selection--disabled',
@@ -49,6 +51,10 @@ export enum CSSClasses {
   GameOpponentSection = 'game-screen__opponent-section',
   GamePlayerInfo = 'game-screen__player-info-container',
   GameControls = 'game-screen__game-buttons-container',
+  // player cards
+  PlayerCards = 'player-cards',
+  PlayerCardsHand = 'player-cards__hand-container',
+  PlayerSelectedCards = 'player-cards__selected-cards-container',
   // overlay
   Overlay = 'overlay',
   BeforeAppend = 'overlay--before-append',

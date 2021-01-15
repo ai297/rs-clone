@@ -33,7 +33,8 @@ class App implements IRootComponent {
     this.gameService = new GameService(connection);
     this.heroesRepository = new HeroesRepository();
 
-    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    // this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    this.showGame();
   }
 
   get rootElement(): HTMLElement { return this.mainContainer; }

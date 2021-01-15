@@ -51,4 +51,8 @@ export class CardSpell extends BaseComponent {
   get id(): string {
     return this.card.id;
   }
+
+  get cardType(): CardTypes {
+    return this.card.type;
+  }
 }
