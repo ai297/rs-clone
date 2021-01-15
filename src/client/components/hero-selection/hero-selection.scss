@@ -10,11 +10,11 @@
     text-align: center;
   }
 
-  &__selected {
+  &--selected {
     border: 3px green solid;
   }
 
-  &__disabled{
+  &--disabled{
     opacity: .5;
     pointer-events: none;
   }

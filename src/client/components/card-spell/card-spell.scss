@@ -1,13 +1,3 @@
-/*
-    необходимо подкорректировать размер шрифта относительно html (стр.8),
-    добавить цветовые стили и иконки для всех элементов (аналогично стр.163-164)
-*/
-
-html {
-  font-family: 'Yanone Kaffeesatz', sans-serif;
-  font-size: 30px;
-}
-
 .card__container {
     perspective: 30rem;
     margin: 1rem;
@@ -20,6 +10,7 @@ html {
     padding: .75em;
     padding-bottom: 1.4em;
     border-radius: .6em;
+    font-family: 'Yanone Kaffeesatz', sans-serif;
     font-size: .75rem;
     background-color: #1a1a1a;
     box-shadow: 0 0 .25em rgba(0, 0, 0, 0.75);

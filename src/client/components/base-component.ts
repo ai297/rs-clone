@@ -1,15 +1,11 @@
 import { createElement } from '../../common';
 import { CSSClasses, Tags } from '../enums';
-
-export interface IComponent {
-  readonly element: HTMLElement;
-  beforeAppend?: () => Promise<void>;
-  onAppended?: () => Promise<void>;
-  beforeRemove?: () => Promise<void>;
-  onRemoved?: () => Promise<void>;
-}
+import { IRootComponent } from '../root-component';
+import { IComponent } from './component';
 
 export abstract class BaseComponent implements IComponent {
+  private static root?: IRootComponent;
+
   private el: HTMLElement;
 
   constructor(classList?: Array<CSSClasses>) {
@@ -18,5 +14,20 @@ export abstract class BaseComponent implements IComponent {
 
   public get element(): HTMLElement {
     return this.el;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected get root(): IRootComponent {
+    return BaseComponent.rootComponent;
+  }
+
+  private static get rootComponent(): IRootComponent {
+    return BaseComponent.root || {
+      rootElement: document.body,
+    };
+  }
+
+  static setRoot(root: IRootComponent): void {
+    if (!BaseComponent.root) BaseComponent.root = root;
   }
 }

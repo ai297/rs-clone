@@ -48,8 +48,8 @@ export class GameService {
   private removePlayer(playerId: string): IHubResponse<null> {
     const removingPlayerIndex = this.players.findIndex((player) => player.id === playerId);
     if (removingPlayerIndex >= 0) {
-      this.players.splice(removingPlayerIndex, 1);
-      this.onPlayerLeaved?.call(this, playerId);
+      const removingPlayer = this.players.splice(removingPlayerIndex, 1)[0];
+      this.onPlayerLeaved?.call(this, removingPlayer);
     }
     return HubResponse.Ok();
   }
@@ -60,8 +60,8 @@ export class GameService {
   }
 
   private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
-    const player: IPlayerInfo = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
-    if (player) player.health = message.currentHealth;
+    const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
+    if (player) (<IPlayerInfo> player).health = message.currentHealth;
     if (message.isDamage && this.onPlayerTakeDamage) {
       await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
     }
@@ -73,7 +73,7 @@ export class GameService {
 
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
-  onPlayerLeaved?: (playerId: string) => void;
+  onPlayerLeaved?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerSelectSpell?: (playerId: string, cardsInSpell: number) => Promise<void>;
 

@@ -20,13 +20,16 @@ export enum CSSClasses {
   СardImage = 'card__image',
   СardTitle = 'card__title',
   СardText = 'card__text',
+  CardTakeHandAnimation = 'card--take-hand-animation',
+  CardSelectAnimation = 'card--select-animation',
   // hero selection
   HeroSelection = 'hero-selection',
+  HeroSelectionDisabled = 'hero-selection--disabled',
   Hero = 'hero',
   HeroImage = 'hero__image',
   HeroName = 'hero__name',
-  HeroDisabled = 'hero__disabled',
-  HeroSelected = 'hero__selected',
+  HeroDisabled = 'hero--disabled',
+  HeroSelected = 'hero--selected',
   // opponents cards
   OpponentsCards = 'opponents-cards',
   OpponentsCardsEmpty = 'opponents-cards--empty',
@@ -40,4 +43,29 @@ export enum CSSClasses {
   // animations classes
   InGameAddHealthAnimation = 'game-player__animation--recovery',
   InGameBringDamageAnimation = 'game-player__animation--damage',
+  // lobby
+  Lobby = 'lobby',
+  GameLink = 'lobby__game-link',
+  NameInput = 'lobby__name-input',
+  SelectHeroButton = 'lobby__select-hero',
+  StartGameButton = 'lobby__start-game',
+  StartGameButtonDisabled = 'lobby__start-game--disabled',
+  // game screen
+  GameScreen = 'game-screen',
+  GameOpponentsCards = 'game-screen__opponent-cards',
+  GamePlaySection = 'game-screen__play-section',
+  GameCardsSection = 'game-screen__card-section',
+  GameUILayer = 'game-screen__ui-layer',
+  GameOpponentsInfo = 'game-screen__opponents-info-container',
+  GameOpponentSection = 'game-screen__opponent-section',
+  GamePlayerInfo = 'game-screen__player-info-container',
+  GameControls = 'game-screen__game-buttons-container',
+  // player cards
+  PlayerCards = 'player-cards',
+  PlayerCardsHand = 'player-cards__hand-container',
+  PlayerSelectedCards = 'player-cards__selected-cards-container',
+  // overlay
+  Overlay = 'overlay',
+  BeforeAppend = 'overlay--before-append',
+  BeforeRemove = 'overlay--before-remove',
 }

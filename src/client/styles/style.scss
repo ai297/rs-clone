@@ -2,11 +2,17 @@
 @import './constants.scss';
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    &:active, &:focus { outline: none; }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  &:active, &:focus { outline: none; }
 }
+
+html {
+  font-size: 16px;
+}
+
+body { overflow: hidden; }
 
 main {
   min-height: 100vh;
@@ -18,3 +24,6 @@ main {
 @import '../components/card-spell/card-spell.scss';
 @import '../components/hero-selection/hero-selection.scss';
 @import '../components/opponents-cards/opponents-cards.scss';
+@import '../components/game-screen/game-screen.scss';
+@import '../components/player-cards/player-cards.scss';
+@import '../components/overlay/overlay.scss';

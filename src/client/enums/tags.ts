@@ -3,4 +3,5 @@ export enum Tags {
   Span = 'span',
   Button = 'button',
   Img = 'img',
+  Input = 'input',
 }

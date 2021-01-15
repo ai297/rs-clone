@@ -7,17 +7,20 @@ import
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
+import { IRootComponent } from './root-component';
+import { BaseComponent } from './components/base-component';
 
 const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
 
-class App {
+class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
 
   private readonly gameService: GameService;
 
   private readonly heroesRepository: HeroesRepository;
 
-  constructor(private mainContainer: HTMLElement) {
+  constructor(private readonly mainContainer: HTMLElement) {
+    BaseComponent.setRoot(this);
     // TODO: show preloader before connect to server here
     // TODO: don't forget remove console.logs
     const connection = new ServerConnection(
@@ -30,8 +33,11 @@ class App {
     this.gameService = new GameService(connection);
     this.heroesRepository = new HeroesRepository();
 
-    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    // this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    this.showGame();
   }
+
+  get rootElement(): HTMLElement { return this.mainContainer; }
 
   show(component: IComponent): void {
     this.mainContainer.innerHTML = '';
@@ -43,8 +49,8 @@ class App {
     if (nextScreen) this.show(<IComponent>nextScreen);
   }
 
-  showLobby(/* params */): void {
-    this.show(new LobbyScreen(/* params */));
+  showLobby(gameCreator: boolean): void {
+    this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
   }
 
   showGame(/* params */): void {
