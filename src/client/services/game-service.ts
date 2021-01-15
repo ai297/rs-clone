@@ -46,8 +46,8 @@ export class GameService {
     this.onPlayerLeaved = undefined;
     this.onPlayerSelectSpell = undefined;
     this.onGetCards = undefined;
-    this.onTakeDamage = undefined;
-    this.onTakeHeal = undefined;
+    this.onPlayerTakeDamage = undefined;
+    this.onPlayerTakeHeal = undefined;
     this.onPlayerMakeDiceRoll = undefined;
   }
 
@@ -75,11 +75,11 @@ export class GameService {
   private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
     const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
     if (player) (<IPlayerInfo> player).health = message.currentHealth;
-    if (message.isDamage && this.onTakeDamage) {
-      await this.onTakeDamage(message.playerId, message.currentHealth);
+    if (message.isDamage && this.onPlayerTakeDamage) {
+      await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
     }
-    if (!message.isDamage && this.onTakeHeal) {
-      await this.onTakeHeal(message.playerId, message.currentHealth);
+    if (!message.isDamage && this.onPlayerTakeHeal) {
+      await this.onPlayerTakeHeal(message.playerId, message.currentHealth);
     }
     return HubResponse.Ok();
   }
@@ -103,9 +103,9 @@ export class GameService {
 
   onGetCards?: (cards: Array<ICard>) => Promise<void>;
 
-  onTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
 
-  onTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
 
   onPlayerMakeDiceRoll?: (playerId: string, rolls: Array<number>, bonus: number) => Promise<void>;
 
