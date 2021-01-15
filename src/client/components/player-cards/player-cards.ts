@@ -1,9 +1,9 @@
 import {
   CardTypes,
-  MagicSigns,
   createElement,
   delay,
   ICard,
+  ICallbackHandler,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
@@ -11,6 +11,9 @@ import { PlayingCard } from './playing-card';
 
 const MAX_HAND_CARDS = 8;
 const MAX_HAND_CARDS_ROTATION = 30;
+const ADD_HAND_DELAY = 500;
+const SELECT_CARD_DELAY = 300;
+const REMOVE_SPELL_DELAY = 0;
 
 export class PlayerCards extends BaseComponent {
   private readonly handCards: PlayingCard[] = [];
@@ -23,106 +26,30 @@ export class PlayerCards extends BaseComponent {
 
   private readonly selectedCardsElement: HTMLElement;
 
-  constructor() {
+  constructor(private readonly onSpellChange?: ICallbackHandler) {
     super([CSSClasses.PlayerCards]);
 
     this.handElement = createElement(Tags.Div, [CSSClasses.PlayerCardsHand]);
     this.selectedCardsElement = createElement(Tags.Div, [CSSClasses.PlayerCardsSelected]);
     this.element.append(this.selectedCardsElement, this.handElement);
-
-    const cards: Array<ICard> = [
-      {
-        id: 'chrono_walker',
-        title: 'хроно йокер',
-        type: CardTypes.source,
-        magicSign: MagicSigns.illusion,
-        src: 'chrono_walker',
-        text: '<p>Все кидают кость. Вы +1 к своему броску за каждый различный «ЗНАК» в своем заклятии. 3 повреждения получит выбросивший наименьший результат.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'sphinx',
-        title: 'сфинксшин',
-        type: CardTypes.source,
-        magicSign: MagicSigns.illusion,
-        src: 'sphinx',
-        text: '<p>Выберите и украдите Сокровище, принадлежащее любому противнику.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'chuk_geck',
-        title: 'чук и гек',
-        type: CardTypes.source,
-        magicSign: MagicSigns.illusion,
-        src: 'chuk_geck',
-        text: '<p>Снимите 4 верхние карты Основной Колоды. Добавьте любые из открытых карт «Качество» в ваше заклятие, остальные сбросьте.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'chrono_walker',
-        title: 'хроно йокер',
-        type: CardTypes.source,
-        magicSign: MagicSigns.illusion,
-        src: 'chrono_walker',
-        text: '<p>Все кидают кость. Вы +1 к своему броску за каждый различный «ЗНАК» в своем заклятии. 3 повреждения получит выбросивший наименьший результат.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'cat_trouble',
-        title: 'кот-а-строфный',
-        type: CardTypes.quality,
-        magicSign: MagicSigns.illusion,
-        src: 'cat_trouble',
-        text: '<p>Все бросают кость. Вы +2 к своему броску. У кого наивысший результат, берут по сокровищу, остальные получают повреждения, у кого сколько выпало на костях.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'disco',
-        title: 'диско-шарный',
-        type: CardTypes.quality,
-        magicSign: MagicSigns.illusion,
-        src: 'disco',
-        text: '<p>Эта карта копирует текст карты «Источник» или «Действие» вашего заклятия.</p>',
-        initiative: 0,
-      },
-      {
-        id: 'acid_shower',
-        title: 'душ кислоты',
-        type: CardTypes.action,
-        magicSign: MagicSigns.mystery,
-        src: 'acid_shower',
-        text: '<p><b>Цель: </b>Противники слева и справа</p><p><b>Проверка силы</b></p><ul><li><span>1-4</span>1 повреждение.</li><li><span>5-9</span>2 повреждения.</li><li><span>10+</span>4 повреждения, вы получаете Сокровище.</li></ul>',
-        initiative: 4,
-      },
-      {
-        id: 'vortex_force',
-        title: 'вихрь силы',
-        type: CardTypes.action,
-        magicSign: MagicSigns.mystery,
-        src: 'vortex_force',
-        text: '<p><b>Цель: </b>Все противники</p><p><b>Проверка силы</b></p><ul><li><span>1-4</span>Вы сбрасываете карту.</li><li><span>5-9</span>2 повреждения, вы сбрасываете 2 карты.</li><li><span>10+</span>Как и выше, + вы получаете Сокровище.</li></ul>',
-        initiative: 16,
-      },
-    ];
-
-    const addCard = async () => {
-      const cardInfo = <ICard> cards.pop();
-      await this.newCard(cardInfo);
-      await delay(1000);
-      if (cards.length > 0) addCard();
-    };
-
-    addCard();
   }
 
-  newCard = async (cardInfo: ICard): Promise<void> => {
-    const card = new PlayingCard(cardInfo, this.selectCard);
-    this.handCards.push(card);
+  getSelectedCardsId(): Array<string> {
+    return this.spellCards.map((card) => card.id);
+  }
 
-    await card.beforeAppend();
-    this.handElement.append(card.element);
-    await card.onAppended();
-    this.rotateHandCards();
+  clearSpell = async (): Promise<void> => {
+    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(REMOVE_SPELL_DELAY));
+    this.spellCards.splice(0, this.spellCards.length);
+    this.updateHandState();
+    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
+    await Promise.all(beforeRemoveCallbacks);
+    this.selectedCardsElement.innerHTML = '';
+  };
+
+  addCards = async (...cardsInfo: ICard[]): Promise<void> => {
+    const cards = cardsInfo.map((cardInfo) => new PlayingCard(cardInfo));
+    await this.addToHand(...cards);
   };
 
   selectCard = async (cardId: string): Promise<void> => {
@@ -136,23 +63,62 @@ export class PlayerCards extends BaseComponent {
     if (this.spellCards.findIndex((spellCard) => spellCard.cardType === card.cardType) >= 0) return;
 
     this.handCards.splice(selectCardIndex, 1);
-    const afterElement = this.spellCards.find((spellCard) => spellCard.cardType > card.cardType)?.element;
-    this.spellCards.push(card);
 
-    await card.beforeRemove();
+    card.clearTransform();
+    await card.beforeRemove(SELECT_CARD_DELAY);
     card.element.remove();
     await card.onRemoved();
 
     this.rotateHandCards();
-    this.disableHandCards(card.cardType);
-    card.clearTransform();
+    this.updateHandState(card.cardType, true);
+
+    card.onClick = this.returnToHand;
 
     await card.beforeAppend();
+    const afterElement = this.spellCards
+      .sort((cardA, cardB) => cardA.cardType - cardB.cardType)
+      .find((spellCard) => spellCard.cardType > card.cardType)?.element;
+
+    this.spellCards.push(card);
+    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
+
     this.selectedCardsElement.insertBefore(card.element, afterElement || null);
     await card.onAppended();
 
     this.isCardSelecting = false;
   };
+
+  returnToHand = async (cardId: string): Promise<void> => {
+    if (this.isCardSelecting) return;
+
+    this.isCardSelecting = true;
+    const selectCardIndex = this.spellCards.findIndex((card) => card.id === cardId);
+    if (selectCardIndex < 0) return;
+
+    const card = <PlayingCard> this.spellCards.splice(selectCardIndex, 1)[0];
+    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
+
+    await card.beforeRemove(REMOVE_SPELL_DELAY);
+    card.element.remove();
+    await card.onRemoved();
+
+    this.updateHandState(card.cardType);
+    await this.addToHand(card);
+    this.isCardSelecting = false;
+  };
+
+  private async addToHand(...cards: PlayingCard[]): Promise<void> {
+    if (cards.length === 0) return;
+    const card = <PlayingCard> cards.pop();
+    this.handCards.push(card);
+    card.onClick = this.selectCard;
+    await card.beforeAppend();
+    this.handElement.append(card.element);
+    await card.onAppended();
+    this.rotateHandCards();
+    await delay(ADD_HAND_DELAY);
+    await this.addToHand(...cards);
+  }
 
   private rotateHandCards(): void {
     const step = Math.round((MAX_HAND_CARDS_ROTATION * 10) / MAX_HAND_CARDS) / 10;
@@ -164,7 +130,10 @@ export class PlayerCards extends BaseComponent {
     });
   }
 
-  private disableHandCards(cardType: CardTypes) {
-    this.handCards.filter((card) => card.cardType === cardType).forEach((card) => card.disable());
+  private updateHandState(cardType?: CardTypes, disable = false) {
+    this.handCards.forEach((card) => {
+      // eslint-disable-next-line no-param-reassign
+      if (cardType === undefined || card.cardType === cardType) card.disabled = disable;
+    });
   }
 }

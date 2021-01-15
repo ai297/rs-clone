@@ -9,14 +9,30 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: red;
+
+    & > .card-container {
+      flex: 0 0 auto;
+      margin: 0 .25rem;
+      max-width: 30%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: all .5s;
+
+      &.card-container--before-append { max-width: 0%; }
+      &.card-container--before-remove { max-width: 0%; }
+
+      &:hover { transform: rotate(-15deg); }
+    }
   }
 
   &__hand-container {
     position: relative;
     flex: 1 1 50%;
     max-width: 100%;
-    background-color: blue;
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
@@ -24,6 +40,7 @@
     & > .card-container {
       flex: 1 1 12%;
       max-width: 12%;
+      margin-left: 0;
       display: flex;
       flex-direction: row;
       align-items: flex-start;
@@ -34,7 +51,17 @@
 
       &:hover { z-index: 2; }
 
-      &.card-container--before-append { max-width: 0%; }
+      &.card-container--before-append {
+        max-width: 0%;
+        transform: translateX(-50vw);
+      }
+      &.card-container--before-remove {
+        transition: all .3s;
+        max-width: 0%;
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
       &.card-container--disable {
         z-index: 0;
         & > .card::after {
@@ -55,7 +82,10 @@
         cursor: pointer;
         transition: all .5s;
       }
-      &:not(.card-container--disable) > .card:hover { transform: translateY(-30%); }
+      &:not(.card-container--disable) > .card:hover {
+        transform: translateY(-100%) scale(1.75);
+        box-shadow: cyan 0 0 2em;
+      }
     }
   }
 }

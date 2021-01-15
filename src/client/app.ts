@@ -67,8 +67,7 @@ class App implements IRootComponent {
   };
 
   start(): void {
-    // this.showStatic(StaticScreens.Start);
-    this.showGame();
+    this.showStatic(StaticScreens.Start);
   }
 }
 

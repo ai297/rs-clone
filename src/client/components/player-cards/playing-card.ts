@@ -18,8 +18,6 @@ export class PlayingCard extends CardSpell {
     else this.element.classList.remove(CSSClasses.PlayingCardDisabled);
   }
 
-  disable(): void { this.disabled = true; }
-
   rotate(degree: number): PlayingCard {
     const style = ` rotate(${degree}deg)`;
     this.element.style.transform += style;
@@ -42,9 +40,10 @@ export class PlayingCard extends CardSpell {
     return Promise.resolve();
   }
 
-  async onAppended(): Promise<void> {
-    await delay(0);
+  async onAppended(duration = 0): Promise<void> {
+    await delay(50);
     this.element.classList.remove(CSSClasses.PlayingCardBeforeAppend);
+    await delay(duration);
   }
 
   async beforeRemove(duration = 0): Promise<void> {
