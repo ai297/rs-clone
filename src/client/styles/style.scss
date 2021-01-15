@@ -12,6 +12,8 @@ html {
   font-size: 16px;
 }
 
+body { overflow: hidden; }
+
 main {
   min-height: 100vh;
   display: flex;
@@ -22,5 +24,6 @@ main {
 @import '../components/card-spell/card-spell.scss';
 @import '../components/hero-selection/hero-selection.scss';
 @import '../components/opponents-cards/opponents-cards.scss';
-@import '../components/game-screen//game-screen.scss';
+@import '../components/game-screen/game-screen.scss';
+@import '../components/player-cards/player-cards.scss';
 @import '../components/overlay/overlay.scss';
