@@ -1,7 +1,7 @@
 import { BaseComponent } from '../base-component';
 import { CSSClasses } from '../../enums';
 import { BaseButton } from '../base-button/base-button';
-import { IStartScreenLocalization, START_SCREEN_DEFAULT_LOCALIZATION } from '../localization';
+import { IStartScreenLocalization, START_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
 import { GameService } from '../../services';
 
 export class StartScreen extends BaseComponent {
@@ -11,22 +11,22 @@ export class StartScreen extends BaseComponent {
     super([CSSClasses.StartScreen]);
     this.loc = localization || START_SCREEN_DEFAULT_LOCALIZATION;
     const newGameButton = new BaseButton(
-      START_SCREEN_DEFAULT_LOCALIZATION.NewGame,
+      this.loc.NewGame,
       () => this.startNewGame(),
       [CSSClasses.StartScreenButton],
     );
     const joinButton = new BaseButton(
-      START_SCREEN_DEFAULT_LOCALIZATION.Join,
+      this.loc.Join,
       () => console.log('Join'),
       [CSSClasses.StartScreenButton],
     );
     const rulesButton = new BaseButton(
-      START_SCREEN_DEFAULT_LOCALIZATION.Rules,
+      this.loc.Rules,
       () => console.log('Rules'),
       [CSSClasses.StartScreenButton],
     );
     const settingsButton = new BaseButton(
-      START_SCREEN_DEFAULT_LOCALIZATION.Settings,
+      this.loc.Settings,
       () => console.log('Settings'),
       [CSSClasses.StartScreenButton],
     );
