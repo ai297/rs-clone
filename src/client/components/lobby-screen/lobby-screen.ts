@@ -7,7 +7,7 @@ import { PlayerList } from '../player-list/player-list';
 import { BaseButton } from '../base-button/base-button';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { GameService } from '../../services/game-service';
-import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../localization';
+import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localization';
 import { HeroesRepository } from '../../services';
 
 const SERVER_URL = `${window.location.protocol}//${window.location.host}`;

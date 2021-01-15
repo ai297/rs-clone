@@ -35,7 +35,7 @@ class App implements IRootComponent {
     this.gameService = new GameService(connection);
     this.heroesRepository = new HeroesRepository();
 
-    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    this.staticScreens.set(StaticScreens.Start, new StartScreen(this.gameService));
     // this.showGame();
   }
 
@@ -50,6 +50,7 @@ class App implements IRootComponent {
       await this.currentScreen?.onRemoved();
     }
     if (component.beforeAppend) await component.beforeAppend();
+    this.currentScreen = component;
     this.mainContainer.append(component.element);
     if (component.onAppended) await component.onAppended();
   };
