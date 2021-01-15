@@ -1,4 +1,4 @@
-import { StaticScreens } from "./enums";
+import { StaticScreens } from './enums';
 
 export interface IRootComponent {
   readonly rootElement: HTMLElement,

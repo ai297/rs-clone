@@ -36,7 +36,6 @@ class App implements IRootComponent {
     this.heroesRepository = new HeroesRepository();
 
     this.staticScreens.set(StaticScreens.Start, new StartScreen());
-    // this.showGame();
   }
 
   get rootElement(): HTMLElement { return this.mainContainer; }
@@ -66,6 +65,11 @@ class App implements IRootComponent {
   showGame = async (/* params */): Promise<void> => {
     await this.show(new GameScreen(/* params */));
   };
+
+  start(): void {
+    // this.showStatic(StaticScreens.Start);
+    this.showGame();
+  }
 }
 
 export default App;

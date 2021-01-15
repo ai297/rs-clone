@@ -5,19 +5,57 @@
   &__selected-cards-container {
     flex: 0 0 50%;
     min-height: 14rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     background-color: red;
   }
 
   &__hand-container {
+    position: relative;
     flex: 1 1 50%;
     max-width: 100%;
     background-color: blue;
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: row-reverse;
+    justify-content: center;
 
-    & > .card__container {
+    & > .card-container {
       flex: 1 1 12%;
+      max-width: 12%;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all .5s;
+      z-index: 1;
+
+      &:hover { z-index: 2; }
+
+      &.card-container--before-append { max-width: 0%; }
+      &.card-container--disable {
+        z-index: 0;
+        & > .card::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          border-radius: inherit;
+          background-color: black;
+          opacity: .5;
+        }
+      }
+
+      & > .card {
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all .5s;
+      }
+      &:not(.card-container--disable) > .card:hover { transform: translateY(-30%); }
     }
   }
 }
