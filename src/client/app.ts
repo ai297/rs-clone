@@ -19,6 +19,8 @@ class App implements IRootComponent {
 
   private readonly heroesRepository: HeroesRepository;
 
+  private currentScreen?: IComponent;
+
   constructor(private readonly mainContainer: HTMLElement) {
     BaseComponent.setRoot(this);
     // TODO: show preloader before connect to server here
@@ -33,29 +35,37 @@ class App implements IRootComponent {
     this.gameService = new GameService(connection);
     this.heroesRepository = new HeroesRepository();
 
-    // this.staticScreens.set(StaticScreens.Start, new StartScreen());
-    this.showGame();
+    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    // this.showGame();
   }
 
   get rootElement(): HTMLElement { return this.mainContainer; }
 
-  show(component: IComponent): void {
-    this.mainContainer.innerHTML = '';
+  show = async (component: IComponent): Promise<void> => {
+    if (this.currentScreen && this.currentScreen?.beforeRemove) {
+      await this.currentScreen?.beforeRemove();
+    }
+    this.currentScreen?.element.remove();
+    if (this.currentScreen && this.currentScreen?.onRemoved) {
+      await this.currentScreen?.onRemoved();
+    }
+    if (component.beforeAppend) await component.beforeAppend();
     this.mainContainer.append(component.element);
-  }
+    if (component.onAppended) await component.onAppended();
+  };
 
-  showStatic(type: StaticScreens): void {
+  showStatic = async (type: StaticScreens): Promise<void> => {
     const nextScreen = this.staticScreens.get(type);
-    if (nextScreen) this.show(<IComponent>nextScreen);
-  }
+    if (nextScreen) await this.show(<IComponent>nextScreen);
+  };
 
-  showLobby(gameCreator: boolean): void {
-    this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
-  }
+  showLobby = async (gameCreator = false): Promise<void> => {
+    await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
+  };
 
-  showGame(/* params */): void {
-    this.show(new GameScreen(/* params */));
-  }
+  showGame = async (/* params */): Promise<void> => {
+    await this.show(new GameScreen(/* params */));
+  };
 }
 
 export default App;
