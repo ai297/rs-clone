@@ -1,6 +1,6 @@
 import {
-  // CardTypes,
-  // MagicSigns,
+  CardTypes,
+  MagicSigns,
   createElement,
   delay,
   ICard,
@@ -29,6 +29,90 @@ export class PlayerCards extends BaseComponent {
     this.handElement = createElement(Tags.Div, [CSSClasses.PlayerCardsHand]);
     this.selectedCardsElement = createElement(Tags.Div, [CSSClasses.PlayerSelectedCards], 'selected cards');
     this.element.append(this.selectedCardsElement, this.handElement);
+
+    const cards: Array<ICard> = [
+      {
+        id: 'chrono_walker',
+        title: 'хроно йокер',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'chrono_walker',
+        text: '<p>Все кидают кость. Вы +1 к своему броску за каждый различный «ЗНАК» в своем заклятии. 3 повреждения получит выбросивший наименьший результат.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'sphinx',
+        title: 'сфинксшин',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'sphinx',
+        text: '<p>Выберите и украдите Сокровище, принадлежащее любому противнику.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'chuk_geck',
+        title: 'чук и гек',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'chuk_geck',
+        text: '<p>Снимите 4 верхние карты Основной Колоды. Добавьте любые из открытых карт «Качество» в ваше заклятие, остальные сбросьте.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'chrono_walker',
+        title: 'хроно йокер',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'chrono_walker',
+        text: '<p>Все кидают кость. Вы +1 к своему броску за каждый различный «ЗНАК» в своем заклятии. 3 повреждения получит выбросивший наименьший результат.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'sphinx',
+        title: 'сфинксшин',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'sphinx',
+        text: '<p>Выберите и украдите Сокровище, принадлежащее любому противнику.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'chuk_geck',
+        title: 'чук и гек',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'chuk_geck',
+        text: '<p>Снимите 4 верхние карты Основной Колоды. Добавьте любые из открытых карт «Качество» в ваше заклятие, остальные сбросьте.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'chrono_walker',
+        title: 'хроно йокер',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'chrono_walker',
+        text: '<p>Все кидают кость. Вы +1 к своему броску за каждый различный «ЗНАК» в своем заклятии. 3 повреждения получит выбросивший наименьший результат.</p>',
+        initiative: 0,
+      },
+      {
+        id: 'sphinx',
+        title: 'сфинксшин',
+        type: CardTypes.source,
+        magicSign: MagicSigns.illusion,
+        src: 'sphinx',
+        text: '<p>Выберите и украдите Сокровище, принадлежащее любому противнику.</p>',
+        initiative: 0,
+      },
+    ];
+
+    const addCard = async () => {
+      const cardInfo = <ICard> cards.pop();
+      await this.newCard(cardInfo);
+      await delay(1000);
+      if (cards.length > 0) addCard();
+    };
+
+    addCard();
   }
 
   newCard = async (cardInfo: ICard): Promise<void> => {
