@@ -50,6 +50,7 @@ class App implements IRootComponent {
       await this.currentScreen?.onRemoved();
     }
     if (component.beforeAppend) await component.beforeAppend();
+    this.currentScreen = component;
     this.mainContainer.append(component.element);
     if (component.onAppended) await component.onAppended();
   };
@@ -57,7 +58,6 @@ class App implements IRootComponent {
   showStatic = async (type: StaticScreens): Promise<void> => {
     const nextScreen = this.staticScreens.get(type);
     if (nextScreen) await this.show(<IComponent>nextScreen);
-    this.currentScreen = nextScreen;
   };
 
   showLobby = async (gameCreator = false): Promise<void> => {
