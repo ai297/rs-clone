@@ -35,7 +35,7 @@ class App implements IRootComponent {
     this.gameService = new GameService(connection);
     this.heroesRepository = new HeroesRepository();
 
-    this.staticScreens.set(StaticScreens.Start, new StartScreen());
+    this.staticScreens.set(StaticScreens.Start, new StartScreen(this.gameService));
     // this.showGame();
   }
 
@@ -57,6 +57,7 @@ class App implements IRootComponent {
   showStatic = async (type: StaticScreens): Promise<void> => {
     const nextScreen = this.staticScreens.get(type);
     if (nextScreen) await this.show(<IComponent>nextScreen);
+    this.currentScreen = nextScreen;
   };
 
   showLobby = async (gameCreator = false): Promise<void> => {
