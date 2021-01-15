@@ -1,10 +1,12 @@
 import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses } from '../../enums';
-import { createElement } from '../../../common/utils';
+import { createElement, delay } from '../../../common/utils';
 
 const MAX_HEALTH = 25;
 const START_HEALTH = 20;
 const DEAD_WIZARD = 'R.I.P.';
+const RECOVERY_ANIMATION_DELAY = 0;
+const DAMAGE_ANIMATION_DELAY = 0;
 
 export class GamePlayerDisplay extends BaseComponent {
   private playerHealth: HTMLElement;
@@ -14,7 +16,7 @@ export class GamePlayerDisplay extends BaseComponent {
     private heroName: string,
     private avatar: string,
     private health: number = START_HEALTH,
-    private isGameCreator: boolean = false,
+    private isCurrentPlayer: boolean = false,
   ) {
     super([CSSClasses.GamePlayerDisplayContainer]);
 
@@ -29,41 +31,45 @@ export class GamePlayerDisplay extends BaseComponent {
 
     this.playerHealth.textContent = `${this.health} / ${MAX_HEALTH}`;
 
-    if (isGameCreator === true) {
+    if (this.isCurrentPlayer === true) {
       this.element.append(playerAvatar, playerHero, this.playerHealth);
     } else {
       this.element.append(playerAvatar, playerName, playerHero, this.playerHealth);
     }
   }
 
-  updateHealth(): string {
+  updateHealth(): void {
     this.playerHealth.textContent = `${this.health} / ${MAX_HEALTH}`;
 
     if (this.health <= 0) {
       this.playerHealth.innerHTML = '';
       this.playerHealth.textContent = DEAD_WIZARD;
     }
-
-    return this.playerHealth.textContent;
   }
 
-  addHealth(num: number): string {
+  addHealth = async (num: number): Promise<void> => {
+    this.element.classList.add(CSSClasses.InGameAddHealthAnimation);
     this.health += num;
 
     if (this.health > MAX_HEALTH) {
       this.health = MAX_HEALTH;
     }
 
-    return this.updateHealth();
-  }
+    await delay(RECOVERY_ANIMATION_DELAY);
+    this.element.classList.remove(CSSClasses.InGameAddHealthAnimation);
+    this.updateHealth();
+  };
 
-  takeDamage(num: number): string {
+  bringDamage = async (num: number): Promise<void> => {
+    this.element.classList.add(CSSClasses.InGameBringDamageAnimation);
     this.health -= num;
 
     if (this.health <= 0) {
       this.health = 0;
     }
 
-    return this.updateHealth();
-  }
+    await delay(DAMAGE_ANIMATION_DELAY);
+    this.element.classList.remove(CSSClasses.InGameBringDamageAnimation);
+    this.updateHealth();
+  };
 }

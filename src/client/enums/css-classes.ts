@@ -37,4 +37,7 @@ export enum CSSClasses {
   GamePlayerHero = 'game-player__hero',
   GamePlayerAvatar = 'game-player__avatar',
   GamePlayerHealth = 'game-player__health',
+  // animations classes
+  InGameAddHealthAnimation = 'game-player__animation--recovery',
+  InGameBringDamageAnimation = 'game-player__animation--damage',
 }
