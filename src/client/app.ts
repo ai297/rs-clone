@@ -49,6 +49,7 @@ class App implements IRootComponent {
       await this.currentScreen?.onRemoved();
     }
     if (component.beforeAppend) await component.beforeAppend();
+    this.currentScreen = component;
     this.mainContainer.append(component.element);
     if (component.onAppended) await component.onAppended();
   };
