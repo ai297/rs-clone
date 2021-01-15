@@ -7,6 +7,7 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
+  IDiceRoll,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
@@ -70,9 +71,10 @@ export class Player {
 
   async addCardsHand(cards: Array<ICard>): Promise<void> {
     try {
-      await this.connection.dispatch(HubEventsClient.GetCards, cards);
-    } finally {
       this.handCardsValue = [...this.handCardsValue, ...cards];
+      await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
+    } catch {
+      //
     }
   }
 
@@ -88,9 +90,10 @@ export class Player {
     this.hitPointsValue = this.hitPoints > damage ? this.hitPoints - damage : 0;
     const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: true };
     try {
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } finally {
       this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
+    } catch {
+      //
     }
   }
 
@@ -101,13 +104,14 @@ export class Player {
     }
     const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: false };
     try {
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } finally {
       this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
+    } catch {
+      //
     }
   }
 
-  async makeDiceRoll(number: number): Promise<number> {
+  async makeDiceRoll(number: number, bonus = 0): Promise<number> {
     const rolls: Array<number> = [];
     let result = 0;
     for (let i = 0; i < number; i++) {
@@ -116,11 +120,13 @@ export class Player {
       rolls.push(roll);
     }
     try {
-      await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, rolls));
-    } finally {
-      this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, rolls);
+      const message: IDiceRoll = { playerId: this.id, rolls, bonus };
+      this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
+      await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
+    } catch {
+      //
     }
-    return result;
+    return result + bonus;
   }
 
   addSpellCards(cardIds: Array<string>): void {

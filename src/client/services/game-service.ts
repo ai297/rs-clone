@@ -7,6 +7,8 @@ import {
   ICreatePlayerRequest,
   ISpellSelected,
   IHealthUpdate,
+  ICard,
+  IDiceRoll,
 } from '../../common';
 import { ServerConnection } from './server-connection';
 
@@ -15,18 +17,24 @@ export class GameService {
 
   private playerId = '';
 
+  private playerCards: Array<ICard> = [];
+
   private players: Array<IPlayerInfo> = [];
 
   constructor(private readonly connection: ServerConnection) {
     connection.addEventListener(HubEventsClient.AddPlayer, (player: IPlayerInfo) => this.addPlayer(player));
     connection.addEventListener(HubEventsClient.RemovePlayer, (playerId: string) => this.removePlayer(playerId));
     connection.addEventListener(HubEventsClient.SpellSelected, (message: ISpellSelected) => this.spellSelect(message));
+    connection.addEventListener(HubEventsClient.GetCards, (cards: ICard[]) => this.getCards(cards));
     connection.addEventListener(HubEventsClient.UpdateHealath, (message: IHealthUpdate) => this.healthUpdate(message));
+    connection.addEventListener(HubEventsClient.DiceRoll, (message: IDiceRoll) => this.diceRoll(message));
   }
 
   get currentGameId(): string { return this.gameId; }
 
   get currentPlayerId(): string { return this.playerId; }
+
+  get currentPlayerCards(): Array<ICard> { return this.playerCards; }
 
   get currentPlayers(): Array<IPlayerInfo> { return this.players; }
 
@@ -36,6 +44,11 @@ export class GameService {
     this.players = [];
     this.onPlayerJoined = undefined;
     this.onPlayerLeaved = undefined;
+    this.onPlayerSelectSpell = undefined;
+    this.onGetCards = undefined;
+    this.onTakeDamage = undefined;
+    this.onTakeHeal = undefined;
+    this.onPlayerMakeDiceRoll = undefined;
   }
 
   private addPlayer(player: IPlayerInfo): IHubResponse<null> {
@@ -62,12 +75,23 @@ export class GameService {
   private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
     const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
     if (player) (<IPlayerInfo> player).health = message.currentHealth;
-    if (message.isDamage && this.onPlayerTakeDamage) {
-      await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
+    if (message.isDamage && this.onTakeDamage) {
+      await this.onTakeDamage(message.playerId, message.currentHealth);
     }
-    if (!message.isDamage && this.onPlayerTakeHeal) {
-      await this.onPlayerTakeHeal(message.playerId, message.currentHealth);
+    if (!message.isDamage && this.onTakeHeal) {
+      await this.onTakeHeal(message.playerId, message.currentHealth);
     }
+    return HubResponse.Ok();
+  }
+
+  private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
+    this.playerCards.push(...cards);
+    if (this.onGetCards) await this.onGetCards(cards);
+    return HubResponse.Ok();
+  }
+
+  private async diceRoll(message: IDiceRoll): Promise<IHubResponse<null>> {
+    if (this.onPlayerMakeDiceRoll) await this.onPlayerMakeDiceRoll(message.playerId, message.rolls, message.bonus);
     return HubResponse.Ok();
   }
 
@@ -77,9 +101,13 @@ export class GameService {
 
   onPlayerSelectSpell?: (playerId: string, cardsInSpell: number) => Promise<void>;
 
-  onPlayerTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
+  onGetCards?: (cards: Array<ICard>) => Promise<void>;
 
-  onPlayerTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
+  onTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
+
+  onTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
+
+  onPlayerMakeDiceRoll?: (playerId: string, rolls: Array<number>, bonus: number) => Promise<void>;
 
   /**
    * This method returns promise, that resolve with gameId: string as argument
@@ -100,9 +128,6 @@ export class GameService {
     return playersInGame;
   }
 
-  /**
-   * This method returns nothing now, but it should returns anything
-   */
   async startGame(): Promise<void> {
     await this.connection.dispatch<void>(HubEventsServer.StartGame);
   }
@@ -118,5 +143,6 @@ export class GameService {
 
   async selectSpell(cardIds: Array<string>): Promise<void> {
     await this.connection.dispatch(HubEventsServer.SelectSpell, cardIds);
+    this.playerCards = this.playerCards.filter((card) => !cardIds.includes(card.id));
   }
 }

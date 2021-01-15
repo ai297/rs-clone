@@ -8,6 +8,7 @@ import {
   ICreatePlayerRequest,
   ISpellSelected,
   IHealthUpdate,
+  IDiceRoll,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
 import { Player, PlayerEvents, PlayerService } from '../player';
@@ -123,8 +124,8 @@ export class GameService {
     player.addListener(PlayerEvents.TakeHeal, (message: IHealthUpdate) => {
       this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
     });
-    player.addListener(PlayerEvents.MakeDiceRoll, (rolls: Array<number>) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, rolls);
+    player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, message);
     });
   }
 
