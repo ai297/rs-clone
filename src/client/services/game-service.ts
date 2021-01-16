@@ -124,6 +124,7 @@ export class GameService {
   async joinGame(gameId: string): Promise<IPlayerInfo[]> {
     this.clearState();
     const playersInGame = await this.connection.dispatch<IPlayerInfo[]>(HubEventsServer.JoinGame, gameId);
+    this.gameId = gameId;
     this.players.push(...playersInGame);
     return playersInGame;
   }

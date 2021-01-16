@@ -66,6 +66,9 @@ export class GameService {
     if (!this.games.has(gameId)) return GameService.notFound();
 
     const game = <Game> this.games.get(gameId);
+
+    if (game.isStarted) return HubResponse.Error('The game has already started');
+
     const playersInfo = game.players.map(GameService.getPlayerInfo);
     connection.setGameId(gameId);
 
@@ -106,7 +109,6 @@ export class GameService {
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
-      console.log('new Player created', playerInfo);
       this.connectionService.dispatch(request.gameId, HubEventsClient.AddPlayer, playerInfo);
       return HubResponse.Success<IPlayerInfo>(playerInfo);
     } catch (err: unknown) {

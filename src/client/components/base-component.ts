@@ -25,6 +25,7 @@ export abstract class BaseComponent implements IComponent {
     return BaseComponent.root || {
       rootElement: document.body,
       baseURL: '',
+      getGameUrl: () => '',
       showLobby: () => Promise.reject(),
       showStatic: () => Promise.reject(),
       showGame: () => Promise.reject(),

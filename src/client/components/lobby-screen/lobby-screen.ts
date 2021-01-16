@@ -83,7 +83,7 @@ export class LobbyScreen extends BaseComponent {
   }
 
   private createMarkup(): void {
-    const gameLink = `${this.root.baseURL}/${this.gameService.currentGameId}`;
+    const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
     const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
 
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;
