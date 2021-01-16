@@ -9,6 +9,7 @@ export class GameEndScreen extends BaseComponent {
   constructor(
     private players: Array<IPlayerInfo>,
     private winnerId: string,
+    private heroes: HeroesRepository,
     localization?: IGameEndLocalization,
   ) {
     super([CSSClasses.GameEndScreen]);
@@ -17,7 +18,6 @@ export class GameEndScreen extends BaseComponent {
 
     const winnerContainer = createElement(Tags.Div, [CSSClasses.WinnerContainer], loc.WinnerTitle);
     const losersContainer = createElement(Tags.Div, [CSSClasses.LosersContainer], loc.LosersTitle);
-    const heroes = new HeroesRepository();
 
     const createMarkup = (container: HTMLElement, player: IPlayerInfo): HTMLElement => {
       const playerName = createElement(Tags.Div, [CSSClasses.ItemName], player.userName);
