@@ -3,7 +3,7 @@ import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { createElement } from '../../../common/utils';
 import { IPlayerInfo } from '../../../common/interfaces';
 import { HeroesRepository } from '../../services';
-import { IGameEndLocalization, GAME_END_DEFAULT_LOCALIZATION } from '../localization';
+import { IGameEndLocalization, GAME_END_DEFAULT_LOCALIZATION } from '../../localization';
 
 export class GameEndScreen extends BaseComponent {
   constructor(
