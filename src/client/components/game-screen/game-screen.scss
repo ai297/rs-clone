@@ -8,7 +8,7 @@
   &__opponent-cards {
     position: relative;
     z-index: 2;
-    flex: 0 0 35%;
+    flex: 0 0 30%;
     max-height: 22rem;
     min-height: 15rem;
     display: flex;
@@ -21,7 +21,7 @@
   &__play-section {
     position: relative;
     z-index: 3;
-    flex: 1 0 65%;
+    flex: 1 0 70%;
     min-height: 22rem;
     display: flex;
     flex-direction: row;
