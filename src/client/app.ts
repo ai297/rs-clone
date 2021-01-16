@@ -49,6 +49,7 @@ class App implements IRootComponent {
   showStatic = async (type: StaticScreens): Promise<void> => {
     const nextScreen = this.staticScreens.get(type);
     if (nextScreen) await this.show(<IComponent>nextScreen);
+    window.history.replaceState(null, '', this.baseURL);
   };
 
   showLobby = async (gameCreator = false): Promise<void> => {
@@ -95,7 +96,6 @@ class App implements IRootComponent {
     }).catch((e) => {
       // TODO: show join game error screen here
       console.log((<Error> e).message);
-      window.history.replaceState(null, '', this.baseURL);
       this.showStatic(StaticScreens.Start);
     });
   }
