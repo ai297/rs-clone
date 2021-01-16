@@ -69,4 +69,12 @@ export enum CSSClasses {
   Overlay = 'overlay',
   BeforeAppend = 'overlay--before-append',
   BeforeRemove = 'overlay--before-remove',
+  // win screen
+  GameEndScreen = 'game-end-screen',
+  WinnerContainer = 'game-end__winner',
+  ItemName = 'item__name',
+  ItemHeroName = 'item__hero-name',
+  ItemAvatar = 'item__avatar',
+  LosersContainer = 'game-end__losers',
+  LoserItem = 'loser',
 }
