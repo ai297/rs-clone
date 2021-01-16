@@ -76,10 +76,10 @@ export class GameService {
     const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
     if (player) (<IPlayerInfo> player).health = message.currentHealth;
     if (message.isDamage && this.onPlayerTakeDamage) {
-      await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
+      await this.onPlayerTakeDamage(message.playerId, message.healthsChange, message.currentHealth);
     }
     if (!message.isDamage && this.onPlayerTakeHeal) {
-      await this.onPlayerTakeHeal(message.playerId, message.currentHealth);
+      await this.onPlayerTakeHeal(message.playerId, message.healthsChange, message.currentHealth);
     }
     return HubResponse.Ok();
   }
@@ -103,9 +103,9 @@ export class GameService {
 
   onGetCards?: (cards: Array<ICard>) => Promise<void>;
 
-  onPlayerTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeDamage?: (playerId: string, damage: number, currentHealth: number) => Promise<void>;
 
-  onPlayerTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeHeal?: (playerId: string, heal: number, currentHealth: number) => Promise<void>;
 
   onPlayerMakeDiceRoll?: (playerId: string, rolls: Array<number>, bonus: number) => Promise<void>;
 

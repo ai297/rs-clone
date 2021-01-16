@@ -118,10 +118,7 @@ export class GameService {
     player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
       this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
     });
-    player.addListener(PlayerEvents.TakeDamage, (message: IHealthUpdate) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
-    });
-    player.addListener(PlayerEvents.TakeHeal, (message: IHealthUpdate) => {
+    player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
       this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
     });
     player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {

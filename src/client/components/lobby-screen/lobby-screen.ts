@@ -14,8 +14,6 @@ import { GameService } from '../../services/game-service';
 import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localization';
 import { HeroesRepository } from '../../services';
 
-const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
-
 export class LobbyScreen extends BaseComponent {
   private heroSelection : HeroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this));
 
@@ -85,7 +83,7 @@ export class LobbyScreen extends BaseComponent {
   }
 
   private createMarkup(): void {
-    const gameLink = `${SERVER_URL}/${this.gameService.currentGameId}`;
+    const gameLink = `${this.root.baseURL}/${this.gameService.currentGameId}`;
     const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
 
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;

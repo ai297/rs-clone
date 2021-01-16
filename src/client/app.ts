@@ -21,12 +21,12 @@ class App implements IRootComponent {
 
   private currentScreen?: IComponent;
 
-  constructor(private readonly mainContainer: HTMLElement) {
+  constructor(private readonly mainContainer: HTMLElement, private readonly appURL?: string) {
     BaseComponent.setRoot(this);
     // TODO: show preloader before connect to server here
     // TODO: don't forget remove console.logs
     const connection = new ServerConnection(
-      SERVER_URL,
+      this.baseURL,
       // TODO: hide preloader here
       () => console.log('Connected to server'),
       // TODO: show message about connection problems
@@ -39,6 +39,8 @@ class App implements IRootComponent {
   }
 
   get rootElement(): HTMLElement { return this.mainContainer; }
+
+  get baseURL(): string { return this.appURL || SERVER_URL; }
 
   show = async (component: IComponent): Promise<void> => {
     if (this.currentScreen && this.currentScreen?.beforeRemove) {
