@@ -2,7 +2,7 @@ import cards from '../../../public/cards.json';
 import { ICard } from '../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../common/enums';
 
-class CardRepository {
+export class CardRepository {
   getData = (): Array<ICard> => {
     const cardsArray: Array<ICard> = [];
 
@@ -27,5 +27,3 @@ class CardRepository {
     return cardsArray;
   };
 }
-
-export default CardRepository;

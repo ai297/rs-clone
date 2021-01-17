@@ -1,0 +1,9 @@
+export const MAX_GAMES = 100;
+export const MAX_PLAYERS = 4;
+export const MIN_PLAYERS = 2;
+export const MAX_CARDS_IN_HAND = 8;
+export const START_HEALTH = 20;
+export const MAX_HEALTH = 25;
+export const DICE_MIN_VALUE = 1;
+export const DICE_MAX_VALUE = 6;
+export const MAX_AWAIT_TIME = 10000;

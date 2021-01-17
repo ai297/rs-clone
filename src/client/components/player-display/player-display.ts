@@ -1,9 +1,11 @@
+import {
+  MAX_HEALTH,
+  START_HEALTH,
+} from '../../../common';
 import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses } from '../../enums';
 import { createElement, delay } from '../../../common/utils';
 
-const MAX_HEALTH = 25;
-const START_HEALTH = 20;
 const DEAD_WIZARD = 'R.I.P.';
 const RECOVERY_ANIMATION_DELAY = 0;
 const DAMAGE_ANIMATION_DELAY = 0;
