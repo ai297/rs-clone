@@ -64,7 +64,9 @@ class App implements IRootComponent {
   };
 
   showGame = async (/* params */): Promise<void> => {
-    await this.show(new GameScreen(/* params */));
+    await this.show(new GameScreen(this.gameService, this.heroesRepository));
+    // const inst = new GameScreen(this.gameService, this.heroesRepository);
+    // console.log(inst.showPlayerHeal('nnn', 5));
   };
 
   start(): void {
