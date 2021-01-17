@@ -1,5 +1,5 @@
 import { Player } from '../../player';
-import { ICard } from '../../../common';
+import { forEachAsync, ICard } from '../../../common';
 import { CardHandler } from './type';
 import { Spells } from './spells';
 import { IGameForCasting } from '../interface';
@@ -16,21 +16,22 @@ export class CastingSpells {
     this.spells = new Spells(this.players, game);
   }
 
-  public castSpells(): void {
+  public async castSpells(): Promise<void> {
     const queue: Array<Player> = this.players.slice().sort((a, b) => b.spell.initiative - a.spell.initiative);
 
-    queue.forEach((player) => {
+    await forEachAsync(queue, async (player) => {
       const cards: Array<ICard> = [...player.spell];
       const positionPlayer: number = this.players.findIndex((current) => player === current);
-      cards.forEach((currentCard: ICard) => {
-        const handler = this.spells.getHandler(currentCard.id);
-        if (handler) (handler as CardHandler)(positionPlayer, currentCard);
 
+      await forEachAsync(cards, async (currentCard: ICard) => {
+        // console.log(currentCard.id);
+        const handler = await this.spells.getHandler(currentCard.id);
+        if (handler) await (handler as CardHandler)(positionPlayer, currentCard);
         this.players = this.players.filter((current: Player) => current.hitPoints > 0);
         this.checkForEndGame();
       });
-      const usedCards: Array<ICard> = player.transferSpellCards();
 
+      const usedCards: Array<ICard> = player.transferSpellCards();
       this.game.usedCardHandler(usedCards);
     });
   }

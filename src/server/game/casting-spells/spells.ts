@@ -1,4 +1,10 @@
-import { CardTypes, ICard } from '../../../common';
+import {
+  CardTypes,
+  forEachAsync,
+  getRandomInteger,
+  ICard,
+  MagicSigns,
+} from '../../../common';
 import { CardHandler } from './type';
 import { Player } from '../../player';
 import { PowerMagic } from './enum';
@@ -40,10 +46,20 @@ export class Spells {
       .set('chrono_walker', this.useChronoWalker)
       .set('chuk_geck', this.useСhukGeck)
       .set('king_oberon', this.useKingOberon)
-      .set('fallen_rose', this.useFallenRose);
+      .set('fallen_rose', this.useFallenRose)
+      .set('wormy', this.useWormy)
+      .set('duel_hell', this.useDuelHell)
+      .set('faster', this.useFaster)
+      .set('mystical', this.useMystical)
+      .set('infernal', this.useInfernal)
+      .set('explosive', this.useExplosive)
+      .set('cat_trouble', this.useCatTrouble)
+      .set('head_broken', this.useHeadBroken)
+      .set('spiky', this.useSpiky)
+      .set('stunning', this.useStunning);
   }
 
-  public getHandler(currentCard: string): CardHandler {
+  public async getHandler(currentCard: string): Promise<CardHandler> {
     const handler = this.spells.get(currentCard);
     if (handler) return handler;
     throw new Error('getHandler not found handler');
@@ -265,7 +281,7 @@ export class Spells {
         // если счастливчик не найден фильтруем предентентов с одинаковым хп и отправляем их кидать кубы
         // откуда вернется один!
         targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
       }
     }
 
@@ -308,7 +324,7 @@ export class Spells {
         // если счастливчик не найден фильтруем предентентов с одинаковым хп и отправляем их кидать кубы
         // откуда вернется один!
         targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
       }
     }
 
@@ -352,7 +368,7 @@ export class Spells {
         // если счастливчик не найден фильтруем предентентов с одинаковым хп и отправляем их кидать кубы
         // откуда вернется один!
         targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
       }
     }
 
@@ -435,7 +451,7 @@ export class Spells {
         target = targets[0] as Player;
       } else {
         targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
       }
     }
     // урон завязан на количество активных магов
@@ -449,6 +465,7 @@ export class Spells {
 
     for (let i = 0; i < this.numberPlayers; i++) {
       if (this.players[i] !== player) {
+        // eslint-disable-next-line no-await-in-loop
         const damage = await this.players[i].makeDiceRoll(1);
         this.players[i].takeDamage(damage);
       }
@@ -460,8 +477,8 @@ export class Spells {
     const actions: Array<ICard> = [...player.spell].filter((spell) => spell.type === CardTypes.action);
     if (actions.length > 0) {
       const action: ICard = actions[0];
-      const handler = this.getHandler(actions[0].id);
-      if (handler) handler(positionPlayer, action);
+      const handler = await this.getHandler(actions[0].id);
+      if (handler) await handler(positionPlayer, action);
     }
     return Promise.resolve();
   };
@@ -470,7 +487,7 @@ export class Spells {
     const player = this.players[positionPlayer];
 
     const targets = this.players.filter((playerCur) => !(playerCur === player));
-    const target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+    const [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
     const PROFESSOR_DAMAGE = 3;
     target.takeDamage(PROFESSOR_DAMAGE);
   };
@@ -500,7 +517,7 @@ export class Spells {
         target = targets[0] as Player;
       } else {
         targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        target = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
       }
     }
     const DAMAGE_HEAT = 3;
@@ -515,12 +532,12 @@ export class Spells {
     const throwResults: Array<[number, Player]> = Array(this.numberPlayers);
 
     for (let i = 0; i < this.numberPlayers; i++) {
+      // eslint-disable-next-line no-await-in-loop
       let throwResult = await this.players[i].makeDiceRoll(1);
       if (this.players[i] === player) throwResult += bonusThePlayerResult;
       throwResults[i] = [throwResult, this.players[i]];
     }
     throwResults.sort((a, b) => a[0] - b[0]);
-    console.log('обязательно протестить!!!!');
     if (throwResults[0][0] !== throwResults[1][0]) {
       // обязательно протестить!!!!
       const target: Player = throwResults[0][1];
@@ -528,7 +545,7 @@ export class Spells {
       const CHRONO_WALKER_DAMAGE = 3;
       target.takeDamage(CHRONO_WALKER_DAMAGE);
     } else {
-      // если вверху не получилось выявить обнозначную цель рекурсивно повторяем
+      // если вверху не получилось выявить однозначную цель рекурсивно повторяем
       this.useChronoWalker(positionPlayer, cardCurrent);
     }
   };
@@ -536,9 +553,10 @@ export class Spells {
   private useСhukGeck = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const fourCards = this.game.getCardsActiveDeck(4);
     const qualityCards = fourCards.filter((cardCur) => cardCur.type === CardTypes.quality);
-    qualityCards.forEach((curCard) => {
-      const handler = this.getHandler(curCard.id);
-      if (handler) handler(positionPlayer, curCard);
+
+    forEachAsync(qualityCards, async (curCard) => {
+      const handler = await this.getHandler(curCard.id);
+      if (handler) await handler(positionPlayer, curCard);
     });
 
     this.game.usedCardHandler(fourCards);
@@ -558,5 +576,233 @@ export class Spells {
     const HEAL_ROSE = getNumberUniqueMagicSign([...player.spell]);
     player.takeHeal(HEAL_ROSE);
     return Promise.resolve();
+  };
+
+  private useWormy = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    let targets = this.players.filter((playerCur) => !(playerCur === player));
+
+    let target: Player = targets[0];
+    if (targets.length > 1) {
+      targets.sort((a, b) => b.hitPoints - a.hitPoints);
+      if (targets[0].hitPoints !== targets[1].hitPoints) {
+        target = targets[0] as Player;
+      } else {
+        targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
+        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+      }
+    }
+
+    const damage = [...player.spell].filter((curCard) => curCard.magicSign === MagicSigns.dark).length;
+
+    target.takeDamage(damage);
+  };
+
+  private useDuelHell = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const targets = this.players
+      .filter((playerCur) => !(playerCur === player))
+      .map((playerCur) => playerCur.id);
+
+    const [idTarget] = (await player.selectTarget(targets));
+
+    const [target] = this.players
+      .filter((playerCur) => playerCur.id === idTarget);
+
+    const amountDice = [...player.spell]
+      .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
+    const throwResult = await player.makeDiceRoll(amountDice);
+    const strongPower: PowerMagic = checkStrength(throwResult);
+
+    let damage = 0;
+    let damageYourself = 0;
+
+    switch (strongPower) {
+      case PowerMagic.weakThrow:
+        damage = 2;
+        break;
+      case PowerMagic.averageThrow:
+        damage = 4;
+        damageYourself = 1;
+        break;
+      case PowerMagic.strongThrow:
+        damage = 5;
+        damageYourself = 2;
+        break;
+      default:
+        throw new Error('strong power is wrong');
+    }
+
+    player.takeDamage(damageYourself);
+    target.takeDamage(damage);
+  };
+
+  private useFaster = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const targets = this.players.filter((playerCur) => !(playerCur === player));
+
+    const FASTER_DAMAGE = 1;
+    targets.forEach((target) => {
+      target.takeDamage(FASTER_DAMAGE);
+    });
+  };
+
+  private useMystical = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+    let targetIndex: number = positionPlayer - 1;
+    if (targetIndex < 0) {
+      targetIndex += this.numberPlayers;
+    }
+
+    const target = this.players[targetIndex];
+
+    const damage = [...player.spell]
+      .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
+
+    target.takeDamage(damage);
+  };
+
+  private useInfernal = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const targets = this.players.filter((playerCur) => !(playerCur === player));
+
+    const damage = [...player.spell].filter((card: ICard) => card.magicSign === MagicSigns.element).length;
+
+    targets.forEach((target) => target.takeDamage(damage));
+  };
+
+  private useExplosive = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const targets = this.players
+      .filter((playerCur) => !(playerCur === player))
+      .map((playerCur) => playerCur.id);
+
+    const [idTarget] = (await player.selectTarget(targets));
+
+    const [target] = this.players
+      .filter((playerCur) => playerCur.id === idTarget);
+
+    const amountDice = [...player.spell]
+      .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
+    const throwResult = await player.makeDiceRoll(amountDice);
+    const strongPower: PowerMagic = checkStrength(throwResult);
+
+    let damage = 0;
+    let damageYourself = 0;
+
+    switch (strongPower) {
+      case PowerMagic.weakThrow:
+        damage = 1;
+        break;
+      case PowerMagic.averageThrow:
+        damage = 3;
+        damageYourself = 1;
+        break;
+      case PowerMagic.strongThrow:
+        damage = 4;
+        damageYourself = 0;
+        break;
+      default:
+        throw new Error('strong power is wrong');
+    }
+
+    player.takeDamage(damageYourself);
+    target.takeDamage(damage);
+  };
+
+  private useCatTrouble = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const possibleTargets = this.players.filter((playerCur) => !(playerCur === player));
+
+    if (possibleTargets.length > 1) {
+      const [luckyPlayer, resultDiceRoll] = await throwCheck(possibleTargets);
+
+      const targets = resultDiceRoll
+        .filter((curRes: {value: number, player: Player}) => curRes.player !== luckyPlayer);
+
+      targets.forEach((curPlayer): void => {
+        const target = curPlayer.player;
+        const damage = curPlayer.value;
+        target.takeDamage(damage);
+      });
+    } else {
+      const [target] = possibleTargets;
+      const resultDice = await target.makeDiceRoll(1);
+      if (resultDice < 4) {
+        target.takeDamage(resultDice);
+      }
+    }
+  };
+
+  private useHeadBroken = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const possibleTargets = this.players.filter((playerCur) => !(playerCur === player));
+
+    const targetIndex = getRandomInteger(0, possibleTargets.length - 1);
+    const target = possibleTargets[targetIndex];
+
+    const HEAD_BROKEN_DAMAGE = 3;
+
+    target.takeDamage(HEAD_BROKEN_DAMAGE);
+  };
+
+  private useSpiky = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+    let targetIndex: number = positionPlayer - 1;
+    if (targetIndex < 0) {
+      targetIndex += this.numberPlayers;
+    }
+
+    const target = this.players[targetIndex];
+
+    const amountDice = [...player.spell]
+      .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
+    const throwResult = await player.makeDiceRoll(amountDice);
+    const strongPower: PowerMagic = checkStrength(throwResult);
+
+    let damage = 0;
+    let heal = 0;
+
+    switch (strongPower) {
+      case PowerMagic.weakThrow:
+        damage = 1;
+        break;
+      case PowerMagic.averageThrow:
+        damage = 1;
+        heal = 1;
+        break;
+      case PowerMagic.strongThrow:
+        damage = 3;
+        heal = 3;
+        break;
+      default:
+        throw new Error('strong power is wrong');
+    }
+
+    player.takeHeal(heal);
+    target.takeDamage(damage);
+  };
+
+  private useStunning = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    const player = this.players[positionPlayer];
+
+    const targets = this.players.filter((playerCur) => !(playerCur === player));
+
+    const countDamage = getNumberUniqueMagicSign([...player.spell]);
+
+    const stunningDamage = 2;
+
+    for (let i = 0; i < countDamage; i++) {
+      targets.forEach((playerCur) => {
+        playerCur.takeDamage(stunningDamage);
+      });
+    }
   };
 }

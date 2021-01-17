@@ -7,7 +7,7 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll,
+  IDiceRoll, getRandomInteger,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
@@ -17,7 +17,7 @@ const DEFAULT_HEALTH = 20;
 const MAX_HEALTH = 25;
 const DICE_MIN_VALUE = 1;
 const DICE_MAX_VALUE = 6;
-const MAX_AWAIT_TIME = 3000;
+const MAX_AWAIT_TIME = 0;
 
 function race(task: Promise<void>): Promise<void> {
   return Promise.race([delay(MAX_AWAIT_TIME), task]);
@@ -154,5 +154,16 @@ export class Player {
 
   private removeConnectionListeners(): void {
     this.connection.removeListeners(HubEventsServer.SelectSpell);
+  }
+
+  // в методе нет this пока что
+  // eslint-disable-next-line class-methods-use-this
+  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
+    try {
+      throw new Error('zaglushka');
+    } catch (e) {
+      const randomTarget = getRandomInteger(0, targets.length);
+      return [targets[randomTarget]];
+    }
   }
 }
