@@ -87,9 +87,14 @@ export class Player {
 
   async takeDamage(damage: number): Promise<void> {
     this.hitPointsValue = this.hitPoints > damage ? this.hitPoints - damage : 0;
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: true };
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: damage,
+      currentHealth: this.hitPoints,
+      isDamage: true,
+    };
     try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
       await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
     } catch {
       //
@@ -101,9 +106,14 @@ export class Player {
     if (this.hitPointsValue > MAX_HEALTH) {
       this.hitPointsValue = MAX_HEALTH;
     }
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: false };
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: heal,
+      currentHealth: this.hitPoints,
+      isDamage: false,
+    };
     try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
       await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
     } catch {
       //

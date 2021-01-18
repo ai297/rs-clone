@@ -18,6 +18,8 @@ export class Game implements IGameForCasting {
 
   private isEndGame = false;
 
+  private isGameStarted = false;
+
   constructor(
     private cardDeck: Array<ICard>,
   ) {}
@@ -31,12 +33,16 @@ export class Game implements IGameForCasting {
     return this.playersValue;
   }
 
+  get isStarted(): boolean { return this.isGameStarted; }
+
   public startGame(): void {
     const numberPlayers = this.playersValue.length < MIN_PLAYERS;
 
     if (numberPlayers) {
       throw new Error('Few players to start the game');
     }
+
+    this.isGameStarted = true;
 
     this.activeDeck = shuffleArray([...this.cardDeck]);
 
