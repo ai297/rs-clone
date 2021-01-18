@@ -1,0 +1,24 @@
+.button {
+  padding: 1rem;
+  background: $button-color;
+  border: 1px solid #000000;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5), inset 0px 2px 4px #E0E7FF;
+  border-radius: 1rem;
+  font-family: $headers-font;
+  font-size: 1.3rem;
+  color: $button-font-color;
+  text-shadow: -2px 0 #C4D7E6, 0 2px #C4D7E6, 2px 0 #C4D7E6, 0 -2px #C4D7E6;
+  cursor: pointer;
+  transition: all 0.1s linear;
+
+  &:hover:not(:disabled) {
+    background: $button-hover-color;
+    text-shadow: -2px 0 #FFF, 0 2px #FFF, 2px 0 #FFF, 0 -2px #FFF;
+    box-shadow: 0px 0px 10px #FFFFFF, inset 0px -4px 8px rgba(255, 255, 255, 0.75), inset 0px 4px 8px rgba(255, 255, 255, 0.75);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}

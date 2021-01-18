@@ -18,6 +18,7 @@ main {
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  background-color: black;
 }
 
 @import '../components/start-screen/start-screen.scss';
@@ -28,3 +29,4 @@ main {
 @import '../components/game-screen/game-screen.scss';
 @import '../components/player-cards/player-cards.scss';
 @import '../components/overlay/overlay.scss';
+@import '../components/base-button/base-button.scss';

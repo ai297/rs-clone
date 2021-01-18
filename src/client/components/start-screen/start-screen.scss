@@ -1,14 +1,32 @@
 .start-screen {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
+  align-items: center;
+  background-position: center;
+  background-size: cover;
+  transition: all 0.5s ease-in-out;
 
-.start-screen__button {
-  width: 15rem;
-  height: 3rem;
-  font-size: 1.5rem;
-  &:not(:last-child) {
-    margin-bottom: 1rem;
+  &__logo {
+    margin-bottom: -5rem;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -2rem;
+    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
+    padding: 5rem 3rem;
+  }
+
+  &__button:not(:last-child) {
+      margin-bottom: 1rem;
+  }
+  
+  &--hidden {
+    opacity: 0;
   }
 }
