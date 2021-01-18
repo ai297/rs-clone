@@ -15,7 +15,10 @@ export function checkStrength(throwResult: number): PowerMagic {
   return PowerMagic.strongThrow;
 }
 
-export const throwCheck = async (players: Array<Player>, searchByGreatest = true): Promise<Player> => {
+export const throwCheck = async (
+  players: Array<Player>,
+  searchByGreatest = true,
+): Promise<[Player, Array<{ value: number, player: Player }>]> => {
   if (players.length < 2) throw new Error('throwCheck requires from two elements in an array');
 
   function diceRollDecorator(number = 1, player: Player): Promise<{ value: number, player: Player }> {
@@ -37,7 +40,7 @@ export const throwCheck = async (players: Array<Player>, searchByGreatest = true
     target = targets[0].player;
   }
 
-  if (target) return target;
+  if (target) return [target, targets];
   return throwCheck(players, searchByGreatest);
 };
 

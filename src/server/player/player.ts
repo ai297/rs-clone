@@ -12,7 +12,7 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll,
+  IDiceRoll, getRandomInteger,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
@@ -163,5 +163,16 @@ export class Player {
 
   private removeConnectionListeners(): void {
     this.connection.removeListeners(HubEventsServer.SelectSpell);
+  }
+
+  // в методе нет this пока что
+  // eslint-disable-next-line class-methods-use-this
+  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
+    try {
+      throw new Error('zaglushka');
+    } catch (e) {
+      const randomTarget = getRandomInteger(0, targets.length);
+      return [targets[randomTarget]];
+    }
   }
 }
