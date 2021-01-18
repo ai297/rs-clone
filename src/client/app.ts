@@ -53,7 +53,7 @@ class App implements IRootComponent {
   };
 
   showLobby = async (gameCreator = false): Promise<void> => {
-    window.history.pushState(null, '', this.getGameUrl(this.gameService.currentGameId));
+    window.history.replaceState(null, '', this.getGameUrl(this.gameService.currentGameId));
     await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
   };
 
