@@ -80,7 +80,8 @@ export class Game implements IGameForCasting {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this);
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    const casting = new CastingSpells(activePlayers, this);
 
     casting.castSpells();
 

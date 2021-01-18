@@ -937,5 +937,5 @@ export class Spells {
       targetOne.takeDamage(damageSharp);
       targetTwo.takeDamage(damageSharp);
     }
-  }
+  };
 }

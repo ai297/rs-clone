@@ -85,6 +85,12 @@ export class Player {
     return result;
   }
 
+  transferHandsCards(): Array<ICard> {
+    const result: Array<ICard> = this.handCards;
+    this.handCardsValue = [];
+    return result;
+  }
+
   async takeDamage(damage: number): Promise<void> {
     this.hitPointsValue = this.hitPoints > damage ? this.hitPoints - damage : 0;
     const message: IHealthUpdate = {
