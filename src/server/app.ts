@@ -1,8 +1,6 @@
 import { Server } from 'http';
 import { ConnectionEvents, ConnectionService } from './connection';
-import CardRepository from './services/card-repository';
-import { GameService } from './game/game-service';
-import { PlayerService } from './player';
+import { CardRepository, GameService, PlayerService } from './services';
 
 export default class App {
   private readonly connectionService: ConnectionService;

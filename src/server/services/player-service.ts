@@ -1,4 +1,4 @@
-import { Player } from './player';
+import { Player } from '../player';
 
 export class PlayerService {
   private readonly playersCache: Map<string, Player> = new Map<string, Player>();

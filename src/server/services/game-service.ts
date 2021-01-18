@@ -9,12 +9,12 @@ import {
   ISpellSelected,
   IHealthUpdate,
   IDiceRoll,
+  MAX_GAMES,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
-import { Player, PlayerEvents, PlayerService } from '../player';
-import { Game } from './game';
-
-const MAX_GAMES = 100;
+import { Player, PlayerEvents } from '../player';
+import { Game } from '../game/game';
+import { PlayerService } from './player-service';
 
 interface ICardRepository {
   getData: () => ICard[]
