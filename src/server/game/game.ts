@@ -1,12 +1,13 @@
 import { Player, PlayerEvents } from '../player';
-import { ICard, shuffleArray } from '../../common';
+import {
+  MAX_PLAYERS,
+  MIN_PLAYERS,
+  MAX_CARDS_IN_HAND,
+  ICard,
+  shuffleArray,
+} from '../../common';
 import { CastingSpells } from './casting-spells';
 import { IGameForCasting } from './interface';
-
-const MAX_SIZE_GAME = 4;
-const MIN_SIZE_GAME = 2;
-
-const MAX_CARDS_HAND = 8;
 
 export class Game implements IGameForCasting {
   private playersValue: Array<Player> = [];
@@ -17,28 +18,31 @@ export class Game implements IGameForCasting {
 
   private isEndGame = false;
 
+  private isGameStarted = false;
+
   constructor(
     private cardDeck: Array<ICard>,
   ) {}
 
   public addPlayer(player: Player): void {
-    if (this.playersValue.length < MAX_SIZE_GAME) {
-      this.playersValue = [...this.playersValue, player];
-    } else {
-      throw new Error('There are no places in the game');
-    }
+    if (this.playersValue.length < MAX_PLAYERS) this.playersValue.push(player);
+    else throw new Error('There are no places in the game');
   }
 
   public get players(): Array<Player> {
     return this.playersValue;
   }
 
+  get isStarted(): boolean { return this.isGameStarted; }
+
   public startGame(): void {
-    const numberPlayers = this.playersValue.length < MIN_SIZE_GAME;
+    const numberPlayers = this.playersValue.length < MIN_PLAYERS;
 
     if (numberPlayers) {
       throw new Error('Few players to start the game');
     }
+
+    this.isGameStarted = true;
 
     this.activeDeck = shuffleArray([...this.cardDeck]);
 

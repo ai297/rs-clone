@@ -9,12 +9,12 @@ import {
   ISpellSelected,
   IHealthUpdate,
   IDiceRoll,
+  MAX_GAMES,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
-import { Player, PlayerEvents, PlayerService } from '../player';
-import { Game } from './game';
-
-const MAX_GAMES = 100;
+import { Player, PlayerEvents } from '../player';
+import { Game } from '../game/game';
+import { PlayerService } from './player-service';
 
 interface ICardRepository {
   getData: () => ICard[]
@@ -66,6 +66,9 @@ export class GameService {
     if (!this.games.has(gameId)) return GameService.notFound();
 
     const game = <Game> this.games.get(gameId);
+
+    if (game.isStarted) return HubResponse.Error('The game has already started');
+
     const playersInfo = game.players.map(GameService.getPlayerInfo);
     connection.setGameId(gameId);
 
@@ -106,7 +109,6 @@ export class GameService {
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
-      console.log('new Player created', playerInfo);
       this.connectionService.dispatch(request.gameId, HubEventsClient.AddPlayer, playerInfo);
       return HubResponse.Success<IPlayerInfo>(playerInfo);
     } catch (err: unknown) {
@@ -118,10 +120,7 @@ export class GameService {
     player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
       this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
     });
-    player.addListener(PlayerEvents.TakeDamage, (message: IHealthUpdate) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
-    });
-    player.addListener(PlayerEvents.TakeHeal, (message: IHealthUpdate) => {
+    player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
       this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
     });
     player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {

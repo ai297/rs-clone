@@ -1,4 +1,5 @@
 import {
+  MAX_CARDS_IN_HAND,
   CardTypes,
   createElement,
   delay,
@@ -9,8 +10,7 @@ import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
 import { PlayingCard } from './playing-card';
 
-const MAX_HAND_CARDS = 8;
-const MAX_HAND_CARDS_ROTATION = 30;
+const MAX_CARDS_IN_HAND_ROTATION = 30;
 const ADD_HAND_DELAY = 500;
 const SELECT_CARD_DELAY = 300;
 const REMOVE_SPELL_DELAY = 0;
@@ -121,7 +121,7 @@ export class PlayerCards extends BaseComponent {
   }
 
   private rotateHandCards(): void {
-    const step = Math.round((MAX_HAND_CARDS_ROTATION * 10) / MAX_HAND_CARDS) / 10;
+    const step = Math.round((MAX_CARDS_IN_HAND_ROTATION * 10) / MAX_CARDS_IN_HAND) / 10;
     const startRotation = Math.round(this.handCards.length / 2) * step;
     this.handCards.forEach((cardInHand, index) => {
       const rotate = startRotation - step / 2 - index * step;

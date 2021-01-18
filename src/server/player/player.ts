@@ -1,4 +1,9 @@
 import {
+  START_HEALTH,
+  MAX_HEALTH,
+  DICE_MAX_VALUE,
+  DICE_MIN_VALUE,
+  MAX_AWAIT_TIME,
   delay,
   HubEventsClient,
   HubEventsServer,
@@ -13,12 +18,6 @@ import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
-const DEFAULT_HEALTH = 20;
-const MAX_HEALTH = 25;
-const DICE_MIN_VALUE = 1;
-const DICE_MAX_VALUE = 6;
-const MAX_AWAIT_TIME = 0;
-
 function race(task: Promise<void>): Promise<void> {
   return Promise.race([delay(MAX_AWAIT_TIME), task]);
 }
@@ -30,7 +29,7 @@ export class Player {
 
   private listeners: Map<PlayerEvents, Set<ICallbackHandler>> = new Map<PlayerEvents, Set<ICallbackHandler>>();
 
-  private hitPointsValue = DEFAULT_HEALTH;
+  private hitPointsValue = START_HEALTH;
 
   constructor(
     private connection: ClientConnection,
@@ -88,9 +87,14 @@ export class Player {
 
   async takeDamage(damage: number): Promise<void> {
     this.hitPointsValue = this.hitPoints > damage ? this.hitPoints - damage : 0;
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: true };
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: damage,
+      currentHealth: this.hitPoints,
+      isDamage: true,
+    };
     try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
       await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
     } catch {
       //
@@ -102,9 +106,14 @@ export class Player {
     if (this.hitPointsValue > MAX_HEALTH) {
       this.hitPointsValue = MAX_HEALTH;
     }
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: false };
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: heal,
+      currentHealth: this.hitPoints,
+      isDamage: false,
+    };
     try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
+      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
       await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
     } catch {
       //
