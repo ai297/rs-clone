@@ -50,7 +50,8 @@ export class Game implements IGameForCasting {
   }
 
   private giveCards(): void {
-    this.playersValue.forEach((player) => {
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    activePlayers.forEach((player) => {
       // считаем сколько карт надо досдать игроку.
       const needAddIndex = MAX_CARDS_IN_HAND - player.handCards.length;
       // если в колоде осталось меньше чем нужно сдать запускаем обработку
