@@ -27,8 +27,17 @@ export class CastingSpells {
         // console.log(currentCard.id);
         const handler = await this.spells.getHandler(currentCard.id);
         if (handler) await (handler as CardHandler)(positionPlayer, currentCard);
-        this.players = this.players.filter((current: Player) => current.hitPoints > 0);
-        this.checkForEndGame();
+
+        const deadThisCast: Array<Player> = this.players.filter((current: Player) => current.hitPoints < 1);
+        // если есть покойничек то запускаем его отработку
+        if (deadThisCast.length > 0) {
+          // обновляем состояние списка игроков
+          this.players = this.players.filter((current: Player) => current.hitPoints > 0);
+          // потрошим с покойничка карты и отдаем их в отбой
+          this.removeCardsFromCorpse(deadThisCast);
+          // проверяем игру на законченность
+          this.checkForEndGame();
+        }
       });
 
       const usedCards: Array<ICard> = player.transferSpellCards();
@@ -42,5 +51,14 @@ export class CastingSpells {
     if (numberLivingPlayers === numberLivingPlayersForEnd) {
       this.game.checkEndGameHandler();
     }
+  }
+
+  private removeCardsFromCorpse(deadThisCast: Array<Player>) {
+    // пробегаем по мертвым колдунам забираем карты из заклинания и руки и отдаем в отбой
+    deadThisCast.forEach((player) => {
+      const activeSpell = player.transferSpellCards();
+      const activeHand = player.transferHandsCards();
+      this.game.usedCardHandler([...activeSpell, ...activeHand]);
+    });
   }
 }

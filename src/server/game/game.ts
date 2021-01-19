@@ -50,7 +50,8 @@ export class Game implements IGameForCasting {
   }
 
   private giveCards(): void {
-    this.playersValue.forEach((player) => {
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    activePlayers.forEach((player) => {
       // считаем сколько карт надо досдать игроку.
       const needAddIndex = MAX_CARDS_IN_HAND - player.handCards.length;
       // если в колоде осталось меньше чем нужно сдать запускаем обработку
@@ -80,7 +81,8 @@ export class Game implements IGameForCasting {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this);
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    const casting = new CastingSpells(activePlayers, this);
 
     casting.castSpells();
 
