@@ -1,13 +1,8 @@
 import { ICallbackHandler } from '../interfaces';
 import { IHubResponse } from '../interfaces/DTO/hub-response';
+import { ISocket } from './soket-iterface';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-interface ISocket {
-  id: string,
-  on: ICallbackHandler,
-  emit: ICallbackHandler,
-}
 
 export abstract class BaseConnection<TRequest, TEvent> {
   constructor(protected readonly socket: ISocket) { }

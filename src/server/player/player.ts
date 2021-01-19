@@ -12,14 +12,19 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll, getRandomInteger,
+  IDiceRoll, getRandomInteger, ISelectTarget,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
-function race(task: Promise<void>): Promise<void> {
-  return Promise.race([delay(MAX_AWAIT_TIME), task]);
+function race<T>(task: Promise<T>, data?: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    delay(MAX_AWAIT_TIME).then(() => {
+      resolve(data as T);
+    });
+    task.then(resolve).catch(() => resolve(data as T));
+  });
 }
 
 export class Player {
@@ -69,12 +74,8 @@ export class Player {
   }
 
   async addCardsHand(cards: Array<ICard>): Promise<void> {
-    try {
-      this.handCardsValue = [...this.handCardsValue, ...cards];
-      await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
-    } catch {
-      //
-    }
+    this.handCardsValue = [...this.handCardsValue, ...cards];
+    await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
   }
 
   transferSpellCards(): Array<ICard> {
@@ -99,12 +100,8 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: true,
     };
-    try {
-      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } catch {
-      //
-    }
+    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
   async takeHeal(heal: number): Promise<void> {
@@ -118,12 +115,8 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: false,
     };
-    try {
-      this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } catch {
-      //
-    }
+    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
   async makeDiceRoll(number: number, bonus = 0): Promise<number> {
@@ -134,13 +127,9 @@ export class Player {
       result += roll;
       rolls.push(roll);
     }
-    try {
-      const message: IDiceRoll = { playerId: this.id, rolls, bonus };
-      this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    } catch {
-      //
-    }
+    const message: IDiceRoll = { playerId: this.id, rolls, bonus };
+    this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
     return result + bonus;
   }
 
@@ -174,11 +163,13 @@ export class Player {
   // в методе нет this пока что
   // eslint-disable-next-line class-methods-use-this
   async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
-    try {
-      throw new Error('zaglushka');
-    } catch (e) {
-      const randomTarget = getRandomInteger(0, targets.length);
-      return [targets[randomTarget]];
+    const message: ISelectTarget = { targets, numberOfTargets };
+    const randomResult: Array<string> = [];
+    while (randomResult.length < numberOfTargets && targets.length > 0) {
+      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
     }
+    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
+    const result = await race(selectTargetTask, randomResult);
+    return result;
   }
 }
