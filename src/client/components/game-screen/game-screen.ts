@@ -33,10 +33,6 @@ export class GameScreen extends BaseComponent {
 
   private opponentCardsComponents: Map<string, OpponentsCards> = new Map<string, OpponentsCards>();
 
-  private players = this.gameService.currentPlayers;
-
-  private currentPlayerId = this.gameService.currentPlayerId;
-
   private currentPlayerPosition?: number;
 
   constructor(
@@ -48,39 +44,24 @@ export class GameScreen extends BaseComponent {
     this.loc = localization || GAME_SCREEN_DEFAULT_LOCALIZATION;
     this.createMarkup();
 
-    if (this.currentPlayerId) {
-      const playerInfo = <IPlayerInfo> this.players.find(
-        (player: IPlayerInfo) => player.id === this.currentPlayerId,
+    if (this.gameService.currentPlayerId) {
+      const playerInfo = <IPlayerInfo> this.gameService.currentPlayers.find(
+        (player: IPlayerInfo) => player.id === this.gameService.currentPlayerId,
       );
-
-      const getCurrentPlayerInfo = async (): Promise<GamePlayerDisplay> => {
-        const heroInfo = <IHero> await this.heroesRepository.getHero(playerInfo.heroId);
-        const currentPlayerInfo = new GamePlayerDisplay(
-          playerInfo.userName, heroInfo.name, heroInfo.image, playerInfo.health, true,
-        );
-
-        this.playerInfoContainer.append(currentPlayerInfo.element);
-
-        return currentPlayerInfo;
-      };
-
-      getCurrentPlayerInfo().then((playerDisplay) => {
-        this.currentPlayerDisplay = playerDisplay;
-      });
-
       this.currentPlayerPosition = playerInfo.position;
+
+      this.takeCurrentPlayerInfo(playerInfo);
     }
 
-    this.players.sort((a, b) => a.position - b.position);
-
-    const currentPlayerIndex: number = this.players
+    const currentPlayerIndex: number = this.gameService.currentPlayers
       .findIndex((player) => player.position === this.currentPlayerPosition);
-    const rightHandOpponents: Array<IPlayerInfo> = this.players.splice(0, currentPlayerIndex);
+    const opponentsPlacement: Array<IPlayerInfo> = Array.from(this.gameService.currentPlayers);
+    const rightHandOpponents: Array<IPlayerInfo> = opponentsPlacement.splice(0, currentPlayerIndex);
 
-    this.players.push(...rightHandOpponents);
-    this.players.filter((player) => player.id !== this.currentPlayerId)
+    opponentsPlacement.push(...rightHandOpponents);
+    opponentsPlacement.filter((player) => player.id !== this.gameService.currentPlayerId)
       .forEach((opponent) => {
-        this.getOpponentsInfo(opponent);
+        this.takeOpponentsInfo(opponent);
       });
 
     this.gameService.onPlayerTakeHeal = this.showPlayerHeal;
@@ -93,7 +74,17 @@ export class GameScreen extends BaseComponent {
     this.playSection.append(this.playerCards.element);
   }
 
-  private getOpponentsInfo = async (opponent: IPlayerInfo): Promise<void> => {
+  private takeCurrentPlayerInfo = async (playerInfo: IPlayerInfo): Promise<void> => {
+    const heroInfo = <IHero> await this.heroesRepository.getHero(playerInfo.heroId);
+    const currentPlayerInfo = new GamePlayerDisplay(
+      playerInfo.userName, heroInfo.name, heroInfo.image, playerInfo.health, true,
+    );
+
+    this.currentPlayerDisplay = currentPlayerInfo;
+    this.playerInfoContainer.append(currentPlayerInfo.element);
+  };
+
+  private takeOpponentsInfo = async (opponent: IPlayerInfo): Promise<void> => {
     const heroInfo = <IHero> await this.heroesRepository.getHero(opponent.heroId);
     const opponentInfo = new GamePlayerDisplay(opponent.userName, heroInfo.name, heroInfo.image, opponent.health);
     const opponentCards = new OpponentsCards();
@@ -117,7 +108,7 @@ export class GameScreen extends BaseComponent {
   };
 
   private showPlayerHeal = async (playerId: string, heal: number): Promise<void> => {
-    if (playerId === this.currentPlayerId) {
+    if (playerId === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.addHealth(heal);
     }
 
@@ -129,7 +120,7 @@ export class GameScreen extends BaseComponent {
   };
 
   private showPlayerDamage = async (playerId: string, damage: number): Promise<void> => {
-    if (playerId === this.currentPlayerId) {
+    if (playerId === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.bringDamage(damage);
     }
 
