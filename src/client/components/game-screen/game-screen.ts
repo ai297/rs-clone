@@ -44,7 +44,7 @@ const PLAYERS: Array<IPlayerInfo> = [
   },
 ];
 
-const CURRENT_PLAYER_ID = '333';
+const CURRENT_PLAYER_ID = '222';
 
 export class GameScreen extends BaseComponent {
   private loc!: IGameScreenLocalization;
@@ -70,6 +70,8 @@ export class GameScreen extends BaseComponent {
 
   // test
   private currentPlayerId = CURRENT_PLAYER_ID; // this.gameService.currentPlayerId;
+
+  private currentPlayerPosition?: number;
 
   constructor(
     private readonly gameService: GameService,
@@ -99,8 +101,17 @@ export class GameScreen extends BaseComponent {
       getCurrentPlayerInfo().then((playerDisplay) => {
         this.currentPlayerDisplay = playerDisplay;
       });
+
+      this.currentPlayerPosition = playerInfo.position;
     }
 
+    this.players.sort((a, b) => a.position - b.position);
+
+    const currentPlayerIndex: number = this.players
+      .findIndex((player) => player.position === this.currentPlayerPosition);
+    const rightHandOpponents: Array<IPlayerInfo> = this.players.splice(0, currentPlayerIndex);
+
+    this.players.push(...rightHandOpponents);
     this.players.filter((player) => player.id !== this.currentPlayerId)
       .forEach((opponent) => {
         this.getOpponentsInfo(opponent);
