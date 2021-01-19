@@ -12,40 +12,6 @@ import { HeroesRepository } from '../../services';
 import { OpponentsCards } from '../opponents-cards/opponents-cards';
 import { BaseButton } from '../base-button/base-button';
 
-// test
-const PLAYERS: Array<IPlayerInfo> = [
-  {
-    id: '111',
-    userName: 'Вася',
-    health: 11,
-    heroId: 'lady_lazervere',
-    position: 0,
-  },
-  {
-    id: '222',
-    userName: 'Петя',
-    health: 22,
-    heroId: 'fey_ticklebottom',
-    position: 1,
-  },
-  {
-    id: '333',
-    userName: 'Маша',
-    health: 3,
-    heroId: 'hogs_house',
-    position: 2,
-  },
-  {
-    id: '444',
-    userName: 'Аня',
-    health: 4,
-    heroId: 'jung_jung',
-    position: 3,
-  },
-];
-
-const CURRENT_PLAYER_ID = '222';
-
 export class GameScreen extends BaseComponent {
   private loc!: IGameScreenLocalization;
 
@@ -65,11 +31,11 @@ export class GameScreen extends BaseComponent {
 
   private opponents: Map<string, GamePlayerDisplay> = new Map<string, GamePlayerDisplay>();
 
-  // test
-  private players = PLAYERS; // this.gameService.currentPlayers;
+  private opponentCardsComponents: Map<string, OpponentsCards> = new Map<string, OpponentsCards>();
 
-  // test
-  private currentPlayerId = CURRENT_PLAYER_ID; // this.gameService.currentPlayerId;
+  private players = this.gameService.currentPlayers;
+
+  private currentPlayerId = this.gameService.currentPlayerId;
 
   private currentPlayerPosition?: number;
 
@@ -120,13 +86,11 @@ export class GameScreen extends BaseComponent {
     this.gameService.onPlayerTakeHeal = this.showPlayerHeal;
     this.gameService.onPlayerTakeDamage = this.showPlayerDamage;
     this.gameService.onGetCards = this.addCards;
+    this.gameService.onPlayerSelectSpell = this.showOpponentCards;
 
     this.playerCards = new PlayerCards();
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
     this.playSection.append(this.playerCards.element);
-    // test
-    setTimeout(() => this.showPlayerDamage('222', 5), 5000);
-    setTimeout(() => this.showPlayerHeal('333', 10), 5000);
   }
 
   private getOpponentsInfo = async (opponent: IPlayerInfo): Promise<void> => {
@@ -134,7 +98,9 @@ export class GameScreen extends BaseComponent {
     const opponentInfo = new GamePlayerDisplay(opponent.userName, heroInfo.name, heroInfo.image, opponent.health);
     const opponentCards = new OpponentsCards();
 
+    this.opponentCardsComponents.set(opponent.id, opponentCards);
     this.opponents.set(opponent.id, opponentInfo);
+
     this.addOpponent(opponentInfo, opponentCards);
   };
 
@@ -145,6 +111,10 @@ export class GameScreen extends BaseComponent {
     this.opponentsInfoContainer.append(opponentInfo.element);
     this.opponentsCardsContainer.append(opponentCards.element);
   }
+
+  private showOpponentCards = async (playerId: string, cardsInSpell: number): Promise<void> => {
+    this.opponentCardsComponents.get(playerId)?.showCards(cardsInSpell);
+  };
 
   private showPlayerHeal = async (playerId: string, heal: number): Promise<void> => {
     if (playerId === this.currentPlayerId) {
