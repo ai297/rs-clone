@@ -8,6 +8,7 @@ import {
 } from '../../common';
 import { CastingSpells } from './casting-spells';
 import { IGameForCasting } from './interface';
+import { MADE_MAPS } from './made-maps';
 
 export class Game implements IGameForCasting {
   private playersValue: Array<Player> = [];
@@ -44,7 +45,8 @@ export class Game implements IGameForCasting {
 
     this.isGameStarted = true;
 
-    this.activeDeck = shuffleArray([...this.cardDeck]);
+    const madeCards = this.cardDeck.filter((card) => MADE_MAPS.includes(card.id));
+    this.activeDeck = shuffleArray(madeCards);
 
     this.giveCards();
   }
