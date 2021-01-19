@@ -11,6 +11,8 @@ import {
   IDiceRoll,
   MAX_GAMES,
   getRandomInteger,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
 import { Player, PlayerEvents } from '../player';
@@ -59,7 +61,7 @@ export class GameService {
     if (this.games.has(gameId)) return HubResponse.Error('The game is already exists');
 
     // TODO: add onGameEndCallback to Game constructor here
-    const game = new Game(this.getCards());
+    const game = new Game(this.getCards(), (winners) => this.endGame(gameId, winners));
     this.games.set(gameId, game);
     connection.setGameId(gameId);
 
@@ -80,17 +82,23 @@ export class GameService {
     return HubResponse.Success(playersInfo);
   }
 
-  startGame(gameId: string): IHubResponse<string | null> {
+  async startGame(gameId: string): Promise<IHubResponse<string | null>> {
     if (!this.games.has(gameId)) return GameService.notFound();
     const game = <Game>(this.games.get(gameId));
     try {
-      game.startGame();
+      await game.startGame();
       // TODO: return any data about game?
       this.connectionService.dispatch(gameId, HubEventsClient.StartGame);
       return HubResponse.Ok();
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
     }
+  }
+
+  endGame(gameId: string, winners: Player[]): void {
+    if (!this.games.has(gameId)) return;
+    this.games.delete(gameId);
+    this.connectionService.dispatch(gameId, HubEventsClient.EndGame, winners.map((player) => player.id));
   }
 
   createPlayer(request: ICreatePlayerRequest, connection: ClientConnection): IHubResponse<IPlayerInfo | string> {
@@ -160,6 +168,12 @@ export class GameService {
     });
     player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {
       this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, message);
+    });
+    player.addListener(PlayerEvents.CastSpell, (message: ICastSpell) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.CastSpell, message);
+    });
+    player.addListener(PlayerEvents.CastCard, (message: ICastCard) => {
+      this.connectionService.dispatch(gameId, HubEventsClient.CastCard, message);
     });
   }
 

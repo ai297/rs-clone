@@ -22,7 +22,12 @@ export class GameService {
 
   private players: Array<IPlayerInfo> = [];
 
-  constructor(private readonly connection: ServerConnection) {
+  constructor(private readonly connection: ServerConnection, private readonly onGameStarted?: () => void) {
+    connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
+    connection.addEventListener(HubEventsClient.StartGame, () => {
+      if (this.onGameStarted) this.onGameStarted();
+      return HubResponse.Ok();
+    });
     connection.addEventListener(HubEventsClient.AddPlayer, (player: IPlayerInfo) => this.addPlayer(player));
     connection.addEventListener(HubEventsClient.RemovePlayer, (playerId: string) => this.removePlayer(playerId));
     connection.addEventListener(HubEventsClient.SpellSelected, (message: ISpellSelected) => this.spellSelect(message));
@@ -40,71 +45,7 @@ export class GameService {
 
   get currentPlayers(): Array<IPlayerInfo> { return this.players; }
 
-  private clearState(): void {
-    this.gameId = '';
-    this.playerId = '';
-    this.players = [];
-    this.onPlayerJoined = undefined;
-    this.onPlayerLeaved = undefined;
-    this.onPlayerSelectSpell = undefined;
-    this.onGetCards = undefined;
-    this.onPlayerTakeDamage = undefined;
-    this.onPlayerTakeHeal = undefined;
-    this.onPlayerMakeDiceRoll = undefined;
-    this.onSelectTarget = undefined;
-  }
-
-  private addPlayer(player: IPlayerInfo): IHubResponse<null> {
-    this.players.push(player);
-    this.players.sort((playerA, playerB) => playerA.position - playerB.position);
-    this.onPlayerJoined?.call(this, player);
-    return HubResponse.Ok();
-  }
-
-  private removePlayer(playerId: string): IHubResponse<null> {
-    const removingPlayerIndex = this.players.findIndex((player) => player.id === playerId);
-    if (removingPlayerIndex >= 0) {
-      const removingPlayer = this.players.splice(removingPlayerIndex, 1)[0];
-      this.onPlayerLeaved?.call(this, removingPlayer);
-    }
-    return HubResponse.Ok();
-  }
-
-  private async spellSelect(message: ISpellSelected): Promise<IHubResponse<null>> {
-    if (this.onPlayerSelectSpell) await this.onPlayerSelectSpell(message.playerId, message.spellCards);
-    return HubResponse.Ok();
-  }
-
-  private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
-    const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
-    if (player) (<IPlayerInfo> player).health = message.currentHealth;
-    if (message.isDamage && this.onPlayerTakeDamage) {
-      await this.onPlayerTakeDamage(message.playerId, message.healthsChange, message.currentHealth);
-    }
-    if (!message.isDamage && this.onPlayerTakeHeal) {
-      await this.onPlayerTakeHeal(message.playerId, message.healthsChange, message.currentHealth);
-    }
-    return HubResponse.Ok();
-  }
-
-  private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
-    this.playerCards.push(...cards);
-    if (this.onGetCards) await this.onGetCards(cards);
-    return HubResponse.Ok();
-  }
-
-  private async diceRoll(message: IDiceRoll): Promise<IHubResponse<null>> {
-    if (this.onPlayerMakeDiceRoll) await this.onPlayerMakeDiceRoll(message.playerId, message.rolls, message.bonus);
-    return HubResponse.Ok();
-  }
-
-  private async selectTargets(message: ISelectTarget): Promise<IHubResponse<string[] | string>> {
-    if (this.onSelectTarget) {
-      const result = await this.onSelectTarget(message.targets, message.numberOfTargets);
-      return HubResponse.Success(result);
-    }
-    return HubResponse.Error();
-  }
+  onGoOut?: () => void;
 
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
@@ -167,5 +108,77 @@ export class GameService {
   async createBot(heroId: string): Promise<IPlayerInfo> {
     const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId);
     return playerInfo;
+  }
+
+  private clearState(): void {
+    this.gameId = '';
+    this.playerId = '';
+    this.players = [];
+    this.onPlayerJoined = undefined;
+    this.onPlayerLeaved = undefined;
+    this.onPlayerSelectSpell = undefined;
+    this.onGetCards = undefined;
+    this.onPlayerTakeDamage = undefined;
+    this.onPlayerTakeHeal = undefined;
+    this.onPlayerMakeDiceRoll = undefined;
+    this.onSelectTarget = undefined;
+  }
+
+  private goOut(): IHubResponse<null> {
+    if (this.onGoOut) this.onGoOut();
+    this.clearState();
+    return HubResponse.Ok();
+  }
+
+  private addPlayer(player: IPlayerInfo): IHubResponse<null> {
+    this.players.push(player);
+    this.players.sort((playerA, playerB) => playerA.position - playerB.position);
+    this.onPlayerJoined?.call(this, player);
+    return HubResponse.Ok();
+  }
+
+  private removePlayer(playerId: string): IHubResponse<null> {
+    const removingPlayerIndex = this.players.findIndex((player) => player.id === playerId);
+    if (removingPlayerIndex >= 0) {
+      const removingPlayer = this.players.splice(removingPlayerIndex, 1)[0];
+      this.onPlayerLeaved?.call(this, removingPlayer);
+    }
+    return HubResponse.Ok();
+  }
+
+  private async spellSelect(message: ISpellSelected): Promise<IHubResponse<null>> {
+    if (this.onPlayerSelectSpell) await this.onPlayerSelectSpell(message.playerId, message.spellCards);
+    return HubResponse.Ok();
+  }
+
+  private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
+    const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
+    if (player) (<IPlayerInfo> player).health = message.currentHealth;
+    if (message.isDamage && this.onPlayerTakeDamage) {
+      await this.onPlayerTakeDamage(message.playerId, message.healthsChange, message.currentHealth);
+    }
+    if (!message.isDamage && this.onPlayerTakeHeal) {
+      await this.onPlayerTakeHeal(message.playerId, message.healthsChange, message.currentHealth);
+    }
+    return HubResponse.Ok();
+  }
+
+  private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
+    this.playerCards.push(...cards);
+    if (this.onGetCards) await this.onGetCards(cards);
+    return HubResponse.Ok();
+  }
+
+  private async diceRoll(message: IDiceRoll): Promise<IHubResponse<null>> {
+    if (this.onPlayerMakeDiceRoll) await this.onPlayerMakeDiceRoll(message.playerId, message.rolls, message.bonus);
+    return HubResponse.Ok();
+  }
+
+  private async selectTargets(message: ISelectTarget): Promise<IHubResponse<string[] | string>> {
+    if (this.onSelectTarget) {
+      const result = await this.onSelectTarget(message.targets, message.numberOfTargets);
+      return HubResponse.Success(result);
+    }
+    return HubResponse.Error();
   }
 }

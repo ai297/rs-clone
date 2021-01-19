@@ -12,9 +12,12 @@ export enum HubEventsClient {
   AddPlayer = 'add-player',
   RemovePlayer = 'remove-player',
   StartGame = 'start-game',
+  EndGame = 'end-game',
   GetCards = 'get-cards',
   DiceRoll = 'dice-roll',
   UpdateHealath = 'update-haalth',
   SpellSelected = 'spell-selected',
   SelectTarget = 'select-target',
+  CastSpell = 'cast-spell',
+  CastCard = 'cast-card',
 }

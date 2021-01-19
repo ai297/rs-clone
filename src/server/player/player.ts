@@ -4,6 +4,7 @@ import {
   DICE_MAX_VALUE,
   DICE_MIN_VALUE,
   MAX_AWAIT_TIME,
+  SELECT_TARGET_TIME,
   delay,
   HubEventsClient,
   HubEventsServer,
@@ -12,15 +13,19 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll, getRandomInteger, ISelectTarget,
+  IDiceRoll,
+  getRandomInteger,
+  ISelectTarget,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
-function race<T>(task: Promise<T>, data?: T): Promise<T> {
+function race<T>(task: Promise<T>, data?: T, time?: number): Promise<T> {
   return new Promise<T>((resolve) => {
-    delay(MAX_AWAIT_TIME).then(() => {
+    delay(time || MAX_AWAIT_TIME).then(() => {
       resolve(data as T);
     });
     task.then(resolve).catch(() => resolve(data as T));
@@ -78,6 +83,20 @@ export class Player {
     await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
   }
 
+  async startSpellCasting(): Promise<ICard[]> {
+    const cards = [...this.spell];
+    const message: ICastSpell = { playerId: this.id, cards };
+    this.dispatchCallbacks(PlayerEvents.CastSpell, message);
+    await race(this.connection.dispatch(HubEventsClient.CastSpell, message));
+    return cards;
+  }
+
+  async castCard(cardId: string): Promise<void> {
+    const message: ICastCard = { playerId: this.id, cardId };
+    this.dispatchCallbacks(PlayerEvents.CastCard, message);
+    await race(this.connection.dispatch(HubEventsClient.CastCard, message));
+  }
+
   transferSpellCards(): Array<ICard> {
     // передавая закл в отработку чистим слот
     const result: Array<ICard> = [...this.spell];
@@ -132,6 +151,17 @@ export class Player {
     return rolls;
   }
 
+  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
+    const message: ISelectTarget = { targets, numberOfTargets };
+    const randomResult: Array<string> = [];
+    while (randomResult.length < numberOfTargets && targets.length > 0) {
+      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
+    }
+    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
+    const result = await race(selectTargetTask, randomResult, SELECT_TARGET_TIME);
+    return result;
+  }
+
   addSpellCards(cardIds: Array<string>): void {
     // кладем в активное заклинание
     this.currentSpell = new PlayerSpell(this.handCardsValue.filter((card) => cardIds.includes(card.id)));
@@ -157,18 +187,5 @@ export class Player {
 
   private removeConnectionListeners(): void {
     this.connection.removeListeners(HubEventsServer.SelectSpell);
-  }
-
-  // в методе нет this пока что
-  // eslint-disable-next-line class-methods-use-this
-  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
-    const message: ISelectTarget = { targets, numberOfTargets };
-    const randomResult: Array<string> = [];
-    while (randomResult.length < numberOfTargets && targets.length > 0) {
-      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
-    }
-    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
-    const result = await race(selectTargetTask, randomResult);
-    return result;
   }
 }
