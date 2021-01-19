@@ -3,7 +3,7 @@ import {
   START_HEALTH,
 } from '../../../common';
 import { BaseComponent } from '../base-component';
-import { Tags, CSSClasses } from '../../enums';
+import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { createElement, delay } from '../../../common/utils';
 
 const DEAD_WIZARD = 'R.I.P.';
@@ -28,7 +28,7 @@ export class GamePlayerDisplay extends BaseComponent {
 
     this.playerHealth = createElement(Tags.Div, [CSSClasses.GamePlayerHealth]);
 
-    playerAvatar.setAttribute('src', this.avatar);
+    playerAvatar.setAttribute('src', `${ImagesPaths.HeroesAvatars}${this.avatar}.png`);
     playerAvatar.setAttribute('alt', this.heroName);
 
     this.playerHealth.textContent = `${this.health} / ${MAX_HEALTH}`;

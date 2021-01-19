@@ -58,7 +58,7 @@ class App implements IRootComponent {
   };
 
   showGame = async (/* params */): Promise<void> => {
-    await this.show(new GameScreen(/* params */));
+    await this.show(new GameScreen(this.gameService, this.heroesRepository));
   };
 
   start(gameId?: string): Promise<void> {

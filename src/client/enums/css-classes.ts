@@ -77,4 +77,6 @@ export enum CSSClasses {
   ItemAvatar = 'item__avatar',
   LosersContainer = 'game-end__losers',
   LoserItem = 'loser',
+  // game screen
+  GameScreenButton = 'game-button__ready',
 }
