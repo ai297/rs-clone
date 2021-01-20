@@ -2,7 +2,7 @@ import { PowerMagic } from './enum';
 import { Player } from '../../player';
 import { ICard } from '../../../common';
 
-export function addArrayNumbers(array: Array<number>): number {
+export function sumArray(array: Array<number>): number {
   return array.reduce((acc, cur) => acc + cur, 0);
 }
 
@@ -27,7 +27,7 @@ export const throwCheck = async (
 
   function diceRollDecorator(number = 1, player: Player): Promise<{ value: number, player: Player }> {
     return new Promise((res) => {
-      player.makeDiceRoll(number).then((resultRoll) => res({ value: addArrayNumbers(resultRoll), player }));
+      player.makeDiceRoll(number).then((resultRoll) => res({ value: sumArray(resultRoll), player }));
     });
   }
   const NUMBER_DICE = 1;

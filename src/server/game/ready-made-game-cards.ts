@@ -1,4 +1,4 @@
-export const MADE_MAPS = [
+export const READY_MADE_GAME_CARDS = [
   'acid_shower',
   'egg_blow',
   'cute_death',

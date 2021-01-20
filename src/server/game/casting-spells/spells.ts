@@ -9,7 +9,7 @@ import { CardHandler } from './type';
 import { Player } from '../../player';
 import { PowerMagic } from './enum';
 import {
-  addArrayNumbers,
+  sumArray,
   checkStrength,
   getNumberUniqueMagicSign,
   throwCheck,
@@ -83,7 +83,7 @@ export class Spells {
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
 
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -110,7 +110,7 @@ export class Spells {
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
 
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let heal = 0;
 
@@ -143,7 +143,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -176,7 +176,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
     const damageYourself = 1;
@@ -217,7 +217,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc: number, card: ICard): number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -250,7 +250,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -294,7 +294,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -337,7 +337,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -381,7 +381,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -407,7 +407,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
@@ -472,7 +472,7 @@ export class Spells {
       if (this.players[i] !== player) {
         // eslint-disable-next-line no-await-in-loop
         const damage = await this.players[i].makeDiceRoll(1);
-        this.players[i].takeDamage(addArrayNumbers(damage));
+        this.players[i].takeDamage(sumArray(damage));
       }
     }
   };
@@ -547,7 +547,7 @@ export class Spells {
         throwResult = await this.players[i].makeDiceRoll(1);
       }
 
-      throwResults[i] = [addArrayNumbers(throwResult), this.players[i]];
+      throwResults[i] = [sumArray(throwResult), this.players[i]];
     }
     throwResults.sort((a, b) => a[0] - b[0]);
     if (throwResults[0][0] !== throwResults[1][0]) {
@@ -626,7 +626,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
     let damageYourself = 0;
@@ -702,7 +702,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
     let damageYourself = 0;
@@ -745,7 +745,7 @@ export class Spells {
       });
     } else {
       const [target] = possibleTargets;
-      const resultDice = addArrayNumbers(await target.makeDiceRoll(1));
+      const resultDice = sumArray(await target.makeDiceRoll(1));
       if (resultDice < 4) {
         target.takeDamage(resultDice);
       }
@@ -777,7 +777,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
     let heal = 0;
@@ -833,7 +833,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
     let damageYourself = 0;
@@ -877,7 +877,7 @@ export class Spells {
     const amountDice = [...player.spell]
       .reduce((acc:number, card: ICard):number => (acc + card.magicSign === cardCurrent.magicSign ? 1 : 0), 0);
     const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(addArrayNumbers(throwResult));
+    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
     let damage = 0;
 
