@@ -13,8 +13,8 @@ export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
 };
 
 export const START_SCREEN_DEFAULT_LOCALIZATION: IStartScreenLocalization = {
-  NewGame: 'Новая игра',
-  Join: 'Присоединиться',
+  NewGame: 'Новый замес',
+  Join: 'Заскочить на замес',
   Rules: 'Правила',
   Settings: 'Настройки',
 };

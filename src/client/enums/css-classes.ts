@@ -4,7 +4,10 @@ export enum CSSClasses {
   Button = 'button',
   // start screen
   StartScreen = 'start-screen',
+  StartScreenHidden = 'start-screen--hidden',
+  StartScreenButtons = 'start-screen__buttons',
   StartScreenButton = 'start-screen__button',
+  StartScreenLogo = 'start-screen__logo',
   // player list
   PlayerList = 'player-list',
   PlayerListItem = 'player-list__item',
