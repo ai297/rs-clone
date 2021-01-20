@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { BaseConnection, HubEventsClient, HubEventsServer } from '../../common';
 
 export class ClientConnection extends BaseConnection<HubEventsClient, HubEventsServer> {
-  private gameId = '';
+  protected gameId = '';
 
   get currentGameId(): string { return this.gameId; }
 

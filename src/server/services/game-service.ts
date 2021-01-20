@@ -9,12 +9,14 @@ import {
   ISpellSelected,
   IHealthUpdate,
   IDiceRoll,
+  MAX_GAMES,
+  getRandomInteger,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
-import { Player, PlayerEvents, PlayerService } from '../player';
-import { Game } from './game';
-
-const MAX_GAMES = 100;
+import { Player, PlayerEvents } from '../player';
+import { Game } from '../game/game';
+import { PlayerService } from './player-service';
+import { SimpleBotConnection } from '../bot/bot-connection';
 
 interface ICardRepository {
   getData: () => ICard[]
@@ -46,6 +48,9 @@ export class GameService {
     connection.addEventListener(
       HubEventsServer.AddPlayer, (req: ICreatePlayerRequest) => this.createPlayer(req, connection),
     );
+    connection.addEventListener(
+      HubEventsServer.AddBot, (heroId: string) => this.createBot(connection.currentGameId, heroId),
+    );
   }
 
   newGame(connection: ClientConnection): IHubResponse<string> {
@@ -66,6 +71,9 @@ export class GameService {
     if (!this.games.has(gameId)) return GameService.notFound();
 
     const game = <Game> this.games.get(gameId);
+
+    if (game.isStarted) return HubResponse.Error('The game has already started');
+
     const playersInfo = game.players.map(GameService.getPlayerInfo);
     connection.setGameId(gameId);
 
@@ -106,8 +114,37 @@ export class GameService {
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
-      console.log('new Player created', playerInfo);
       this.connectionService.dispatch(request.gameId, HubEventsClient.AddPlayer, playerInfo);
+      return HubResponse.Success<IPlayerInfo>(playerInfo);
+    } catch (err: unknown) {
+      return HubResponse.Error((<Error> err)?.message);
+    }
+  }
+
+  createBot(gameId: string, heroId: string): IHubResponse<IPlayerInfo | string> {
+    if (!this.games.has(gameId)) return GameService.notFound();
+
+    const game = <Game>(this.games.get(gameId));
+
+    const isHeroTaken = !(game.players.every((player) => player.hero !== heroId));
+    if (isHeroTaken) return HubResponse.Error('This hero is already taken');
+
+    const botNames: string[] = ['Toma', 'Max', 'Anna', 'Al'];
+    const playerNames: string[] = game.players.map((player) => player.name);
+    let botName: string;
+    do {
+      botName = botNames[getRandomInteger(0, botNames.length - 1)];
+    } while (playerNames.includes(botName));
+
+    const botConnection = new SimpleBotConnection(gameId);
+    const player = new Player(botConnection, botConnection.id, `[bot] ${botName}`, heroId);
+
+    try {
+      game.addPlayer(player);
+      this.addPlayerListeners(player, gameId);
+      const playerPosition = game.players.length - 1;
+      const playerInfo = GameService.getPlayerInfo(player, playerPosition);
+      this.connectionService.dispatch(gameId, HubEventsClient.AddPlayer, playerInfo);
       return HubResponse.Success<IPlayerInfo>(playerInfo);
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
@@ -118,10 +155,7 @@ export class GameService {
     player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
       this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
     });
-    player.addListener(PlayerEvents.TakeDamage, (message: IHealthUpdate) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
-    });
-    player.addListener(PlayerEvents.TakeHeal, (message: IHealthUpdate) => {
+    player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
       this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
     });
     player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {

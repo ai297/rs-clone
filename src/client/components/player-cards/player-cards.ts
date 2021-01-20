@@ -1,4 +1,5 @@
 import {
+  MAX_CARDS_IN_HAND,
   CardTypes,
   createElement,
   delay,
@@ -9,11 +10,11 @@ import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
 import { PlayingCard } from './playing-card';
 
-const MAX_HAND_CARDS = 8;
-const MAX_HAND_CARDS_ROTATION = 30;
+const MAX_CARDS_IN_HAND_ROTATION = 30;
 const ADD_HAND_DELAY = 500;
 const SELECT_CARD_DELAY = 300;
 const REMOVE_SPELL_DELAY = 0;
+const REMOVE_HAND_DELAY = 0;
 
 export class PlayerCards extends BaseComponent {
   private readonly handCards: PlayingCard[] = [];
@@ -47,9 +48,22 @@ export class PlayerCards extends BaseComponent {
     this.selectedCardsElement.innerHTML = '';
   };
 
+  clearHand = async (): Promise<void> => {
+    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(REMOVE_HAND_DELAY));
+    this.handCards.splice(0, this.handCards.length);
+    await Promise.all(beforeRemoveCallbacks);
+    this.handElement.innerHTML = '';
+  };
+
   addCards = async (...cardsInfo: ICard[]): Promise<void> => {
     const cards = cardsInfo.map((cardInfo) => new PlayingCard(cardInfo));
     await this.addToHand(...cards);
+  };
+
+  setDisable = (disable: true): Promise<void> => {
+    this.updateHandState(undefined, disable);
+    // rotate hand cards here
+    return Promise.resolve();
   };
 
   selectCard = async (cardId: string): Promise<void> => {
@@ -88,7 +102,7 @@ export class PlayerCards extends BaseComponent {
     this.isCardSelecting = false;
   };
 
-  returnToHand = async (cardId: string): Promise<void> => {
+  private returnToHand = async (cardId: string): Promise<void> => {
     if (this.isCardSelecting) return;
 
     this.isCardSelecting = true;
@@ -121,7 +135,7 @@ export class PlayerCards extends BaseComponent {
   }
 
   private rotateHandCards(): void {
-    const step = Math.round((MAX_HAND_CARDS_ROTATION * 10) / MAX_HAND_CARDS) / 10;
+    const step = Math.round((MAX_CARDS_IN_HAND_ROTATION * 10) / MAX_CARDS_IN_HAND) / 10;
     const startRotation = Math.round(this.handCards.length / 2) * step;
     this.handCards.forEach((cardInHand, index) => {
       const rotate = startRotation - step / 2 - index * step;
@@ -130,7 +144,7 @@ export class PlayerCards extends BaseComponent {
     });
   }
 
-  private updateHandState(cardType?: CardTypes, disable = false) {
+  private updateHandState(cardType?: CardTypes, disable = false): void {
     this.handCards.forEach((card) => {
       // eslint-disable-next-line no-param-reassign
       if (cardType === undefined || card.cardType === cardType) card.disabled = disable;

@@ -1,4 +1,9 @@
 import {
+  START_HEALTH,
+  MAX_HEALTH,
+  DICE_MAX_VALUE,
+  DICE_MIN_VALUE,
+  MAX_AWAIT_TIME,
   delay,
   HubEventsClient,
   HubEventsServer,
@@ -7,20 +12,19 @@ import {
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll,
+  IDiceRoll, getRandomInteger, ISelectTarget,
 } from '../../common';
 import { ClientConnection } from '../connection';
 import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
-const DEFAULT_HEALTH = 20;
-const MAX_HEALTH = 25;
-const DICE_MIN_VALUE = 1;
-const DICE_MAX_VALUE = 6;
-const MAX_AWAIT_TIME = 3000;
-
-function race(task: Promise<void>): Promise<void> {
-  return Promise.race([delay(MAX_AWAIT_TIME), task]);
+function race<T>(task: Promise<T>, data?: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    delay(MAX_AWAIT_TIME).then(() => {
+      resolve(data as T);
+    });
+    task.then(resolve).catch(() => resolve(data as T));
+  });
 }
 
 export class Player {
@@ -30,7 +34,7 @@ export class Player {
 
   private listeners: Map<PlayerEvents, Set<ICallbackHandler>> = new Map<PlayerEvents, Set<ICallbackHandler>>();
 
-  private hitPointsValue = DEFAULT_HEALTH;
+  private hitPointsValue = START_HEALTH;
 
   constructor(
     private connection: ClientConnection,
@@ -70,12 +74,8 @@ export class Player {
   }
 
   async addCardsHand(cards: Array<ICard>): Promise<void> {
-    try {
-      this.handCardsValue = [...this.handCardsValue, ...cards];
-      await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
-    } catch {
-      //
-    }
+    this.handCardsValue = [...this.handCardsValue, ...cards];
+    await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
   }
 
   transferSpellCards(): Array<ICard> {
@@ -86,15 +86,22 @@ export class Player {
     return result;
   }
 
+  transferHandsCards(): Array<ICard> {
+    const result: Array<ICard> = this.handCards;
+    this.handCardsValue = [];
+    return result;
+  }
+
   async takeDamage(damage: number): Promise<void> {
     this.hitPointsValue = this.hitPoints > damage ? this.hitPoints - damage : 0;
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: true };
-    try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } catch {
-      //
-    }
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: damage,
+      currentHealth: this.hitPoints,
+      isDamage: true,
+    };
+    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
   async takeHeal(heal: number): Promise<void> {
@@ -102,13 +109,14 @@ export class Player {
     if (this.hitPointsValue > MAX_HEALTH) {
       this.hitPointsValue = MAX_HEALTH;
     }
-    const message: IHealthUpdate = { playerId: this.id, currentHealth: this.hitPoints, isDamage: false };
-    try {
-      this.dispatchCallbacks(PlayerEvents.TakeDamage, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
-    } catch {
-      //
-    }
+    const message: IHealthUpdate = {
+      playerId: this.id,
+      healthsChange: heal,
+      currentHealth: this.hitPoints,
+      isDamage: false,
+    };
+    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
   async makeDiceRoll(number: number, bonus = 0): Promise<number> {
@@ -119,13 +127,9 @@ export class Player {
       result += roll;
       rolls.push(roll);
     }
-    try {
-      const message: IDiceRoll = { playerId: this.id, rolls, bonus };
-      this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
-      await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    } catch {
-      //
-    }
+    const message: IDiceRoll = { playerId: this.id, rolls, bonus };
+    this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
+    await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
     return result + bonus;
   }
 
@@ -154,5 +158,18 @@ export class Player {
 
   private removeConnectionListeners(): void {
     this.connection.removeListeners(HubEventsServer.SelectSpell);
+  }
+
+  // в методе нет this пока что
+  // eslint-disable-next-line class-methods-use-this
+  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
+    const message: ISelectTarget = { targets, numberOfTargets };
+    const randomResult: Array<string> = [];
+    while (randomResult.length < numberOfTargets && targets.length > 0) {
+      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
+    }
+    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
+    const result = await race(selectTargetTask, randomResult);
+    return result;
   }
 }

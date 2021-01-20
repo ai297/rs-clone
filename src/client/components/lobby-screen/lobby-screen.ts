@@ -1,6 +1,10 @@
 import { BaseComponent } from '../base-component';
 import {
-  createElement, ICreatePlayerRequest, IHero, IPlayerInfo,
+  MIN_PLAYERS,
+  createElement,
+  ICreatePlayerRequest,
+  IHero,
+  IPlayerInfo,
 } from '../../../common';
 import { HeroSelection } from '../hero-selection/hero-selection';
 import { PlayerList } from '../player-list/player-list';
@@ -9,9 +13,6 @@ import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { GameService } from '../../services/game-service';
 import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localization';
 import { HeroesRepository } from '../../services';
-
-const SERVER_URL = `${window.location.protocol}//${window.location.host}`;
-const MIN_PLAYERS_NUMBER = 2;
 
 export class LobbyScreen extends BaseComponent {
   private heroSelection : HeroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this));
@@ -55,7 +56,7 @@ export class LobbyScreen extends BaseComponent {
       this.currentHero = null;
       this.readyToSelect();
     }
-    if (this.gameService.currentPlayers.length > MIN_PLAYERS_NUMBER && this.startGameButton) {
+    if (this.gameService.currentPlayers.length > MIN_PLAYERS && this.startGameButton) {
       this.startGameButton.disabled = false;
     }
   }
@@ -63,7 +64,7 @@ export class LobbyScreen extends BaseComponent {
   private onPlayerLeaved(playerInfo: IPlayerInfo): void {
     this.playerList.removePlayer(playerInfo.id);
     this.heroSelection.makeDisabled(playerInfo.heroId, false);
-    if (this.gameService.currentPlayers.length < MIN_PLAYERS_NUMBER && this.startGameButton) {
+    if (this.gameService.currentPlayers.length < MIN_PLAYERS && this.startGameButton) {
       this.startGameButton.disabled = true;
     }
   }
@@ -82,7 +83,7 @@ export class LobbyScreen extends BaseComponent {
   }
 
   private createMarkup(): void {
-    const gameLink = `${SERVER_URL}/${this.gameService.currentGameId}`;
+    const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
     const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
 
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;

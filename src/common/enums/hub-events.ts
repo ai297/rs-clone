@@ -4,6 +4,7 @@ export enum HubEventsServer {
   StartGame = 'start-game',
   AddPlayer = 'add-player',
   SelectSpell = 'select-spell',
+  AddBot = 'add-ai-player',
 }
 
 export enum HubEventsClient {
@@ -15,4 +16,5 @@ export enum HubEventsClient {
   DiceRoll = 'dice-roll',
   UpdateHealath = 'update-haalth',
   SpellSelected = 'spell-selected',
+  SelectTarget = 'select-target',
 }

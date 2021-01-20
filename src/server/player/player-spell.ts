@@ -41,7 +41,6 @@ export class PlayerSpell {
   static get Empty(): PlayerSpell { return PlayerSpell.empty; }
 
   addCardForSpell(cardsAdd: Array<ICard>): void {
-    console.log(cardsAdd);
     cardsAdd.forEach((cur, index) => {
       this.cards.set(index, cur);
     });

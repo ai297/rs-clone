@@ -9,6 +9,7 @@ import {
   IHealthUpdate,
   ICard,
   IDiceRoll,
+  ISelectTarget,
 } from '../../common';
 import { ServerConnection } from './server-connection';
 
@@ -28,6 +29,7 @@ export class GameService {
     connection.addEventListener(HubEventsClient.GetCards, (cards: ICard[]) => this.getCards(cards));
     connection.addEventListener(HubEventsClient.UpdateHealath, (message: IHealthUpdate) => this.healthUpdate(message));
     connection.addEventListener(HubEventsClient.DiceRoll, (message: IDiceRoll) => this.diceRoll(message));
+    connection.addEventListener(HubEventsClient.SelectTarget, (message: ISelectTarget) => this.selectTargets(message));
   }
 
   get currentGameId(): string { return this.gameId; }
@@ -49,6 +51,7 @@ export class GameService {
     this.onPlayerTakeDamage = undefined;
     this.onPlayerTakeHeal = undefined;
     this.onPlayerMakeDiceRoll = undefined;
+    this.onSelectTarget = undefined;
   }
 
   private addPlayer(player: IPlayerInfo): IHubResponse<null> {
@@ -76,10 +79,10 @@ export class GameService {
     const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
     if (player) (<IPlayerInfo> player).health = message.currentHealth;
     if (message.isDamage && this.onPlayerTakeDamage) {
-      await this.onPlayerTakeDamage(message.playerId, message.currentHealth);
+      await this.onPlayerTakeDamage(message.playerId, message.healthsChange, message.currentHealth);
     }
     if (!message.isDamage && this.onPlayerTakeHeal) {
-      await this.onPlayerTakeHeal(message.playerId, message.currentHealth);
+      await this.onPlayerTakeHeal(message.playerId, message.healthsChange, message.currentHealth);
     }
     return HubResponse.Ok();
   }
@@ -95,6 +98,14 @@ export class GameService {
     return HubResponse.Ok();
   }
 
+  private async selectTargets(message: ISelectTarget): Promise<IHubResponse<string[] | string>> {
+    if (this.onSelectTarget) {
+      const result = await this.onSelectTarget(message.targets, message.numberOfTargets);
+      return HubResponse.Success(result);
+    }
+    return HubResponse.Error();
+  }
+
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerLeaved?: (playerInfo: IPlayerInfo) => void;
@@ -103,11 +114,13 @@ export class GameService {
 
   onGetCards?: (cards: Array<ICard>) => Promise<void>;
 
-  onPlayerTakeDamage?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeDamage?: (playerId: string, damage: number, currentHealth: number) => Promise<void>;
 
-  onPlayerTakeHeal?: (playerId: string, currentHealth: number) => Promise<void>;
+  onPlayerTakeHeal?: (playerId: string, heal: number, currentHealth: number) => Promise<void>;
 
   onPlayerMakeDiceRoll?: (playerId: string, rolls: Array<number>, bonus: number) => Promise<void>;
+
+  onSelectTarget?: (targets: Array<string>, numberOfTargets: number) => Promise<string[]>;
 
   /**
    * This method returns promise, that resolve with gameId: string as argument
@@ -124,6 +137,7 @@ export class GameService {
   async joinGame(gameId: string): Promise<IPlayerInfo[]> {
     this.clearState();
     const playersInGame = await this.connection.dispatch<IPlayerInfo[]>(HubEventsServer.JoinGame, gameId);
+    this.gameId = gameId;
     this.players.push(...playersInGame);
     return playersInGame;
   }
@@ -144,5 +158,14 @@ export class GameService {
   async selectSpell(cardIds: Array<string>): Promise<void> {
     await this.connection.dispatch(HubEventsServer.SelectSpell, cardIds);
     this.playerCards = this.playerCards.filter((card) => !cardIds.includes(card.id));
+  }
+
+  /**
+   * This method send request to create a bot and return bot's player info object
+   * @param heroId - heroId for bot character
+   */
+  async createBot(heroId: string): Promise<IPlayerInfo> {
+    const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId);
+    return playerInfo;
   }
 }

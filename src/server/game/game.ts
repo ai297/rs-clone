@@ -1,12 +1,13 @@
 import { Player, PlayerEvents } from '../player';
-import { ICard, shuffleArray } from '../../common';
+import {
+  MAX_PLAYERS,
+  MIN_PLAYERS,
+  MAX_CARDS_IN_HAND,
+  ICard,
+  shuffleArray,
+} from '../../common';
 import { CastingSpells } from './casting-spells';
 import { IGameForCasting } from './interface';
-
-const MAX_SIZE_GAME = 4;
-const MIN_SIZE_GAME = 2;
-
-const MAX_CARDS_HAND = 8;
 
 export class Game implements IGameForCasting {
   private playersValue: Array<Player> = [];
@@ -17,28 +18,31 @@ export class Game implements IGameForCasting {
 
   private isEndGame = false;
 
+  private isGameStarted = false;
+
   constructor(
     private cardDeck: Array<ICard>,
   ) {}
 
   public addPlayer(player: Player): void {
-    if (this.playersValue.length < MAX_SIZE_GAME) {
-      this.playersValue = [...this.playersValue, player];
-    } else {
-      throw new Error('There are no places in the game');
-    }
+    if (this.playersValue.length < MAX_PLAYERS) this.playersValue.push(player);
+    else throw new Error('There are no places in the game');
   }
 
   public get players(): Array<Player> {
     return this.playersValue;
   }
 
+  get isStarted(): boolean { return this.isGameStarted; }
+
   public startGame(): void {
-    const numberPlayers = this.playersValue.length < MIN_SIZE_GAME;
+    const numberPlayers = this.playersValue.length < MIN_PLAYERS;
 
     if (numberPlayers) {
       throw new Error('Few players to start the game');
     }
+
+    this.isGameStarted = true;
 
     this.activeDeck = shuffleArray([...this.cardDeck]);
 
@@ -46,10 +50,17 @@ export class Game implements IGameForCasting {
   }
 
   private giveCards(): void {
-    this.playersValue.forEach((player) => {
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    activePlayers.forEach((player) => {
       // считаем сколько карт надо досдать игроку.
-      const needAddIndex = MAX_CARDS_HAND - player.handCards.length;
-      // ///// здесь вписать потом обработку заканчивающейся колоды //////
+      const needAddIndex = MAX_CARDS_IN_HAND - player.handCards.length;
+      // если в колоде осталось меньше чем нужно сдать запускаем обработку
+      if (this.activeDeck.length < needAddIndex) {
+        // добавляем в колоду отбой и перемешиваем
+        this.activeDeck = shuffleArray([...this.activeDeck, ...this.usedCardsDeck]);
+        // обнуляем отбой
+        this.usedCardsDeck = [];
+      }
 
       const startIndex = this.activeDeck.length - needAddIndex;
 
@@ -70,7 +81,8 @@ export class Game implements IGameForCasting {
 
   private castSpells(): void {
     // класс очень короткоживущий - существует только в момент выполнения функции и никуда больше не записывается.
-    const casting = new CastingSpells(this.players, this);
+    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    const casting = new CastingSpells(activePlayers, this);
 
     casting.castSpells();
 
