@@ -68,7 +68,11 @@ export class Spells {
   public async getHandler(currentCard: string): Promise<CardHandler> {
     const handler = this.spells.get(currentCard);
     if (handler) return handler;
-    throw new Error('getHandler not found handler');
+    return this.useEmpty;
+  }
+
+  public checkCardInDeck(key: string): boolean {
+    return this.spells.has(key);
   }
 
   private useFistNatureCard = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
@@ -947,4 +951,9 @@ export class Spells {
       targetTwo.takeDamage(damageSharp);
     }
   };
+
+  private useEmpty = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+    console.log('No card in the deck!');
+    return Promise.resolve();
+  }
 }
