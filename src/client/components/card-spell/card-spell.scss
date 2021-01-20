@@ -5,9 +5,10 @@
     padding: .75em;
     padding-bottom: 1.4em;
     border-radius: .6em;
+    // возможно, это надо вынести в переменную/изменить
     font-family: 'Yanone Kaffeesatz', sans-serif;
     font-size: inherit;
-    background-color: #1a1a1a;
+    background-color: $primary-dark-color;
     box-shadow: 0 0 .25em rgba(0, 0, 0, 0.75);
     transition: all .5s ease-in-out
 }
@@ -33,17 +34,17 @@
     border: .2em solid;
 }
 .card-type--source .card__content {
-    border-color: #ffd100;
+    border-color: $card-type-source;
     border-radius: .5em 0 0 .5em;
     border-right: none;
 }
 .card-type--quality .card__content {
-    border-color: #ff6200;
+    border-color: $card-type-quality;
     border-right: none;
     border-left: 0;
 }
 .card-type--action .card__content {
-    border-color: #fc1c3f;
+    border-color: $card-type-action;
     border-radius: 0 .5em .5em 0;
     border-left: none;
 }
@@ -71,7 +72,7 @@
     right: 0;
     top: 54%;
     height: 22%;
-    font-family: 'VNI-Canun', sans-serif;
+    font-family: $headers-font;
     font-size: 1em;
     background-image: url('../assets/cards/card-spell-background.svg');
     background-repeat: no-repeat;
@@ -136,13 +137,13 @@
     margin-right: .2em;
     box-sizing: border-box;
     display: inline-block;
-    border: 2px solid #1a1a1a;
+    border: 2px solid $primary-dark-color;
     border-radius: 50%;
     background-color: currentColor;
     vertical-align: bottom;
     overflow: hidden;
 }
-.card-element--mystery .card-element--label { color: #ff007c; }
+.card-element--mystery .card-element--label { color: $card-element-mystery; }
 .card-element--mystery .card-element--label::before { content: url('../assets/cards/mystery-sign-icon.svg'); }
 
 .card-type--label {
@@ -160,29 +161,29 @@
     padding: .3em;
     box-sizing: border-box;
     display: inline-block;
-    font-family: 'VNI-Canun', sans-serif;
+    font-family: $headers-font;
     font-size: 1.2em;
     line-height: .6em;
-    color: #1a1a1a;
+    color: $primary-dark-color;
     vertical-align: bottom;
-    border: 2px solid #1a1a1a;
+    border: 2px solid $primary-dark-color;
     overflow: hidden;
 }
 
-.card-type--source .card-type--label { color: #ffd100; }
+.card-type--source .card-type--label { color: $card-type-source; }
 .card-type--source .card-type--label::after {
     content: 'И';
-    background-color: #ffd100;
+    background-color: $card-type-source;
 }
-.card-type--quality .card-type--label { color: #ff6200; }
+.card-type--quality .card-type--label { color: $card-type-quality; }
 .card-type--quality .card-type--label::after {
     content: 'К';
-    background-color: #ff6200;
+    background-color: $card-type-quality;
 }
-.card-type--action .card-type--label { color: #fc1c3f; }
+.card-type--action .card-type--label { color: $card-type-action; }
 .card-type--action .card-type--label::after {
     content: 'Д';
-    background-color: #fc1c3f;
+    background-color: $card-type-action;
 }
 
 .card-type-icon {
@@ -194,7 +195,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    font-family: 'VNI-Canun', sans-serif;
+    font-family: $headers-font;
     font-size: .9em;
     line-height: 1.8em;
     background: center no-repeat url('../assets/cards/initiative-icon.svg');
