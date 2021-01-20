@@ -540,8 +540,10 @@ export class Spells {
       // eslint-disable-next-line no-await-in-loop
       let throwResult = [];
       if (this.players[i] === player) {
+        // eslint-disable-next-line no-await-in-loop
         throwResult = await this.players[i].makeDiceRoll(1, bonusThePlayerResult);
       } else {
+        // eslint-disable-next-line no-await-in-loop
         throwResult = await this.players[i].makeDiceRoll(1);
       }
 
