@@ -46,6 +46,7 @@ export class Game implements IGameForCasting {
     this.isGameStarted = true;
 
     const madeCards = this.cardDeck.filter((card) => MADE_MAPS.includes(card.id));
+    madeCards.push(...madeCards);
     this.activeDeck = shuffleArray(madeCards);
 
     this.giveCards();
