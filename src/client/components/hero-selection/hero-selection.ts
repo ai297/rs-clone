@@ -11,7 +11,11 @@ export class HeroSelection extends BaseComponent {
 
   private isActive = true;
 
-  constructor(private heroesRepository: HeroesRepository, private onSelect: (hero: IHero) => void) {
+  constructor(
+    private heroesRepository: HeroesRepository,
+    private onSelect: (hero: IHero) => void,
+    private disabledHeroes: Array<string> = [],
+  ) {
     super([CSSClasses.HeroSelection]);
     this.selectedHero = null;
     this.createMarkup();
@@ -30,6 +34,9 @@ export class HeroSelection extends BaseComponent {
         });
         this.heroes.set(elem.id, hero);
         this.element.append(hero);
+        if (this.disabledHeroes.includes(elem.id)) {
+          this.makeDisabled(elem.id);
+        }
       });
     });
   }
