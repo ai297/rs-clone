@@ -119,18 +119,17 @@ export class Player {
     await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
-  async makeDiceRoll(number: number, bonus = 0): Promise<number> {
+  async makeDiceRoll(number: number, bonus = 0): Promise<Array<number>> {
     const rolls: Array<number> = [];
-    let result = 0;
     for (let i = 0; i < number; i++) {
       const roll = DICE_MIN_VALUE + Math.floor(Math.random() * DICE_MAX_VALUE);
-      result += roll;
       rolls.push(roll);
     }
     const message: IDiceRoll = { playerId: this.id, rolls, bonus };
     this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    return result + bonus;
+    rolls.push(bonus);
+    return rolls;
   }
 
   addSpellCards(cardIds: Array<string>): void {
