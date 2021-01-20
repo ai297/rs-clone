@@ -27,6 +27,7 @@ export class CastingSpells {
         // console.log(currentCard.id);
         const handler = await this.spells.getHandler(currentCard.id);
         if (handler) await (handler as CardHandler)(positionPlayer, currentCard);
+        // this.players.forEach((cur, index) => console.log('pozit player', index, 'hit point', cur.hitPoints));
 
         const deadThisCast: Array<Player> = this.players.filter((current: Player) => current.hitPoints < 1);
         // если есть покойничек то запускаем его отработку
@@ -46,7 +47,6 @@ export class CastingSpells {
   }
 
   private checkForEndGame(): void {
-    this.players.forEach((cur, index) => console.log('pozit player', index, 'hit point', cur.hitPoints));
     const numberLivingPlayers: number = this.players.filter((player: Player) => player.hitPoints > 0).length;
     if (numberLivingPlayers === numberLivingPlayersForEnd) {
       this.game.checkEndGameHandler();

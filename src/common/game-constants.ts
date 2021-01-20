@@ -6,4 +6,4 @@ export const START_HEALTH = 20;
 export const MAX_HEALTH = 25;
 export const DICE_MIN_VALUE = 1;
 export const DICE_MAX_VALUE = 6;
-export const MAX_AWAIT_TIME = 10000;
+export const MAX_AWAIT_TIME = 10;
