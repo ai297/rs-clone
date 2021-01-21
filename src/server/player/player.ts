@@ -138,7 +138,7 @@ export class Player {
       rolls.push(roll);
     }
     const message: IDiceRoll = { playerId: this.id, rolls, bonus };
-    console.log(`${this.name} rolls ${number} dice result - `, rolls);
+    // console.log(`${this.name} rolls ${number} dice result - `, rolls);
     this.connection.sendOthers(HubEventsClient.DiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
     rolls.push(bonus);
@@ -154,7 +154,7 @@ export class Player {
     const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
     const selectionResult = await race(selectTargetTask, randomResult, SELECT_TARGET_TIME);
     const result = selectionResult.every((target) => targets.includes(target)) ? selectionResult : randomResult;
-    console.log(`${this.name} select target`, result);
+    // console.log(`${this.name} select target`, result);
     return result;
   }
 
@@ -173,7 +173,7 @@ export class Player {
   private addConnectionListeners(): void {
     this.connection.addEventListener(HubEventsServer.SelectSpell, (cardIds: Array<string>) => {
       this.addSpellCards(cardIds);
-      console.log(`${this.name} select spell`);
+      // console.log(`${this.name} select spell`);
       return HubResponse.Ok();
     });
   }

@@ -210,7 +210,6 @@ export class GameService {
   }
 
   private async selectTargets(message: ISelectTarget): Promise<IHubResponse<string[] | string>> {
-    console.log(message);
     if (this.onSelectTarget) {
       const result = await this.onSelectTarget(message.targets, message.numberOfTargets);
       return HubResponse.Success(result);
