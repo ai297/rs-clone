@@ -111,11 +111,19 @@ export class LobbyScreen extends BaseComponent {
     if (this.gameCreator) {
       this.startGameButton = new BaseButton(
         this.loc.StartGame,
-        () => this.root.showGame(),
+        () => this.startGameHandler(),
         [CSSClasses.StartGameButton, CSSClasses.StartGameButtonDisabled],
       );
       this.startGameButton.disabled = true;
       this.element.append(this.startGameButton.element);
+    }
+  }
+
+  private async startGameHandler(): Promise<void> {
+    try {
+      await this.gameService.startGame();
+    } catch (error) {
+      alert(error);
     }
   }
 
@@ -146,7 +154,7 @@ export class LobbyScreen extends BaseComponent {
     }
   }
 
-  async setHero(): Promise<void> {
+  private async setHero(): Promise<void> {
     if (!this.isDisabled) {
       this.disableLobby(true);
       const request: ICreatePlayerRequest = {
