@@ -5,6 +5,7 @@ import {
   DICE_MIN_VALUE,
   MAX_AWAIT_TIME,
   SELECT_TARGET_TIME,
+  SERVER_DELAY,
   delay,
   HubEventsClient,
   HubEventsServer,
@@ -23,7 +24,7 @@ import { PlayerSpell } from './player-spell';
 
 function race<T>(task: Promise<T>, data?: T, time?: number): Promise<T> {
   return new Promise<T>((resolve) => {
-    delay(time || MAX_AWAIT_TIME).then(() => {
+    delay(time ? time + SERVER_DELAY : MAX_AWAIT_TIME + SERVER_DELAY).then(() => {
       resolve(data as T);
     });
     task.then(resolve).catch(() => resolve(data as T));

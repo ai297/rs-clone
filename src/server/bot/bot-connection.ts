@@ -13,8 +13,8 @@ import {
 } from '../../common';
 import { ClientConnection, ConnectionService } from '../connection';
 
-const MIN_BOT_DELAY = 100;
-const MAX_BOT_DELAY = 1000;
+const MIN_BOT_DELAY = 1000;
+const MAX_BOT_DELAY = 3000;
 
 type EventHandler = (...args: any[]) => any;
 
@@ -40,7 +40,6 @@ export class SimpleBotConnection extends ClientConnection {
       .set(HubEventsClient.DiceRoll, () => { })
       .set(HubEventsClient.GetCards, (cards: Array<ICard>): void => {
         this.handCards.push(...cards);
-        console.log('bot get cards');
         if (this.health > 0) this.selectSpell();
       })
       .set(HubEventsClient.UpdateHealath, (message: IHealthUpdate): void => {

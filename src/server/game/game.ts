@@ -3,7 +3,7 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   MAX_CARDS_IN_HAND,
-  START_GAME_DALAY,
+  START_GAME_DELAY,
   ICard,
   shuffleArray,
   delay,
@@ -54,7 +54,7 @@ export class Game implements IGameForCasting {
       madeCards.push(...madeCards);
       this.activeDeck = shuffleArray(madeCards);
 
-      delay(START_GAME_DALAY).then(() => this.giveCards());
+      delay(START_GAME_DELAY).then(() => this.giveCards());
     });
   }
 

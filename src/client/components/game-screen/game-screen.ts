@@ -96,7 +96,7 @@ export class GameScreen extends BaseComponent {
   async showTargetSelection(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
     const targetNames = targets.map((playerId) => this.gameService.getPlayerInfo(playerId)?.userName || playerId);
     console.log(`Вы должны выбрать ${numberOfTargets} целей из: ${targetNames.join(', ')}`);
-    await delay(SELECT_TARGET_TIME - 1000);
+    await delay(SELECT_TARGET_TIME);
     console.log('Время на выбор цели истекло');
     return [targetNames[0]];
   }
