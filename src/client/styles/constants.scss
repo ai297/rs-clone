@@ -4,18 +4,42 @@ $headers-font: 'VNI-Canun', sans-serif;
 
 // font colors
 $primary-font-color: #FFF;
+$secondary-font-color: #FFD300; // желтые надписи
 $button-font-color: #5E0D0C;
 
 // ui colors
-$shadow-color: #C4D7E6;
-$shadow-color-light: rgba(255, 255, 255, 0.75);
-$shadow-color-extra-light: #FFF;
-$shadow-color-dark: rgba(0, 0, 0, 0.5);
-$button-color: linear-gradient(180deg, #C81B44 0%, #F5A404 100%);
-$button-hover-color: linear-gradient(180deg, #EA8413 0%, #F5A404 50%, #C81B44 60%, #F5A404 100%);
-
 $card-type-source: #FFD100;
 $card-type-quality: #FF6200;
 $card-type-action: #FC1C3F;
 $card-element-mystery: #FF007C;
-$primary-dark-color: #1A1A1A;
+$primary-dark-color: #1E1E1E;
+
+$primary-success-color: #0EB70B; // зеленый (шкала здоровья)
+
+$secondary-warning-color: #F5A404; // светлый оранжевый (низ кнопки и пр.)
+
+$primary-attention-color: #C81B44; // малиново-красный
+$secondary-attention-color: #F11721; // яркий красный
+
+$shadow-color: #C4D7E6;
+$shadow-color-light: rgba(255, 255, 255, 0.75);
+$shadow-color-extra-light: #FFF;
+$shadow-color-dark: mix($primary-dark-color, transparent, 50%);
+$shadow-color-darkest: mix($primary-dark-color, transparent, 75%);
+$shadow-color-black: mix(black, transparent, 75%);
+
+$button-color: linear-gradient(180deg, $primary-attention-color 0%, $secondary-warning-color 100%);
+$button-hover-color: linear-gradient(180deg,
+                    #EA8413 0%,
+                    $secondary-warning-color 50%,
+                    $primary-attention-color 60%,
+                    $secondary-warning-color 100%);
+
+@mixin primary-font {
+  font-family: $primary-font;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.12em;
+  color: $primary-font-color;
+  letter-spacing: 0.06em;
+}

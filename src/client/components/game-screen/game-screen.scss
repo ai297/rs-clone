@@ -4,6 +4,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-image: url('../assets/backgrounds/game.jpg');
+  background-position: center;
+  background-size: cover;
 
   &__opponent-cards {
     position: relative;
@@ -15,7 +18,7 @@
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-around;
-    background-color: yellow;
+    //background-color: yellow;
   }
 
   &__play-section {
@@ -27,14 +30,7 @@
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
-    background-color: steelblue;
-  }
-
-  &__opponent-section {
-    flex: 0 0 30%;
-    min-width: 20rem;
-    background-color: tomato;
-    text-align: center;
+    // background-color: steelblue;
   }
 
   &__card-section {
@@ -59,16 +55,18 @@
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    background-color: royalblue;
+    padding-left: 20px;
+    // background-color: royalblue;
   }
 
   &__player-info-container {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 30%;
+    width: 31%;
     min-width: 22rem;
-    background-color: salmon;
+    padding-left: 25px;
+    // background-color: salmon;
   }
 
   &__game-buttons-container {

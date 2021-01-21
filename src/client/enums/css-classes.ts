@@ -59,6 +59,7 @@ export enum CSSClasses {
   GameUILayer = 'game-screen__ui-layer',
   GameOpponentsInfo = 'game-screen__opponents-info-container',
   GameOpponentSection = 'game-screen__opponent-section',
+  GameOpponentSectionDead = 'game-screen__opponent-section--dead',
   GamePlayerInfo = 'game-screen__player-info-container',
   GameControls = 'game-screen__game-buttons-container',
   // player cards

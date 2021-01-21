@@ -1,0 +1,98 @@
+.game-screen__opponent-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 30%;
+  min-width: 20rem;
+  max-width: 23.5rem;
+
+  .game-player__health {
+    border-bottom-right-radius: 1.5rem;
+  }
+}
+
+.game-player {
+  &__container {
+    position: relative;
+    min-height: 6.7rem;
+    margin: 1rem;
+    padding-left: 5.9rem;
+
+    &.game-screen__opponent-section {
+      border-radius: 1.5rem;
+      background-color: $shadow-color-darkest;
+
+      &--dead {
+        background-color: $primary-dark-color;
+      }
+    }
+  }
+
+  &__avatar {
+    position: absolute;
+    top: -6%;
+    left: -7%;
+    width: 7.5rem;
+    height: 7.5rem;
+    border: 0.2rem solid $primary-dark-color;
+    border-radius: 50%;
+  }
+
+  &__name,
+  &__hero {
+    margin-left: 0.7rem;
+    font-size: 1.25rem;
+  }
+
+  &__name {
+    @include primary-font;
+    margin-top: 0.25rem;
+  }
+
+  &__hero {
+    font-family: $headers-font;
+    font-weight: bold;
+    color: $secondary-font-color;
+    line-height: 120%;
+  }
+
+  &__health {
+    @include primary-font;
+    position: relative;
+    margin-top: 3px;
+    padding-left: 1.75rem;
+    font-size: 1.5rem;
+    border: 2px solid $primary-dark-color;
+    background-color: $primary-dark-color;
+
+    &::before {
+      content: url('../assets/skull-icon.svg');
+      position: absolute;
+      height: 3rem;
+      width: 3rem;
+      top: -11px;
+      left: -26px;
+    }
+  }
+}
+
+.game-screen__player-info-container {
+  .game-player {
+    &__container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    &__health {
+      margin-top: 0.5rem;
+      padding-left: 2.25rem;
+      border-radius: 0px 20px 20px 0px;
+
+      &::before {
+        top: -11px;
+        left: -18px;
+      }
+    }
+  }
+}
