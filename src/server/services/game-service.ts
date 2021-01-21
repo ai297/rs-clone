@@ -117,7 +117,6 @@ export class GameService {
     const player = new Player(connection, playerId, request.userName, request.heroId);
     try {
       game.addPlayer(player);
-      // this.addPlayerListeners(player, request.gameId);
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
@@ -148,7 +147,6 @@ export class GameService {
 
     try {
       game.addPlayer(player);
-      // this.addPlayerListeners(player, gameId);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
       this.connectionService.dispatch(gameId, HubEventsClient.AddPlayer, playerInfo);
@@ -157,24 +155,6 @@ export class GameService {
       return HubResponse.Error((<Error> err)?.message);
     }
   }
-
-  // private addPlayerListeners(player: Player, gameId: string): void {
-  //   player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
-  //     this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
-  //   });
-  //   player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
-  //     this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
-  //   });
-  //   player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {
-  //     this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, message);
-  //   });
-  //   player.addListener(PlayerEvents.CastSpell, (message: ICastSpell) => {
-  //     this.connectionService.dispatch(gameId, HubEventsClient.CastSpell, message);
-  //   });
-  //   player.addListener(PlayerEvents.CastCard, (message: ICastCard) => {
-  //     this.connectionService.dispatch(gameId, HubEventsClient.CastCard, message);
-  //   });
-  // }
 
   private static notFound = (): IHubResponse<string> => HubResponse.Error('Game not found');
 
