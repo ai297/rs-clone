@@ -10,6 +10,8 @@ import {
   ICard,
   IDiceRoll,
   ISelectTarget,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ServerConnection } from './server-connection';
 
@@ -22,10 +24,24 @@ export class GameService {
 
   private players: Array<IPlayerInfo> = [];
 
-  constructor(private readonly connection: ServerConnection, private readonly onGameStarted?: () => void) {
+  private castingSpellCards: Array<ICard> = [];
+
+  constructor(
+    private readonly connection: ServerConnection,
+    private readonly onGameStarted?: () => void,
+    private readonly onGameEnded?: () => void,
+  ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
     connection.addEventListener(HubEventsClient.StartGame, () => {
       if (this.onGameStarted) this.onGameStarted();
+      return HubResponse.Ok();
+    });
+    connection.addEventListener(HubEventsClient.EndGame, () => {
+      if (this.onGameEnded) this.onGameEnded();
+      return HubResponse.Ok();
+    });
+    connection.addEventListener(HubEventsClient.NextMove, () => {
+      if (this.onNextMove) this.onNextMove();
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.AddPlayer, (player: IPlayerInfo) => this.addPlayer(player));
@@ -35,6 +51,8 @@ export class GameService {
     connection.addEventListener(HubEventsClient.UpdateHealath, (message: IHealthUpdate) => this.healthUpdate(message));
     connection.addEventListener(HubEventsClient.DiceRoll, (message: IDiceRoll) => this.diceRoll(message));
     connection.addEventListener(HubEventsClient.SelectTarget, (message: ISelectTarget) => this.selectTargets(message));
+    connection.addEventListener(HubEventsClient.CastSpell, (message: ICastSpell) => this.castSpell(message));
+    connection.addEventListener(HubEventsClient.CastCard, (message: ICastCard) => this.castCard(message));
   }
 
   get currentGameId(): string { return this.gameId; }
@@ -45,23 +63,33 @@ export class GameService {
 
   get currentPlayers(): Array<IPlayerInfo> { return this.players; }
 
+  getPlayerInfo(playerId: string): IPlayerInfo | undefined {
+    return this.currentPlayers.find((player) => player.id === playerId);
+  }
+
   onGoOut?: () => void;
 
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerLeaved?: (playerInfo: IPlayerInfo) => void;
 
-  onPlayerSelectSpell?: (playerId: string, cardsInSpell: number) => Promise<void>;
+  onNextMove?: () => void;
 
   onGetCards?: (cards: Array<ICard>) => Promise<void>;
 
-  onPlayerTakeDamage?: (playerId: string, damage: number, currentHealth: number) => Promise<void>;
+  onPlayerSelectSpell?: (playerInfo: IPlayerInfo, cardsInSpell: number) => Promise<void>;
 
-  onPlayerTakeHeal?: (playerId: string, heal: number, currentHealth: number) => Promise<void>;
+  onPlayerTakeDamage?: (playerInfo: IPlayerInfo, damage: number) => Promise<void>;
 
-  onPlayerMakeDiceRoll?: (playerId: string, rolls: Array<number>, bonus: number) => Promise<void>;
+  onPlayerTakeHeal?: (playerInfo: IPlayerInfo, heal: number) => Promise<void>;
+
+  onPlayerMakeDiceRoll?: (playerInfo: IPlayerInfo, rolls: Array<number>, bonus: number) => Promise<void>;
 
   onSelectTarget?: (targets: Array<string>, numberOfTargets: number) => Promise<string[]>;
+
+  onSpellCast?: (playerInfo: IPlayerInfo, spellCards: Array<ICard>) => Promise<void>;
+
+  onCardCast?: (playerInfo: IPlayerInfo, card: ICard) => Promise<void>;
 
   /**
    * This method returns promise, that resolve with gameId: string as argument
@@ -116,12 +144,14 @@ export class GameService {
     this.players = [];
     this.onPlayerJoined = undefined;
     this.onPlayerLeaved = undefined;
-    this.onPlayerSelectSpell = undefined;
+    this.onNextMove = undefined;
     this.onGetCards = undefined;
+    this.onPlayerSelectSpell = undefined;
     this.onPlayerTakeDamage = undefined;
     this.onPlayerTakeHeal = undefined;
     this.onPlayerMakeDiceRoll = undefined;
     this.onSelectTarget = undefined;
+    this.onSpellCast = undefined;
   }
 
   private goOut(): IHubResponse<null> {
@@ -147,18 +177,21 @@ export class GameService {
   }
 
   private async spellSelect(message: ISpellSelected): Promise<IHubResponse<null>> {
-    if (this.onPlayerSelectSpell) await this.onPlayerSelectSpell(message.playerId, message.spellCards);
+    if (this.onPlayerSelectSpell) {
+      await this.onPlayerSelectSpell(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.spellCards);
+    }
     return HubResponse.Ok();
   }
 
-  private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null>> {
-    const player = this.currentPlayers.find((playerInfo) => playerInfo.id === message.playerId);
+  private async healthUpdate(message: IHealthUpdate): Promise<IHubResponse<null | string>> {
+    const player = this.getPlayerInfo(message.playerId);
     if (player) (<IPlayerInfo> player).health = message.currentHealth;
+    else return HubResponse.Error('Player not found');
     if (message.isDamage && this.onPlayerTakeDamage) {
-      await this.onPlayerTakeDamage(message.playerId, message.healthsChange, message.currentHealth);
+      await this.onPlayerTakeDamage(player, message.healthsChange);
     }
     if (!message.isDamage && this.onPlayerTakeHeal) {
-      await this.onPlayerTakeHeal(message.playerId, message.healthsChange, message.currentHealth);
+      await this.onPlayerTakeHeal(player, message.healthsChange);
     }
     return HubResponse.Ok();
   }
@@ -170,15 +203,38 @@ export class GameService {
   }
 
   private async diceRoll(message: IDiceRoll): Promise<IHubResponse<null>> {
-    if (this.onPlayerMakeDiceRoll) await this.onPlayerMakeDiceRoll(message.playerId, message.rolls, message.bonus);
+    if (this.onPlayerMakeDiceRoll) {
+      await this.onPlayerMakeDiceRoll(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.rolls, message.bonus);
+    }
     return HubResponse.Ok();
   }
 
   private async selectTargets(message: ISelectTarget): Promise<IHubResponse<string[] | string>> {
+    console.log(message);
     if (this.onSelectTarget) {
       const result = await this.onSelectTarget(message.targets, message.numberOfTargets);
       return HubResponse.Success(result);
     }
     return HubResponse.Error();
+  }
+
+  private async castSpell(message: ICastSpell): Promise<IHubResponse<null>> {
+    if (message.playerId === this.currentPlayerId) {
+      const castCardsId = message.cards.map((card) => card.id);
+      this.playerCards = this.playerCards.filter((card) => !castCardsId.includes(card.id));
+    }
+    this.castingSpellCards = message.cards;
+    if (this.onSpellCast) {
+      await this.onSpellCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.cards);
+    }
+    return HubResponse.Ok();
+  }
+
+  private async castCard(message: ICastCard): Promise<IHubResponse<null>> {
+    const castingCard = <ICard> this.castingSpellCards.find((card) => card.id === message.cardId);
+    if (this.onCardCast) {
+      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), castingCard);
+    }
+    return HubResponse.Ok();
   }
 }

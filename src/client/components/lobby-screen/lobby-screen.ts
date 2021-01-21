@@ -5,6 +5,7 @@ import {
   ICreatePlayerRequest,
   IHero,
   IPlayerInfo,
+  getRandomInteger,
 } from '../../../common';
 import { HeroSelection } from '../hero-selection/hero-selection';
 import { PlayerList } from '../player-list/player-list';
@@ -116,6 +117,17 @@ export class LobbyScreen extends BaseComponent {
       );
       this.startGameButton.disabled = true;
       this.element.append(this.startGameButton.element);
+
+      const addBotButton = new BaseButton('Добавить бота', async () => {
+        const heroes = await this.heroesRepository.getAllHeroes();
+        const hero = heroes[getRandomInteger(0, heroes.length - 1)];
+        try {
+          await this.gameService.createBot(hero.id);
+        } catch (e: unknown) {
+          alert((e as Error)?.message);
+        }
+      });
+      this.element.append(addBotButton.element);
     }
   }
 

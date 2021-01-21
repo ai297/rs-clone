@@ -952,8 +952,8 @@ export class Spells {
     }
   };
 
-  private useEmpty = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  private useEmpty = async (): Promise<void> => {
     console.log('No card in the deck!');
     return Promise.resolve();
-  }
+  };
 }

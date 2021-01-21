@@ -9,7 +9,6 @@ import {
   HubEventsClient,
   HubEventsServer,
   HubResponse,
-  ICallbackHandler,
   ICard,
   IHealthUpdate,
   ISpellSelected,
@@ -20,7 +19,6 @@ import {
   ICastCard,
 } from '../../common';
 import { ClientConnection } from '../connection';
-import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
 function race<T>(task: Promise<T>, data?: T, time?: number): Promise<T> {
@@ -36,8 +34,6 @@ export class Player {
   private handCardsValue: Array<ICard> = [];
 
   private currentSpell: PlayerSpell = PlayerSpell.Empty;
-
-  private listeners: Map<PlayerEvents, Set<ICallbackHandler>> = new Map<PlayerEvents, Set<ICallbackHandler>>();
 
   private hitPointsValue = START_HEALTH;
 
@@ -64,18 +60,14 @@ export class Player {
 
   get hitPoints(): number { return this.hitPointsValue; }
 
+  onSpellSelected?: () => void;
+
   changeConnection(connection: ClientConnection): void {
     if (connection.id === this.connection.id) return;
     this.removeConnectionListeners();
     this.connection.dispatch(HubEventsClient.GoOut);
     this.connection = connection;
     this.addConnectionListeners();
-  }
-
-  addListener(event: PlayerEvents, handler: ICallbackHandler): void {
-    if (!this.listeners.has(event)) this.listeners.set(event, new Set<ICallbackHandler>());
-    const eventListeners = <Set<ICallbackHandler>> this.listeners.get(event);
-    eventListeners.add(handler);
   }
 
   async addCardsHand(cards: Array<ICard>): Promise<void> {
@@ -86,14 +78,14 @@ export class Player {
   async startSpellCasting(): Promise<ICard[]> {
     const cards = [...this.spell];
     const message: ICastSpell = { playerId: this.id, cards };
-    this.dispatchCallbacks(PlayerEvents.CastSpell, message);
+    this.connection.sendOthers(HubEventsClient.CastSpell, message);
     await race(this.connection.dispatch(HubEventsClient.CastSpell, message));
     return cards;
   }
 
   async castCard(cardId: string): Promise<void> {
     const message: ICastCard = { playerId: this.id, cardId };
-    this.dispatchCallbacks(PlayerEvents.CastCard, message);
+    this.connection.sendOthers(HubEventsClient.CastCard, message);
     await race(this.connection.dispatch(HubEventsClient.CastCard, message));
   }
 
@@ -119,7 +111,7 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: true,
     };
-    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    this.connection.sendOthers(HubEventsClient.UpdateHealath, message);
     await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
@@ -134,7 +126,7 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: false,
     };
-    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    this.connection.sendOthers(HubEventsClient.UpdateHealath, message);
     await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
@@ -145,20 +137,23 @@ export class Player {
       rolls.push(roll);
     }
     const message: IDiceRoll = { playerId: this.id, rolls, bonus };
-    this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
+    console.log(`${this.name} rolls ${number} dice result - `, rolls);
+    this.connection.sendOthers(HubEventsClient.DiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
     rolls.push(bonus);
     return rolls;
   }
 
   async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
-    const message: ISelectTarget = { targets, numberOfTargets };
+    const message: ISelectTarget = { targets: [...targets], numberOfTargets };
     const randomResult: Array<string> = [];
     while (randomResult.length < numberOfTargets && targets.length > 0) {
       randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
     }
     const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
-    const result = await race(selectTargetTask, randomResult, SELECT_TARGET_TIME);
+    const selectionResult = await race(selectTargetTask, randomResult, SELECT_TARGET_TIME);
+    const result = selectionResult.every((target) => targets.includes(target)) ? selectionResult : randomResult;
+    console.log(`${this.name} select target`, result);
     return result;
   }
 
@@ -170,17 +165,14 @@ export class Player {
     this.handCardsValue = this.handCardsValue.filter((card) => !spellCards.includes(card.id));
 
     const message: ISpellSelected = { playerId: this.id, spellCards: this.currentSpell.length };
-    this.dispatchCallbacks(PlayerEvents.CardsSelected, message);
-  }
-
-  private dispatchCallbacks<T>(event: PlayerEvents, ...args: T[]) {
-    const callback = this.listeners.get(event);
-    callback?.forEach((handler) => handler(...args));
+    this.connection.sendOthers(HubEventsClient.SpellSelected, message);
+    if (this.onSpellSelected) this.onSpellSelected();
   }
 
   private addConnectionListeners(): void {
     this.connection.addEventListener(HubEventsServer.SelectSpell, (cardIds: Array<string>) => {
       this.addSpellCards(cardIds);
+      console.log(`${this.name} select spell`);
       return HubResponse.Ok();
     });
   }

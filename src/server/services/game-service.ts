@@ -6,16 +6,11 @@ import {
   HubResponse,
   IPlayerInfo,
   ICreatePlayerRequest,
-  ISpellSelected,
-  IHealthUpdate,
-  IDiceRoll,
   MAX_GAMES,
   getRandomInteger,
-  ICastSpell,
-  ICastCard,
 } from '../../common';
 import { ClientConnection, ConnectionService, ConnectionEvents } from '../connection';
-import { Player, PlayerEvents } from '../player';
+import { Player } from '../player';
 import { Game } from '../game/game';
 import { PlayerService } from './player-service';
 import { SimpleBotConnection } from '../bot/bot-connection';
@@ -61,7 +56,11 @@ export class GameService {
     if (this.games.has(gameId)) return HubResponse.Error('The game is already exists');
 
     // TODO: add onGameEndCallback to Game constructor here
-    const game = new Game(this.getCards(), (winners) => this.endGame(gameId, winners));
+    const game = new Game(
+      this.getCards(),
+      (winners) => this.endGame(gameId, winners),
+      () => this.connectionService.dispatch(gameId, HubEventsClient.NextMove),
+    );
     this.games.set(gameId, game);
     connection.setGameId(gameId);
 
@@ -118,7 +117,7 @@ export class GameService {
     const player = new Player(connection, playerId, request.userName, request.heroId);
     try {
       game.addPlayer(player);
-      this.addPlayerListeners(player, request.gameId);
+      // this.addPlayerListeners(player, request.gameId);
       this.playerService.addPlayer(playerId, player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
@@ -137,19 +136,19 @@ export class GameService {
     const isHeroTaken = !(game.players.every((player) => player.hero !== heroId));
     if (isHeroTaken) return HubResponse.Error('This hero is already taken');
 
-    const botNames: string[] = ['Toma', 'Max', 'Anna', 'Al'];
+    const botNames: string[] = ['Toma', 'Max', 'Anna', 'Casper'];
     const playerNames: string[] = game.players.map((player) => player.name);
     let botName: string;
     do {
       botName = botNames[getRandomInteger(0, botNames.length - 1)];
     } while (playerNames.includes(botName));
 
-    const botConnection = new SimpleBotConnection(gameId);
+    const botConnection = new SimpleBotConnection(gameId, this.connectionService);
     const player = new Player(botConnection, botConnection.id, `[bot] ${botName}`, heroId);
 
     try {
       game.addPlayer(player);
-      this.addPlayerListeners(player, gameId);
+      // this.addPlayerListeners(player, gameId);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
       this.connectionService.dispatch(gameId, HubEventsClient.AddPlayer, playerInfo);
@@ -159,23 +158,23 @@ export class GameService {
     }
   }
 
-  private addPlayerListeners(player: Player, gameId: string): void {
-    player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
-    });
-    player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
-    });
-    player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, message);
-    });
-    player.addListener(PlayerEvents.CastSpell, (message: ICastSpell) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.CastSpell, message);
-    });
-    player.addListener(PlayerEvents.CastCard, (message: ICastCard) => {
-      this.connectionService.dispatch(gameId, HubEventsClient.CastCard, message);
-    });
-  }
+  // private addPlayerListeners(player: Player, gameId: string): void {
+  //   player.addListener(PlayerEvents.CardsSelected, (message: ISpellSelected) => {
+  //     this.connectionService.dispatch(gameId, HubEventsClient.SpellSelected, message);
+  //   });
+  //   player.addListener(PlayerEvents.UpdateHealths, (message: IHealthUpdate) => {
+  //     this.connectionService.dispatch(gameId, HubEventsClient.UpdateHealath, message);
+  //   });
+  //   player.addListener(PlayerEvents.MakeDiceRoll, (message: IDiceRoll) => {
+  //     this.connectionService.dispatch(gameId, HubEventsClient.DiceRoll, message);
+  //   });
+  //   player.addListener(PlayerEvents.CastSpell, (message: ICastSpell) => {
+  //     this.connectionService.dispatch(gameId, HubEventsClient.CastSpell, message);
+  //   });
+  //   player.addListener(PlayerEvents.CastCard, (message: ICastCard) => {
+  //     this.connectionService.dispatch(gameId, HubEventsClient.CastCard, message);
+  //   });
+  // }
 
   private static notFound = (): IHubResponse<string> => HubResponse.Error('Game not found');
 

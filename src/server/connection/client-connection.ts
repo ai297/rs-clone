@@ -17,4 +17,9 @@ export class ClientConnection extends BaseConnection<HubEventsClient, HubEventsS
     const socket = <Socket> this.socket;
     socket.removeAllListeners(event);
   }
+
+  sendOthers<T>(event: HubEventsClient, data?: T): void {
+    const socket = <Socket> this.socket;
+    socket.to(this.currentGameId).emit(String(event), data);
+  }
 }

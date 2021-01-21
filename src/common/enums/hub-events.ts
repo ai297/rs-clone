@@ -20,4 +20,5 @@ export enum HubEventsClient {
   SelectTarget = 'select-target',
   CastSpell = 'cast-spell',
   CastCard = 'cast-card',
+  NextMove = 'next-move',
 }

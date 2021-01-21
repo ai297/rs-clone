@@ -1,4 +1,4 @@
-import { Player, PlayerEvents } from '../player';
+import { Player } from '../player';
 import {
   MAX_PLAYERS,
   MIN_PLAYERS,
@@ -26,12 +26,14 @@ export class Game implements IGameForCasting {
   constructor(
     private cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
+    private readonly onNextMove?: () => void,
   ) {}
 
   public addPlayer(player: Player): void {
     if (this.playersValue.length >= MAX_PLAYERS) throw new Error('There are no places in the game');
-    player.addListener(PlayerEvents.CardsSelected, this.cardSelectionHandler);
     this.playersValue.push(player);
+    // проклятый es-lint =)
+    this.playersValue[this.playersValue.length - 1].onSpellSelected = () => this.cardSelectionHandler();
   }
 
   public get players(): Array<Player> {
@@ -57,6 +59,7 @@ export class Game implements IGameForCasting {
   }
 
   private giveCards(): void {
+    if (this.onNextMove) this.onNextMove();
     const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
     activePlayers.forEach((player) => {
       console.log(`give cards to player ${player.name}`);
@@ -77,13 +80,13 @@ export class Game implements IGameForCasting {
     });
   }
 
-  private cardSelectionHandler = (): void => {
+  private cardSelectionHandler(): void {
     const isMagicReady = this.players.every((player) => player.isSpellReady);
 
     if (isMagicReady) {
       this.castSpells();
     }
-  };
+  }
 
   private async castSpells(): Promise<void> {
     const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
@@ -94,7 +97,7 @@ export class Game implements IGameForCasting {
     if (!this.isEndGame) {
       this.giveCards();
     } else {
-      this.isEndGame = false;
+      this.endGame();
     }
   }
 
