@@ -12,6 +12,7 @@ export enum CSSClasses {
   // player list
   PlayerList = 'player-list',
   PlayerListItem = 'player-list__item',
+  EmptyItem = 'empty-item',
   PlayerAvatar = 'player__avatar',
   PlayerName = 'player__name',
   PlayerHero = 'player__hero',

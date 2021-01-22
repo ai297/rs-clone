@@ -19,13 +19,29 @@
     &:not(:last-child) {
       margin-bottom: .5rem;
     }
+
+    &.empty-item {
+      background: rgba(69, 52, 52, 0.5);
+      border: 3px solid rgba(0, 0, 0, 0.5);
+
+      .player__avatar {
+        background: rgba(41, 26, 26, 0.5);
+        box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.4);
+      }
+    }
   }
 }
 
 .player__avatar {
   width: 5rem;
-  border-radius: 50px 7px 7px 7px;
+  height: 5rem;
+  border-radius: 7px;
   margin-right: 1rem;
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
 }
 
 .player__name {
