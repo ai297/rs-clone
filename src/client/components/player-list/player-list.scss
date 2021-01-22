@@ -1,3 +1,38 @@
 .player-list {
   display: flex;
+  flex-direction: column;
+  // temporary
+  width: 20rem;
+  height: 24rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: .5rem;
+  font-family: $primary-font;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    background: #1B1817;
+    border: 3px solid #5E0D0C;
+    border-radius: 50px 15px;
+    overflow: hidden;
+    padding-right: .5rem;
+    &:not(:last-child) {
+      margin-bottom: .5rem;
+    }
+  }
+}
+
+.player__avatar {
+  width: 5rem;
+  border-radius: 50px 7px 7px 7px;
+  margin-right: 1rem;
+}
+
+.player__name {
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.player__hero {
+  font-size: 1rem;
 }

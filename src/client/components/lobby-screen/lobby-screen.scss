@@ -1,0 +1,81 @@
+.lobby {
+  display: flex;
+  flex-direction: column;
+  color: $primary-font-color;
+  height: 100%;
+  background-image: url('../assets/images/backgrounds/lobby.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 2rem 4rem;
+
+  &-header {
+    height: 8rem;
+    // flex: 0 1 auto;
+  }
+
+  &-main {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  &-buttons {
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    // flex: 0 1 auto;
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-family: $headers-font;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &__subtitle {
+    display: block;
+    font-size: 1.5rem;
+    font-family: $primary-font;
+    margin-bottom: 1rem;
+  }
+
+  &__link-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+  }
+
+  &__game-link {
+    position: relative;
+    flex-grow: 1;
+    margin-left: 1rem;
+    background: rgba(69, 52, 52, 0.5);
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    padding: .3rem;
+
+    &::before {
+      content: url('../assets/icons/copy.svg');
+      cursor: pointer;
+      position: absolute;
+      height: 1.5rem;
+      width: 1.5rem;
+      right: 5px;
+    }
+  }
+
+  &__name-input {
+    background: rgba(69, 52, 52, 0.5);
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    padding: .3rem;
+    width: calc(100% - 10rem);
+    font-size: 1.5rem;
+    font-family: $primary-font;
+    color: $primary-font-color;
+    margin-left: 1rem;
+  }
+}

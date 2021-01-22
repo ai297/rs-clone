@@ -4,7 +4,8 @@ import { IGameEndLocalization } from './game-end-localization';
 import { IGameScreenLocalization } from './game-screen-localization';
 
 export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
-  EnterYourName: 'Введите имя',
+  Title: 'Подготовка к битве',
+  EnterYourName: 'Представься:',
   SelectHero: 'Выбрать персонажа',
   StartGame: 'Начать игру',
   GameLink: 'Ссылка на присоединение к игре',

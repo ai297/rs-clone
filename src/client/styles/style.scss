@@ -15,8 +15,10 @@ html {
 body { overflow: hidden; }
 
 main {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
+  flex-direction: column;
+  // display: flex;
   justify-content: center;
   background-color: black;
 }
@@ -30,3 +32,4 @@ main {
 @import '../components/player-cards/player-cards.scss';
 @import '../components/overlay/overlay.scss';
 @import '../components/base-button/base-button.scss';
+@import '../components/lobby-screen/lobby-screen.scss';
