@@ -23,6 +23,7 @@ export class BaseButton implements IComponent {
   public set disabled(value: boolean) {
     if (value) {
       this.el.setAttribute('disabled', '');
+      this.el.blur();
     } else {
       this.el.removeAttribute('disabled');
     }

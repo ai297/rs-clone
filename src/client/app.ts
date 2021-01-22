@@ -80,7 +80,7 @@ class App implements IRootComponent {
           reject(Error('Cannot connect to server...'));
         },
       );
-      this.gameService = new GameService(connection);
+      this.gameService = new GameService(connection, () => this.showGame());
       this.staticScreens.set(StaticScreens.Start, new StartScreen(this.gameService));
     });
   }

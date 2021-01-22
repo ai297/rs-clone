@@ -11,10 +11,10 @@ import {
   IHealthUpdate,
   // ISelectTarget,
 } from '../../common';
-import { ClientConnection } from '../connection';
+import { ClientConnection, ConnectionService } from '../connection';
 
-const MIN_BOT_DELAY = 100;
-const MAX_BOT_DELAY = 1000;
+const MIN_BOT_DELAY = 1000;
+const MAX_BOT_DELAY = 3000;
 
 type EventHandler = (...args: any[]) => any;
 
@@ -28,7 +28,7 @@ export class SimpleBotConnection extends ClientConnection {
 
   private readonly handlers: Map<HubEventsClient, EventHandler> = new Map();
 
-  constructor(gameId: string) {
+  constructor(gameId: string, private readonly connectionService: ConnectionService) {
     super({
       id: `bot_${(Math.random() * 1000).toFixed()}`,
       on: () => { },
@@ -65,6 +65,10 @@ export class SimpleBotConnection extends ClientConnection {
     return Promise.reject(Error('Unknown method'));
   }
 
+  sendOthers<T>(event: HubEventsClient, data?: T): void {
+    this.connectionService.dispatch(this.currentGameId, event, data);
+  }
+
   addEventListener<T>(
     event: HubEventsServer,
     handler: (...args: any[]) => IHubResponse<T> | Promise<IHubResponse<T>>,
@@ -88,12 +92,13 @@ export class SimpleBotConnection extends ClientConnection {
 
     // TODO: write spell selection logic here
     // for example - select all cards with different magic signs
-    const selectedCards: Array<ICard> = this.handCards.reduce((acc, card) => {
-      if (acc.find((selectedCard) => selectedCard.magicSign !== card.magicSign)) {
-        return [...acc, card];
+    const selectedCards: Array<ICard> = [];
+
+    this.handCards.forEach((card) => {
+      if (!selectedCards.map((selectedCard) => selectedCard.type).includes(card.type)) {
+        selectedCards.push(card);
       }
-      return acc;
-    }, [] as ICard[]);
+    });
 
     // when cards selected, remove its from hand and dispatch callback whit selected cards id
     this.handCards = this.handCards.filter((card) => !selectedCards.includes(card));
