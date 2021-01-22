@@ -1,31 +1,38 @@
 .lobby {
+  flex: 0 0 100%;
   display: flex;
   flex-direction: column;
   color: $primary-font-color;
-  height: 100%;
   background-image: url('../assets/images/backgrounds/lobby.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   padding: 2rem 4rem;
 
-  &-header {
-    height: 8rem;
-    // flex: 0 1 auto;
-  }
+  &-header { flex: 0 0 10rem; }
 
   &-main {
+    max-height: calc(100% - 14rem); // 14rem === &-header height + &-buttons height
     display: flex;
     flex-grow: 1;
-    justify-content: center;
+    justify-content: space-around;
+
+    &__left {
+      flex: 0 0 55%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      & > .hero-selection { max-height: calc(100% - 3.5rem); } // 3.5rem === &__subtitle height
+    }
+    &__right { flex: 0 0 40%; }
   }
 
   &-buttons {
-    height: 4rem;
+    flex: 0 0 4rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    // flex: 0 1 auto;
   }
 
   &__title {
@@ -36,10 +43,10 @@
   }
 
   &__subtitle {
+    height: 3.5rem;
     display: block;
     font-size: 1.5rem;
     font-family: $primary-font;
-    margin-bottom: 1rem;
   }
 
   &__link-wrapper {

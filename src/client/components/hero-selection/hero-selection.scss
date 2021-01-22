@@ -1,25 +1,23 @@
 .hero-selection {
-  // temporary
-  width: 32rem;
-  height: 21rem;
-  border-radius: 8px;
   padding: 1rem;
+  display: flex;
+  color: blanchedalmond;
+  border-radius: .5rem;
   background: rgba(30, 30, 30, 0.75);
-  margin-right: 5rem;
 
   img {
     display: block;
-    // position: relative;
     max-width: 100%;
     max-height: 100%;
-    border-radius: 7px;
+    // border-radius: .5rem;
   }
 
   &__full-hero {
+    flex: 1 0 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all .2s ease-in-out;
-    // width: 20rem
-    // filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
-    // overflow: hidden;
   }
 
   &__heroes-wrapper {
@@ -28,7 +26,6 @@
   }
 
   &__heroes {
-    // height: fit-content;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(4, 1fr);
@@ -42,24 +39,6 @@
   cursor: pointer;
   border: 2px solid #1E1E1E;
   border-radius: 7px;
-  // filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
-  // border-radius: 7px;
-  // overflow: hidden;
-  // width: 5rem;
-  // height: 5rem;
-  // padding: 1rem;
-  
-  &-selection {
-    display: flex;
-    color: blanchedalmond;
-    // height: 50%;
-    // height: fit-content;
-    // display: grid;
-    // grid-template-columns: repeat(2, 1fr);
-    // grid-template-rows: repeat(4, 1fr);
-    // justify-items: center;
-    // text-align: center;
-  }
 
   &--selected {
     box-shadow: inset 0px 0px 4px #CBF2FF, 0px 0px 8px #CBF2FF;

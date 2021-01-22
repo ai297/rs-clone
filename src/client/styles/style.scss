@@ -17,10 +17,18 @@ body { overflow: hidden; }
 main {
   height: 100vh;
   display: flex;
-  flex-direction: column;
-  // display: flex;
+  flex-direction: row;
   justify-content: center;
-  background-color: black;
+  background-color: $primary-dark-color;
+}
+
+.component {
+  & *::-webkit-scrollbar { width: .7rem; }
+  & *::-webkit-scrollbar-track { background: none; }
+  & *::-webkit-scrollbar-thumb {
+    background: $primary-dark-color;
+    border-radius: .35rem;
+  }
 }
 
 @import '../components/start-screen/start-screen.scss';
