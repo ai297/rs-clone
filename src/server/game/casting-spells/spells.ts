@@ -703,7 +703,12 @@ export class Spells {
       .filter((playerCur) => !(playerCur === player))
       .map((playerCur) => playerCur.id);
 
-    const [idTarget] = (await player.selectTarget(targets));
+    let idTarget = '';
+    if (targets.length === 1) {
+      [idTarget] = targets;
+    } else {
+      [idTarget] = (await player.selectTarget(targets));
+    }
 
     const [target] = this.players
       .filter((playerCur) => playerCur.id === idTarget);
@@ -732,7 +737,7 @@ export class Spells {
         throw new Error('strong power is wrong');
     }
 
-    player.takeDamage(damageYourself);
+    if (damageYourself !== 0) player.takeDamage(damageYourself);
     target.takeDamage(damage);
   };
 
@@ -834,7 +839,12 @@ export class Spells {
       .filter((playerCur) => !(playerCur === player))
       .map((playerCur) => playerCur.id);
 
-    const [idTarget] = (await player.selectTarget(targets));
+    let idTarget = '';
+    if (targets.length === 1) {
+      [idTarget] = targets;
+    } else {
+      [idTarget] = (await player.selectTarget(targets));
+    }
 
     const [target] = this.players
       .filter((playerCur) => playerCur.id === idTarget);
@@ -862,8 +872,8 @@ export class Spells {
         throw new Error('strong power is wrong');
     }
 
-    player.takeDamage(damageYourself);
-    target.takeDamage(damage);
+    if (damageYourself !== 0) player.takeDamage(damageYourself);
+    if (damage !== 0) target.takeDamage(damage);
   };
 
   private useBrilliant = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
