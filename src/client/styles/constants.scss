@@ -21,9 +21,11 @@ $secondary-warning-color: #F5A404; // светлый оранжевый (низ 
 $primary-attention-color: #C81B44; // малиново-красный
 $secondary-attention-color: #F11721; // яркий красный
 
+$accent-color: #24FF00; // ядовито-зеленый (таймер)
+
 $shadow-color: #C4D7E6;
-$shadow-color-light: rgba(255, 255, 255, 0.75);
 $shadow-color-extra-light: #FFF;
+$shadow-color-light: mix($shadow-color-extra-light, transparent, 75%);
 $shadow-color-dark: mix($primary-dark-color, transparent, 50%);
 $shadow-color-darkest: mix($primary-dark-color, transparent, 75%);
 $shadow-color-black: mix(black, transparent, 75%);

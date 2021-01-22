@@ -1,16 +1,17 @@
 import {
   MAX_HEALTH,
   START_HEALTH,
+  createElement,
+  delay,
 } from '../../../common';
 import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
-import { createElement, delay } from '../../../common/utils';
 
 const MIDDLE_HEALTH_PERСENT = 0.6;
 const LOW_HEALTH_PERСENT = 0.2;
 const DEAD_WIZARD = 'R. I. P.';
-const RECOVERY_ANIMATION_DELAY = 0;
-const DAMAGE_ANIMATION_DELAY = 0;
+const RECOVERY_ANIMATION_DELAY = 3000;
+const DAMAGE_ANIMATION_DELAY = 2500;
 
 const PRIMARY_SUCCESS_COLOR = '#0EB70B';
 const PRIMARY_SUCCESS_COLOR_OPACITY = 'rgba(14, 183, 11, 0.5)';
@@ -24,6 +25,8 @@ export class GamePlayerDisplay extends BaseComponent {
   private playerHealth: HTMLElement;
 
   private playerAvatar: HTMLElement;
+
+  private pointsAnimation: HTMLElement;
 
   constructor(
     private name: string,
@@ -40,15 +43,19 @@ export class GamePlayerDisplay extends BaseComponent {
     this.playerAvatar = createElement(Tags.Img, [CSSClasses.GamePlayerAvatar]);
     this.playerHealth = createElement(Tags.Div, [CSSClasses.GamePlayerHealth]);
 
+    this.pointsAnimation = createElement(Tags.Div, [CSSClasses.GamePlayerPointsAnimation]);
+
     this.playerAvatar.setAttribute('src', `${ImagesPaths.HeroesAvatars}${this.avatar}.png`);
     this.playerAvatar.setAttribute('alt', this.heroName);
 
     this.updateHealth();
 
     if (this.isCurrentPlayer === true) {
-      this.element.append(this.playerAvatar, playerHero, this.playerHealth);
+      this.element.classList.add(CSSClasses.GamePlayerDisplayContainerCurrent);
+      this.element.append(this.playerAvatar, playerHero, this.playerHealth, this.pointsAnimation);
     } else {
-      this.element.append(this.playerAvatar, playerName, playerHero, this.playerHealth);
+      this.element.classList.add(CSSClasses.GamePlayerDisplayContainerOpponent);
+      this.element.append(this.playerAvatar, playerName, playerHero, this.playerHealth, this.pointsAnimation);
     }
   }
 
@@ -97,29 +104,36 @@ export class GamePlayerDisplay extends BaseComponent {
                       ${colorOpacity} 100%)`;
   }
 
-  addHealth = async (num: number): Promise<void> => {
-    this.element.classList.add(CSSClasses.InGameAddHealthAnimation);
-    this.health += num;
+  addHealth = async (points: number): Promise<void> => {
+    this.pointsAnimation.classList.remove(CSSClasses.GamePlayerPointsHidden);
+    this.pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
+    this.pointsAnimation.textContent = `+${points}`;
+
+    this.health += points;
 
     if (this.health > MAX_HEALTH) {
       this.health = MAX_HEALTH;
     }
 
     await delay(RECOVERY_ANIMATION_DELAY);
-    this.element.classList.remove(CSSClasses.InGameAddHealthAnimation);
+    this.pointsAnimation.classList.remove(CSSClasses.InGameAddHealthAnimation);
+    this.pointsAnimation.classList.add(CSSClasses.GamePlayerPointsHidden);
     this.updateHealth();
   };
 
-  bringDamage = async (num: number): Promise<void> => {
-    this.element.classList.add(CSSClasses.InGameBringDamageAnimation);
-    this.health -= num;
+  bringDamage = async (points: number): Promise<void> => {
+    this.pointsAnimation.classList.add(CSSClasses.InGameBringDamageAnimation);
+    this.pointsAnimation.textContent = `-${points}`;
+
+    this.health -= points;
 
     if (this.health <= 0) {
       this.health = 0;
     }
 
     await delay(DAMAGE_ANIMATION_DELAY);
-    this.element.classList.remove(CSSClasses.InGameBringDamageAnimation);
+    this.pointsAnimation.textContent = '';
+    this.pointsAnimation.classList.remove(CSSClasses.InGameBringDamageAnimation);
     this.updateHealth();
   };
 }
