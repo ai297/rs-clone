@@ -9,13 +9,19 @@
     margin: 1rem 1rem 1rem 2rem;
     padding-left: 5.9rem;
 
+    &--dead {
+      &.game-player__container--opponent {
+        background-color: $primary-dark-color;
+      }
+
+      .game-player__hero {
+        color: $primary-attention-color;
+      }
+    }
+
     &--opponent {
       border-radius: 1.5rem;
       background-color: $shadow-color-darkest;
-
-      &--dead {
-        background-color: $primary-dark-color;
-      }
 
       .game-player__health {
         border-bottom-right-radius: 1.5rem;
