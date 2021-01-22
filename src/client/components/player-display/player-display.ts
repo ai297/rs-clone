@@ -64,8 +64,11 @@ export class GamePlayerDisplay extends BaseComponent {
     this.updateScaleColor(this.health / MAX_HEALTH);
 
     if (this.health <= 0) {
+      if (this.isCurrentPlayer !== true) {
+        this.element.classList.add(`${CSSClasses.GamePlayerDisplayContainerOpponent}--dead`);
+      }
+
       this.playerAvatar.setAttribute('src', `${ImagesPaths.HeroesDeaths}${this.avatar}.png`);
-      this.element.classList.add(CSSClasses.GameOpponentSection);
 
       this.playerHealth.innerHTML = '';
       this.playerHealth.textContent = DEAD_WIZARD;
@@ -104,12 +107,12 @@ export class GamePlayerDisplay extends BaseComponent {
                       ${colorOpacity} 100%)`;
   }
 
-  addHealth = async (points: number): Promise<void> => {
+  addHealth = async (points: number, currentHealth = 0): Promise<void> => {
     this.pointsAnimation.classList.remove(CSSClasses.GamePlayerPointsHidden);
     this.pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
     this.pointsAnimation.textContent = `+${points}`;
 
-    this.health += points;
+    this.health = currentHealth;
 
     if (this.health > MAX_HEALTH) {
       this.health = MAX_HEALTH;
@@ -121,11 +124,11 @@ export class GamePlayerDisplay extends BaseComponent {
     this.updateHealth();
   };
 
-  bringDamage = async (points: number): Promise<void> => {
+  bringDamage = async (points: number, currentHealth = 0): Promise<void> => {
     this.pointsAnimation.classList.add(CSSClasses.InGameBringDamageAnimation);
     this.pointsAnimation.textContent = `-${points}`;
 
-    this.health -= points;
+    this.health = currentHealth;
 
     if (this.health <= 0) {
       this.health = 0;
