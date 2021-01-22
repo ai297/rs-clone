@@ -86,28 +86,37 @@ export class LobbyScreen extends BaseComponent {
   }
 
   private createMarkup(): void {
+    const lobbyHeader = createElement(Tags.Div, [CSSClasses.LobbyHeader]);
     const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
-    const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
+    lobbyHeader.innerHTML = `<h1 class="${CSSClasses.LobbyTitle}">${this.loc.Title}</h1>
+                            <div class="${CSSClasses.GameLinkWrapper} ${CSSClasses.LobbySubtitle}">
+                              <p>${this.loc.GameLink}:</p>
+                              <p class="${CSSClasses.GameLink}">${gameLink}</p>
+                            </div>`;
 
+    const lobbyMain = createElement(Tags.Div, [CSSClasses.LobbyMain]);
+    const lobbyMainLeft = createElement(Tags.Div, [CSSClasses.LobbyMainLeft]);
+    const lobbyMainRight = createElement(Tags.Div, [CSSClasses.LobbyMainRight]);
+    lobbyMainRight.innerHTML = `<div class="${CSSClasses.LobbySubtitle}">${this.loc.PlayerList}</div>`;
+    lobbyMainRight.append(this.playerList.element);
+    lobbyMain.append(lobbyMainLeft, lobbyMainRight);
+
+    const nameLabel = createElement(Tags.Label, [CSSClasses.LobbySubtitle], this.loc.EnterYourName);
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;
     this.nameInput.setAttribute('type', 'text');
-    this.nameInput.setAttribute('placeholder', this.loc.EnterYourName);
+    // this.nameInput.setAttribute('placeholder', this.loc.EnterYourName);
     this.nameInput.oninput = this.readyToSelect.bind(this);
+    nameLabel.append(this.nameInput);
+    lobbyMainLeft.append(nameLabel, this.heroSelection.element);
 
+    const lobbyButtons = createElement(Tags.Div, [CSSClasses.LobbyButtons]);
     this.heroSelectionButton = new BaseButton(
       this.loc.SelectHero,
       this.setHero.bind(this),
       [CSSClasses.SelectHeroButton],
     );
     this.heroSelectionButton.disabled = true;
-
-    this.element.append(
-      gameLinkElement,
-      this.nameInput,
-      this.heroSelection.element,
-      this.playerList.element,
-      this.heroSelectionButton.element,
-    );
+    lobbyButtons.append(this.heroSelectionButton.element);
 
     if (this.gameCreator) {
       this.startGameButton = new BaseButton(
@@ -116,8 +125,6 @@ export class LobbyScreen extends BaseComponent {
         [CSSClasses.StartGameButton, CSSClasses.StartGameButtonDisabled],
       );
       this.startGameButton.disabled = true;
-      this.element.append(this.startGameButton.element);
-
       // const addBotButton = new BaseButton('Добавить бота', async () => {
       //   const heroes = await this.heroesRepository.getAllHeroes();
       //   const hero = heroes[getRandomInteger(0, heroes.length - 1)];
@@ -128,7 +135,14 @@ export class LobbyScreen extends BaseComponent {
       //   }
       // });
       // this.element.append(addBotButton.element);
+      lobbyButtons.append(this.startGameButton.element);
     }
+
+    this.element.append(
+      lobbyHeader,
+      lobbyMain,
+      lobbyButtons,
+    );
   }
 
   private async startGameHandler(): Promise<void> {
