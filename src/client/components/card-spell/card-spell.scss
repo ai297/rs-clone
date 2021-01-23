@@ -120,15 +120,33 @@
   padding-top: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   font-size: .8em;
   overflow: hidden;
 }
 
-.card__text p { text-align: center; }
-.card__text ul { list-style: none; }
-.card__text span { margin: 0 .5em; }
+.card__text p {
+  text-align: center;
+  line-height: 1.1em;
+}
+.card__text ul {
+  list-style: none;
+  line-height: 1em;
+  text-align: left;
+  & > li {
+    display: flex;
+    font-size: 0.9em;
+  }
+}
+.card__text span {
+  margin: 0 .5em;
+  white-space: nowrap;
+}
+.card__text div {
+  text-align: left;
+  white-space: nowrap;
+}
 
 .card-element--label {
   position: absolute;
