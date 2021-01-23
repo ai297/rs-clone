@@ -1,7 +1,7 @@
 .button {
   padding: 1rem;
   background: $button-color;
-  border: 1px solid #000;
+  border: 1px solid $primary-dark-color;
   box-shadow: 0px 2px 4px $shadow-color-dark, inset 0px 2px 4px $shadow-color;
   border-radius: 1rem;
   font-family: $headers-font;
@@ -10,6 +10,7 @@
   text-shadow: -2px 0 $shadow-color, 0 2px $shadow-color, 2px 0 $shadow-color, 0 -2px $shadow-color;
   cursor: pointer;
   transition: all 0.1s linear;
+  min-width: 12rem;
 
   &:hover:not(:disabled) {
     background: $button-hover-color;

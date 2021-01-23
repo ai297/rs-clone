@@ -4,13 +4,12 @@ import { IGameEndLocalization } from './game-end-localization';
 import { IGameScreenLocalization } from './game-screen-localization';
 
 export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
-  Title: 'Подготовка к битве',
   EnterYourName: 'Представься:',
-  SelectHero: 'Выбрать персонажа',
-  StartGame: 'Начать игру',
-  GameLink: 'Ссылка на присоединение к игре',
-  GameId: 'Ключ игры',
-  PlayerList: 'Список игроков',
+  SelectHero: 'Готов!',
+  StartGame: 'Погнали!',
+  GameLink: 'Позови врагов',
+  PlayerList: 'Готовы к бою',
+  AddBot: 'Добавить бота',
 };
 
 export const START_SCREEN_DEFAULT_LOCALIZATION: IStartScreenLocalization = {

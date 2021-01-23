@@ -10,6 +10,7 @@ export enum CSSClasses {
   StartScreenButton = 'start-screen__button',
   StartScreenLogo = 'start-screen__logo',
   // player list
+  PlayerListWrapper = 'player-list-wrapper',
   PlayerList = 'player-list',
   PlayerListItem = 'player-list__item',
   EmptyItem = 'empty-item',
@@ -17,6 +18,7 @@ export enum CSSClasses {
   PlayerName = 'player__name',
   PlayerHero = 'player__hero',
   PlayerInfo = 'player__info',
+  AddBotButton = 'bot-button',
   // cards spell
   Сard = 'card',
   СardBackside = 'card__backside',

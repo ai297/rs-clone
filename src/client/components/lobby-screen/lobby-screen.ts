@@ -18,7 +18,7 @@ import { HeroesRepository } from '../../services';
 export class LobbyScreen extends BaseComponent {
   private heroSelection! : HeroSelection;
 
-  private playerList : PlayerList = new PlayerList();
+  private playerList! : PlayerList;
 
   private currentHero : IHero | null = null;
 
@@ -42,6 +42,7 @@ export class LobbyScreen extends BaseComponent {
   ) {
     super([CSSClasses.Lobby]);
     this.loc = localization || LOBBY_DEFAULT_LOCALIZATION;
+    this.playerList = new PlayerList(this.gameCreator);
     const disabledHeroes = this.gameService.currentPlayers.map((elem) => elem.heroId);
     this.heroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this), disabledHeroes);
     this.gameService.currentPlayers.forEach((elem) => {
@@ -86,14 +87,6 @@ export class LobbyScreen extends BaseComponent {
   }
 
   private createMarkup(): void {
-    const lobbyHeader = createElement(Tags.Div, [CSSClasses.LobbyHeader]);
-    const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
-    lobbyHeader.innerHTML = `<h1 class="${CSSClasses.LobbyTitle}">${this.loc.Title}</h1>
-                            <div class="${CSSClasses.GameLinkWrapper} ${CSSClasses.LobbySubtitle}">
-                              <p>${this.loc.GameLink}:</p>
-                              <p class="${CSSClasses.GameLink}">${gameLink}</p>
-                            </div>`;
-
     const lobbyMain = createElement(Tags.Div, [CSSClasses.LobbyMain]);
     const lobbyMainLeft = createElement(Tags.Div, [CSSClasses.LobbyMainLeft]);
     const lobbyMainRight = createElement(Tags.Div, [CSSClasses.LobbyMainRight]);
@@ -119,6 +112,11 @@ export class LobbyScreen extends BaseComponent {
     lobbyButtons.append(this.heroSelectionButton.element);
 
     if (this.gameCreator) {
+      const lobbyHeader = createElement(Tags.Div, [CSSClasses.LobbyHeader]);
+      const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
+      lobbyHeader.innerHTML = ` <h3 class="${CSSClasses.LobbySubtitle}">${this.loc.GameLink}:</h3>
+                              <p class="${CSSClasses.GameLink}">${gameLink}</p>`;
+      this.element.append(lobbyHeader);
       this.startGameButton = new BaseButton(
         this.loc.StartGame,
         () => this.startGameHandler(),
@@ -139,7 +137,6 @@ export class LobbyScreen extends BaseComponent {
     }
 
     this.element.append(
-      lobbyHeader,
       lobbyMain,
       lobbyButtons,
     );

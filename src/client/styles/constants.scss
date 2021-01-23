@@ -3,8 +3,8 @@ $primary-font: 'Neucha', cursive;
 $headers-font: 'VNI-Canun', sans-serif;
 
 // font colors
-$primary-font-color: #FFF;
 $secondary-font-color: #FFD300; // желтые надписи
+$primary-font-color: #F8CFA9;
 $button-font-color: #5E0D0C;
 
 // ui colors
@@ -22,8 +22,10 @@ $primary-dark-color: #1E1E1E;
 $primary-success-color: #0EB70B; // зеленый (шкала здоровья)
 
 $secondary-warning-color: #F5A404; // светлый оранжевый (низ кнопки и пр.)
+$secondary-warning-color-light: mix($secondary-warning-color, transparent, 50%);
 
 $primary-attention-color: #C81B44; // малиново-красный
+$primary-attention-color-light: mix($primary-attention-color, transparent, 50%);
 $secondary-attention-color: #F11721; // яркий красный
 
 $accent-color: #24FF00; // ядовито-зеленый (таймер)
@@ -50,3 +52,7 @@ $button-hover-color: linear-gradient(180deg,
   color: $primary-font-color;
   letter-spacing: 0.06em;
 }
+
+$red-grey-color: #453434;
+$red-grey-color-light: mix($red-grey-color, transparent, 50%);
+$primary-border-radius: .5rem;

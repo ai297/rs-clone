@@ -1,19 +1,22 @@
+.player-list-wrapper {
+  margin-top: 1rem;
+  overflow-y: scroll;
+  padding: .5rem;
+  background: $primary-attention-color-light;
+  border-radius: $primary-border-radius;
+  font-family: $primary-font;
+}
+
 .player-list {
   display: flex;
   flex-direction: column;
-  // temporary
-  width: 20rem;
-  height: 24rem;
-  background: rgba(0, 0, 0, 0.5);
-  padding: .5rem;
-  font-family: $primary-font;
 
   &__item {
     display: flex;
     align-items: center;
-    background: #1B1817;
-    border: 3px solid #5E0D0C;
-    border-radius: 50px 15px;
+    background: $primary-dark-color;
+    border: 3px solid $secondary-warning-color;
+    border-radius: 3rem 1rem;
     overflow: hidden;
     padding-right: .5rem;
     &:not(:last-child) {
@@ -21,34 +24,55 @@
     }
 
     &.empty-item {
-      background: rgba(69, 52, 52, 0.5);
-      border: 3px solid rgba(0, 0, 0, 0.5);
+      background: $red-grey-color-light;
+      border: 3px solid $secondary-warning-color-light;
 
       .player__avatar {
-        background: rgba(41, 26, 26, 0.5);
-        box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.4);
+        background: $red-grey-color-light;
+        box-shadow: inset 0px 0px 3px $shadow-color-dark;
+      }
+
+      .bot-button {
+        background: $secondary-warning-color-light;
+        border: 1px solid $secondary-warning-color-light;
+        border-radius: $primary-border-radius;
+        font-size: 1rem;
+        color: $primary-font-color;
+        box-shadow: none;
+        text-shadow: none;
+        margin: 0 auto;
+
+        &:hover {
+          background: $secondary-warning-color;
+          color: $shadow-color-extra-light;
+          text-shadow: none;
+          box-shadow: none;
+        }
       }
     }
+
+    .player__avatar {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 2.7rem $primary-border-radius $primary-border-radius $primary-border-radius;
+      margin: .2rem 1rem .2rem .2rem;
+      overflow: hidden;
+    
+      img {
+        display: block;
+        max-width: 100%;
+      }
+    }
+    
+    .player__name {
+      font-size: 2rem;
+      margin-bottom: .5rem;
+      color: $primary-font-color;
+    }
+    
+    .player__hero {
+      font-size: 1rem;
+      color: $secondary-warning-color;
+    }
   }
-}
-
-.player__avatar {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 7px;
-  margin-right: 1rem;
-
-  img {
-    display: block;
-    max-width: 100%;
-  }
-}
-
-.player__name {
-  font-size: 1.5rem;
-  margin-bottom: .5rem;
-}
-
-.player__hero {
-  font-size: 1rem;
 }

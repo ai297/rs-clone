@@ -1,3 +1,13 @@
+@mixin  link-input {
+  margin-left: 1rem;
+  background: $shadow-color-darkest;
+  border-radius: $primary-border-radius;
+  padding: .3rem;
+  font-family: $primary-font;
+  font-size: 1.8rem;
+  color: $primary-font-color;
+}
+
 .lobby {
   flex: 0 0 100%;
   display: flex;
@@ -9,13 +19,19 @@
   background-repeat: no-repeat;
   padding: 2rem 4rem;
 
-  &-header { flex: 0 0 10rem; }
+  &-header { 
+    display: flex;
+    align-items: center;
+    flex: 0 0 4rem; 
+    margin-bottom: 1rem;
+  }
 
   &-main {
-    max-height: calc(100% - 14rem); // 14rem === &-header height + &-buttons height
+    max-height: calc(100% - 10rem);
     display: flex;
     flex-grow: 1;
-    justify-content: space-around;
+    justify-content: space-between;
+    margin-bottom: 2rem;
 
     &__left {
       flex: 0 0 55%;
@@ -23,9 +39,18 @@
       flex-direction: column;
       overflow: hidden;
 
-      & > .hero-selection { max-height: calc(100% - 3.5rem); } // 3.5rem === &__subtitle height
+      & > .hero-selection { max-height: calc(100% - 3.5rem); }
     }
-    &__right { flex: 0 0 40%; }
+
+    &__right { 
+      flex: 0 0 40%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-width: 30rem; 
+
+      & > .player-list-wrapper { max-height: calc(100% - 3.5rem); }
+    }
   }
 
   &-buttons {
@@ -43,26 +68,21 @@
   }
 
   &__subtitle {
-    height: 3.5rem;
-    display: block;
-    font-size: 1.5rem;
-    font-family: $primary-font;
-  }
-
-  &__link-wrapper {
     display: flex;
-    width: 100%;
-    align-items: center;
+    font-family: $headers-font;
+    font-size: 1.5rem;
+    line-height: 3rem;
+    color: $primary-attention-color;
+    text-shadow: 2px 0 0 $primary-dark-color, -2px 0 0 $primary-dark-color, 0 2px 0 $primary-dark-color,
+                  0 -2px 0 $primary-dark-color, 1px 1px $primary-dark-color, -1px -1px 0 $primary-dark-color,
+                  1px -1px 0 $primary-dark-color, -1px 1px 0 $primary-dark-color; 
   }
 
   &__game-link {
     position: relative;
     flex-grow: 1;
-    margin-left: 1rem;
-    background: rgba(69, 52, 52, 0.5);
-    border: 3px solid rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
-    padding: .3rem;
+    max-width: 42rem;
+    @include link-input;
 
     &::before {
       content: url('../assets/icons/copy.svg');
@@ -75,14 +95,8 @@
   }
 
   &__name-input {
-    background: rgba(69, 52, 52, 0.5);
-    border: 3px solid rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
-    padding: .3rem;
+    border: none;
     width: calc(100% - 10rem);
-    font-size: 1.5rem;
-    font-family: $primary-font;
-    color: $primary-font-color;
-    margin-left: 1rem;
+    @include link-input;
   }
 }
