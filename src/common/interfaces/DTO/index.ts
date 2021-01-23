@@ -6,3 +6,4 @@ export { IDiceRoll } from './roll-dice-message';
 export { ISelectTarget } from './select-target-message';
 export { ICastSpell } from './cast-spell-message';
 export { ICastCard } from './cast-card-message';
+export { IJoinGameResponse } from './join-game-response';

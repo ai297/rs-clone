@@ -12,8 +12,14 @@ import {
   ISelectTarget,
   ICastSpell,
   ICastCard,
+  IJoinGameResponse,
 } from '../../common';
 import { ServerConnection } from './server-connection';
+
+enum StorageItems {
+  GameCreator = 'game-creator',
+  PlayerId = 'player-id',
+}
 
 export class GameService {
   private gameId = '';
@@ -28,8 +34,10 @@ export class GameService {
 
   constructor(
     private readonly connection: ServerConnection,
+    private readonly onGameCreated?: (isCreator: boolean) => void,
     private readonly onGameStarted?: () => void,
     private readonly onGameEnded?: () => void,
+    private readonly onGoOut?: () => void,
   ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
     connection.addEventListener(HubEventsClient.StartGame, () => {
@@ -67,8 +75,6 @@ export class GameService {
     return this.currentPlayers.find((player) => player.id === playerId);
   }
 
-  onGoOut?: () => void;
-
   onPlayerJoined?: (playerInfo: IPlayerInfo) => void;
 
   onPlayerLeaved?: (playerInfo: IPlayerInfo) => void;
@@ -91,24 +97,30 @@ export class GameService {
 
   onCardCast?: (playerInfo: IPlayerInfo, card: ICard) => Promise<void>;
 
-  /**
-   * This method returns promise, that resolve with gameId: string as argument
-   */
-  async newGame(): Promise<string> {
+  async newGame(): Promise<void> {
     this.clearState();
     this.gameId = await this.connection.dispatch<string>(HubEventsServer.NewGame);
-    return this.gameId;
+    localStorage.setItem(StorageItems.GameCreator, this.gameId);
+    if (this.onGameCreated) this.onGameCreated(true);
   }
 
-  /**
-   * This method returns array of players, who already joined to game
-   */
-  async joinGame(gameId: string): Promise<IPlayerInfo[]> {
+  async joinGame(gameId: string): Promise<void> {
     this.clearState();
-    const playersInGame = await this.connection.dispatch<IPlayerInfo[]>(HubEventsServer.JoinGame, gameId);
-    this.gameId = gameId;
-    this.players.push(...playersInGame);
-    return playersInGame;
+    const savedGameId = localStorage.getItem(StorageItems.GameCreator);
+    const savedPlayerId = localStorage.getItem(StorageItems.PlayerId);
+
+    const joinResponse = await this.connection.dispatch<IJoinGameResponse>(
+      HubEventsServer.JoinGame,
+      gameId,
+      savedPlayerId,
+    );
+    this.gameId = joinResponse.gameId;
+    this.players = joinResponse.players;
+
+    const currentPlayer = this.players.find((player) => player.id === savedPlayerId);
+    if (currentPlayer) this.playerId = currentPlayer.id;
+    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted();
+    else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId);
   }
 
   async startGame(): Promise<void> {
@@ -121,6 +133,7 @@ export class GameService {
   async createHero(request: ICreatePlayerRequest): Promise<IPlayerInfo> {
     const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddPlayer, request);
     this.playerId = playerInfo.id;
+    localStorage.setItem(StorageItems.PlayerId, playerInfo.id);
     return playerInfo;
   }
 
@@ -155,8 +168,8 @@ export class GameService {
   }
 
   private goOut(): IHubResponse<null> {
-    if (this.onGoOut) this.onGoOut();
     this.clearState();
+    if (this.onGoOut) this.onGoOut();
     return HubResponse.Ok();
   }
 
