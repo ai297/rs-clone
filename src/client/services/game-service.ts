@@ -32,6 +32,8 @@ export class GameService {
 
   private castingSpellCards: Array<ICard> = [];
 
+  private isCastingStep = false;
+
   constructor(
     private readonly connection: ServerConnection,
     private readonly onGameCreated?: (isCreator: boolean) => void,
@@ -49,6 +51,7 @@ export class GameService {
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.NextMove, () => {
+      this.isCastingStep = false;
       if (this.onNextMove) this.onNextMove();
       return HubResponse.Ok();
     });
@@ -70,6 +73,8 @@ export class GameService {
   get currentPlayerCards(): Array<ICard> { return this.playerCards; }
 
   get currentPlayers(): Array<IPlayerInfo> { return this.players; }
+
+  get isCasting(): boolean { return this.isCastingStep; }
 
   getPlayerInfo(playerId: string): IPlayerInfo | undefined {
     return this.currentPlayers.find((player) => player.id === playerId);
@@ -115,10 +120,11 @@ export class GameService {
       savedPlayerId,
     );
     this.gameId = joinResponse.gameId;
+    this.isCastingStep = joinResponse.isCasting;
     this.players = joinResponse.players;
+    this.playerId = joinResponse.playerId;
+    this.playerCards = joinResponse.playerCards;
 
-    const currentPlayer = this.players.find((player) => player.id === savedPlayerId);
-    if (currentPlayer) this.playerId = currentPlayer.id;
     if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted();
     else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId);
   }
@@ -211,6 +217,7 @@ export class GameService {
 
   private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
     this.playerCards.push(...cards);
+    this.isCastingStep = false;
     if (this.onGetCards) await this.onGetCards(cards);
     return HubResponse.Ok();
   }

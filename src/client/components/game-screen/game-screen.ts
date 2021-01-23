@@ -61,6 +61,7 @@ export class GameScreen extends BaseComponent {
     this.gameService.onSelectTarget = (targets, numberOfTargets) => this.showTargetSelection(targets, numberOfTargets);
 
     this.playerCards = new PlayerCards();
+    this.playerCards.addCards(...this.gameService.currentPlayerCards);
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
     this.playSection.append(this.playerCards.element);
   }
@@ -162,7 +163,7 @@ export class GameScreen extends BaseComponent {
     const currentPlayerInfo = new GamePlayerDisplay(
       playerInfo.userName, heroInfo.name, heroInfo.image, playerInfo.health, true,
     );
-
+    if (playerInfo.spellLength > 0) this.readyButton.disabled = true;
     this.currentPlayerDisplay = currentPlayerInfo;
     this.playerInfoContainer.append(currentPlayerInfo.element);
   };
@@ -171,6 +172,7 @@ export class GameScreen extends BaseComponent {
     const heroInfo = <IHero> await this.heroesRepository.getHero(opponent.heroId);
     const opponentInfo = new GamePlayerDisplay(opponent.userName, heroInfo.name, heroInfo.image, opponent.health);
     const opponentCards = new OpponentsCards();
+    opponentCards.showCards(opponent.spellLength);
 
     this.opponentCards.set(opponent.id, opponentCards);
     this.opponents.set(opponent.id, opponentInfo);
@@ -192,7 +194,7 @@ export class GameScreen extends BaseComponent {
       () => this.setSelectSpell(),
       [CSSClasses.GameScreenButton],
     );
-    this.readyButton.disabled = true;
+    this.readyButton.disabled = this.gameService.isCasting;
 
     this.controlsContainer.append(this.readyButton.element);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);

@@ -80,14 +80,17 @@ export class GameService {
 
     const currentPlayer = game.players.find((player) => player.id === playerId);
     currentPlayer?.changeConnection(connection);
+    if (currentPlayer) connection.setGameId(gameId);
 
     const playersInfo = game.players.map(GameService.getPlayerInfo);
-    connection.setGameId(gameId);
 
     const response: IJoinGameResponse = {
       gameId,
+      playerId: currentPlayer?.id || '',
       isStarted: game.isStarted,
+      isCasting: game.isCasting,
       players: playersInfo,
+      playerCards: currentPlayer?.handCards || [],
     };
 
     return HubResponse.Success(response);
@@ -180,5 +183,6 @@ export class GameService {
     heroId: player.hero,
     health: player.hitPoints,
     position,
+    spellLength: player.spell.length,
   });
 }
