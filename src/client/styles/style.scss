@@ -21,9 +21,9 @@ main {
   background-color: black;
 }
 
-@import '../components/avatar/avatar-types.ts';
 @import '../components/overlay/overlay.scss';
 @import '../components/base-button/base-button.scss';
+@import '../components/avatar/avatar.scss';
 @import '../components/start-screen/start-screen.scss';
 @import '../components/player-list/player-list.scss';
 @import '../components/card-spell/card-spell.scss';
