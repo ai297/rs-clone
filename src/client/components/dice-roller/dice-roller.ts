@@ -30,7 +30,7 @@ export class DiceRoller extends BaseComponent {
     (<any> window).diceRoller = this;
   }
 
-  roll(): Promise<void> {
+  show(): Promise<void> {
     this.element.classList.add(CSSClasses.DiceRollerShow);
     this.diceContainers.forEach((container) => {
       const move = (200 + Math.random() * 100).toFixed();
