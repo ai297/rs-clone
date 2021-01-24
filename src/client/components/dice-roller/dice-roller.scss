@@ -1,0 +1,82 @@
+.dice-roller {
+  align-self: center;
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  font-size: 1rem;
+  font-family: $headers-font;
+  perspective: 30em;
+  opacity: 0;
+  transition: opacity .3s ease-in;
+
+  &--show { opacity: 1; }
+}
+
+.dice-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transition: all .75s ease-in;
+}
+
+.dice {
+  position: relative;
+  width: 4em;
+  height: 4em;
+  transform-origin: center;
+  transform-style: preserve-3d;
+
+  &__side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary-dark-color;
+    font-size: 2.5em;
+    border-radius: .25em;
+    // поправить цвет фона и текста на правильные переменные
+    background-color: wheat;
+    box-shadow: inset 0 0 0.25em 0 $primary-dark-color;
+
+    &--front {
+      transform-origin: bottom center;
+      transform: rotateX(-90deg);
+    }
+    &--back {
+      transform-origin: top center;
+      transform: rotateX(-90deg) rotateY(180deg) translateY(-100%);
+    }
+    &--top {
+      transform-origin: top center;
+      transform: rotateX(-90deg) translateY(-100%) rotateX(90deg);
+    }
+    &--bottom {
+      transform: rotateX(180deg);
+    }
+    &--left {
+      transform-origin: top left;
+      transform: rotateY(-90deg) rotateZ(90deg) translateY(-100%);
+    }
+    &--right {
+      transform-origin: top right;
+      transform: rotateY(90deg) rotateZ(-90deg) translateY(-100%);
+    }
+  }
+
+  &--rolling {
+    animation: fly-and-rotate 1s cubic-bezier(.6, .15, .6, .8);
+  }
+}
+
+@keyframes fly-and-rotate {
+  30% { transform: translateZ(25em) rotate3d(1, 1, 1, 180deg); }
+  45% { transform: translateZ(12.5em) rotate3d(1, 1, 1, 290deg); }
+  60% { transform: translateZ(.5em) rotate3d(1, 1, 0.5, 400deg); }
+  80% { transform: rotate3d(1, 1, 0, 340deg); }
+  100% { transform: rotate3d(1, 1, 0, 360deg); }
+}
