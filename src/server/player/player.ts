@@ -137,11 +137,11 @@ export class Player {
       const roll = DICE_MIN_VALUE + Math.floor(Math.random() * DICE_MAX_VALUE);
       rolls.push(roll);
     }
-    const message: IDiceRoll = { playerId: this.id, rolls, bonus };
+    const message: IDiceRoll = { playerId: this.id, rolls: [...rolls], bonus };
     // console.log(`${this.name} rolls ${number} dice result - `, rolls);
     this.connection.sendOthers(HubEventsClient.DiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    rolls.push(bonus);
+    if (bonus) rolls.push(bonus);
     return rolls;
   }
 

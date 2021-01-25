@@ -4,6 +4,7 @@ import {
   getRandomInteger,
   ICard,
   MagicSigns,
+  TARGET_ALL,
 } from '../../../common';
 import { CardHandler } from './type';
 import { Player } from '../../player';
@@ -16,11 +17,10 @@ import {
 } from './utils';
 import { IGameForCasting } from '../interface';
 
-const TARGET_SMALLEST_CUBE = true;
-
 async function makePowerDiceRoll(player: Player, magicSign: MagicSigns): Promise<PowerMagic> {
   const amountDice = [...player.spell]
     .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === magicSign ? 1 : 0)), 0);
+  if (!amountDice) return PowerMagic.nothing;
   const throwResult = await player.makeDiceRoll(amountDice);
   const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
   return strongPower;
@@ -111,7 +111,7 @@ export class Spells {
     return <Player> alivePlayers[targetPosition];
   }
 
-  async getConcreteOpponent(position: number, isStrongest = true) : Promise<Player | null> {
+  private async getConcreteOpponent(position: number, isStrongest = true) : Promise<Player | null> {
     // проверка входных данных
     if (position > this.players.length - 1 || position < 0) return null;
 
@@ -124,6 +124,23 @@ export class Spells {
     if (opponents.length === 1 || opponents[0].hitPoints !== opponents[1].hitPoints) return opponents[0];
     const [target] = await throwCheck(opponents, false);
     return target;
+  }
+
+  private async selectOpponents(playerPosition: number, targetIds: Array<string>, maxResults = 1): Promise<Player[]> {
+    // проверка входных данных
+    if (playerPosition > this.players.length - 1 || playerPosition < 0) return [];
+
+    const currentPlayer = this.players[playerPosition];
+    const allOpponents = this.players.filter((player) => player !== currentPlayer && player.hitPoints > 0);
+
+    if (targetIds.length <= maxResults) {
+      if (targetIds.includes(TARGET_ALL)) return allOpponents;
+      return allOpponents.filter((player) => targetIds.includes(player.id));
+    }
+
+    const selectedTargets = await currentPlayer.selectTarget(targetIds, maxResults);
+    if (selectedTargets.includes(TARGET_ALL)) return allOpponents;
+    return allOpponents.filter((player) => selectedTargets.includes(player.id));
   }
 
   private getLeftOpponent(position: number): Player | null { return this.getNextOpponent(position); }
@@ -212,7 +229,7 @@ export class Spells {
 
     const damageTasks: Array<Promise<void>> = [];
     if (damage && firstTarget) damageTasks.push(firstTarget.takeDamage(damage));
-    if (damage && secondTarget) damageTasks.push(secondTarget.takeDamage(damage));
+    if (damage && secondTarget && secondTarget !== player) damageTasks.push(secondTarget.takeDamage(damage));
 
     await Promise.race(damageTasks);
   };
@@ -399,7 +416,7 @@ export class Spells {
     const fourCards = this.game.getCardsActiveDeck(4);
     const qualityCards = fourCards.filter((cardCur) => cardCur.type === CardTypes.quality);
 
-    forEachAsync(qualityCards, async (curCard) => {
+    await forEachAsync(qualityCards, async (curCard) => {
       const handler = await this.getHandler(curCard.id);
       await player.castCard(curCard);
       if (handler) await handler(positionPlayer, curCard);
@@ -408,171 +425,131 @@ export class Spells {
     this.game.usedCardHandler(fourCards);
   };
 
-  private useKingOberon = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * король оберон
+   */
+  private useKingOberon = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
     const HEAL_OBERON = 2;
-    player.takeHeal(HEAL_OBERON);
-    return Promise.resolve();
+    await player.takeHeal(HEAL_OBERON);
   };
 
-  private useFallenRose = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * падшая роза
+   */
+  private useFallenRose = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
     const HEAL_ROSE = getNumberUniqueMagicSign([...player.spell]);
-    player.takeHeal(HEAL_ROSE);
-    return Promise.resolve();
+    await player.takeHeal(HEAL_ROSE);
   };
 
-  private useWormy = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * червивый
+   */
+  private useWormy = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
+    const target = await this.getStrongestOpponent(positionPlayer);
+    const damage = 2 * [...player.spell].filter((curCard) => curCard.magicSign === MagicSigns.dark).length;
 
-    let targets = this.players.filter((playerCur) => !(playerCur === player));
-
-    let target: Player = targets[0];
-    if (targets.length > 1) {
-      targets.sort((a, b) => b.hitPoints - a.hitPoints);
-      if (targets[0].hitPoints !== targets[1].hitPoints) {
-        target = targets[0] as Player;
-      } else {
-        targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
-      }
-    }
-
-    const damage = [...player.spell].filter((curCard) => curCard.magicSign === MagicSigns.dark).length;
-
-    target.takeDamage(damage);
+    if (damage && target) await target.takeDamage(damage);
   };
 
+  /**
+   * дуэльадский
+   */
   private useDuelHell = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
-
-    const targets = this.players
-      .filter((playerCur) => !(playerCur === player))
+    const targetIds = this.players
+      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
       .map((playerCur) => playerCur.id);
 
-    let idTarget = '';
-    if (targets.length === 1) {
-      [idTarget] = targets;
-    } else {
-      [idTarget] = (await player.selectTarget(targets));
-    }
+    const [target] = await this.selectOpponents(positionPlayer, targetIds);
 
-    const [target] = this.players
-      .filter((playerCur) => playerCur.id === idTarget);
+    const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
-    const amountDice = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-    const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
+    const damageStrength = [2, 4, 5];
+    const selfDamageStrength = [0, 1, 2];
+    const damage = damageStrength[strongPower] || 0;
+    const damageYourself = selfDamageStrength[strongPower] || 0;
 
-    let damage = 0;
-    let damageYourself = 0;
+    const damageTasks: Array<Promise<void>> = [];
+    if (damage && target) damageTasks.push(target.takeDamage(damage));
+    if (damageYourself) damageTasks.push(player.takeDamage(damageYourself));
 
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damage = 2;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 4;
-        damageYourself = 1;
-        break;
-      case PowerMagic.strongThrow:
-        damage = 5;
-        damageYourself = 2;
-        break;
-      default:
-        throw new Error('strong power is wrong');
-    }
-
-    if (damageYourself !== 0) player.takeDamage(damageYourself);
-    target.takeDamage(damage);
+    await Promise.race(damageTasks);
   };
 
-  private useFaster = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * шустрый
+   */
+  private useFaster = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
-
-    const targets = this.players.filter((playerCur) => !(playerCur === player));
+    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
 
     const FASTER_DAMAGE = 1;
-    targets.forEach((target) => {
-      target.takeDamage(FASTER_DAMAGE);
-    });
+
+    await Promise.race(targets.map((target) => target.takeDamage(FASTER_DAMAGE)));
   };
 
-  private useMystical = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * мистический
+   */
+  private useMystical = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
-    let targetIndex: number = positionPlayer - 1;
-    if (targetIndex < 0) {
-      targetIndex += this.numberPlayers;
-    }
+    const target = this.getRightOpponent(positionPlayer);
 
-    const target = this.players[targetIndex];
+    const damage = getNumberUniqueMagicSign([...player.spell]);
 
-    const damage = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-
-    target.takeDamage(damage);
+    if (damage && target) await target.takeDamage(damage);
   };
 
-  private useInfernal = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * адско-стический
+   */
+  private useInfernal = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
-
-    const targets = this.players.filter((playerCur) => !(playerCur === player));
+    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
 
     const damage = [...player.spell].filter((card: ICard) => card.magicSign === MagicSigns.element).length;
 
-    targets.forEach((target) => target.takeDamage(damage));
+    if (damage && targets.length > 0) await Promise.race(targets.map((target) => target.takeDamage(damage)));
   };
 
+  /**
+   * взрывастый
+   */
   private useExplosive = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const targets = this.players
-      .filter((playerCur) => !(playerCur === player))
+    const targetIds = this.players
+      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
       .map((playerCur) => playerCur.id);
 
-    let idTarget = '';
-    if (targets.length === 1) {
-      [idTarget] = targets;
-    } else {
-      [idTarget] = (await player.selectTarget(targets));
-    }
+    const [target] = await this.selectOpponents(positionPlayer, targetIds);
+    const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
-    const [target] = this.players
-      .filter((playerCur) => playerCur.id === idTarget);
+    const damageStrength = [1, 3, 4];
+    const selfDamageStrength = [0, 1, 0];
 
-    const amountDice = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-    const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
+    const damage = damageStrength[strongPower] || 0;
+    const damageYourself = selfDamageStrength[strongPower] || 0;
 
-    let damage = 0;
-    let damageYourself = 0;
+    const damageTasks: Array<Promise<void>> = [];
 
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damage = 1;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 3;
-        damageYourself = 1;
-        break;
-      case PowerMagic.strongThrow:
-        damage = 4;
-        damageYourself = 0;
-        break;
-      default:
-        throw new Error('strong power is wrong');
-    }
+    if (target && damage) damageTasks.push(target.takeDamage(damage));
+    if (target && damageYourself) damageTasks.push(player.takeDamage(damageYourself));
 
-    if (damageYourself !== 0) player.takeDamage(damageYourself);
-    target.takeDamage(damage);
+    if (damageTasks.length > 0) await Promise.race(damageTasks);
   };
 
-  private useCatTrouble = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * кот-а-строфный
+   */
+  private useCatTrouble = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const possibleTargets = this.players.filter((playerCur) => !(playerCur === player));
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const damageTasks: Array<Promise<void>> = [];
 
     if (possibleTargets.length > 1) {
       const [luckyPlayer, resultDiceRoll] = await throwCheck(possibleTargets);
@@ -583,196 +560,156 @@ export class Spells {
       targets.forEach((curPlayer): void => {
         const target = curPlayer.player;
         const damage = curPlayer.value;
-        target.takeDamage(damage);
+        damageTasks.push(target.takeDamage(damage));
       });
     } else {
       const [target] = possibleTargets;
-      const resultDice = sumArray(await target.makeDiceRoll(1));
-      if (resultDice < 4) {
-        target.takeDamage(resultDice);
-      }
+      const roll = await target.makeDiceRoll(1);
+      const resultDice = sumArray(roll);
+      if (resultDice < 4) damageTasks.push(target.takeDamage(resultDice));
     }
+
+    if (damageTasks.length > 0) await Promise.race(damageTasks);
   };
 
-  private useHeadBroken = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * ума-ломный
+   */
+  private useHeadBroken = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const possibleTargets = this.players.filter((playerCur) => !(playerCur === player));
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
 
     const targetIndex = getRandomInteger(0, possibleTargets.length - 1);
     const target = possibleTargets[targetIndex];
 
     const HEAD_BROKEN_DAMAGE = 3;
 
-    target.takeDamage(HEAD_BROKEN_DAMAGE);
+    if (target) await target.takeDamage(HEAD_BROKEN_DAMAGE);
   };
 
+  /**
+   * колючий
+   */
   private useSpiky = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
-    let targetIndex: number = positionPlayer - 1;
-    if (targetIndex < 0) {
-      targetIndex += this.numberPlayers;
-    }
+    const target = this.getRightOpponent(positionPlayer);
 
-    const target = this.players[targetIndex];
+    const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
-    const amountDice = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-    const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
+    const damageStrength = [1, 1, 3];
+    const healingStrengths = [0, 1, 3];
 
-    let damage = 0;
-    let heal = 0;
+    const damage = damageStrength[strongPower] || 0;
+    const heal = healingStrengths[strongPower] || 0;
 
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damage = 1;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 1;
-        heal = 1;
-        break;
-      case PowerMagic.strongThrow:
-        damage = 3;
-        heal = 3;
-        break;
-      default:
-        throw new Error('strong power is wrong');
-    }
+    const tasks: Array<Promise<void>> = [];
+    if (heal) tasks.push(player.takeHeal(heal));
+    if (target && damage) tasks.push(target.takeDamage(damage));
 
-    player.takeHeal(heal);
-    target.takeDamage(damage);
+    if (tasks.length > 0) await Promise.race(tasks);
   };
 
-  private useStunning = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * оглушающий
+   */
+  private useStunning = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const targets = this.players.filter((playerCur) => !(playerCur === player));
-
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
     const countDamage = getNumberUniqueMagicSign([...player.spell]);
 
-    const stunningDamage = 2;
-
+    const targets: Array<Player> = [];
     for (let i = 0; i < countDamage; i++) {
-      targets.forEach((playerCur) => {
-        playerCur.takeDamage(stunningDamage);
-      });
+      const target = possibleTargets[getRandomInteger(0, possibleTargets.length - 1)];
+      targets.push(target);
     }
+    if (targets.length === 0) return;
+
+    const stunningDamage = 2;
+    await forEachAsync(targets, async (target) => {
+      await target.takeDamage(stunningDamage);
+    });
   };
 
+  /**
+   * ритуалистичный
+   */
   private useRitual = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const targets = this.players
-      .filter((playerCur) => !(playerCur === player))
+    const targetIds = this.players
+      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
       .map((playerCur) => playerCur.id);
 
-    let idTarget = '';
-    if (targets.length === 1) {
-      [idTarget] = targets;
-    } else {
-      [idTarget] = (await player.selectTarget(targets));
-    }
+    const [target] = await this.selectOpponents(positionPlayer, targetIds);
+    const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
-    const [target] = this.players
-      .filter((playerCur) => playerCur.id === idTarget);
+    const damageStrength = [0, 3, 5];
+    const selfDamageStrength = [3, 0, 0];
 
-    const amountDice = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-    const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
+    const damage = damageStrength[strongPower] || 0;
+    const damageYourself = selfDamageStrength[strongPower] || 0;
 
-    let damage = 0;
-    let damageYourself = 0;
+    const damageTasks: Array<Promise<void>> = [];
+    if (target && damage) damageTasks.push(target.takeDamage(damage));
+    if (damageYourself) damageTasks.push(player.takeDamage(damageYourself));
 
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damageYourself = 3;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 3;
-
-        break;
-      case PowerMagic.strongThrow:
-        damage = 5;
-        break;
-      default:
-        throw new Error('strong power is wrong');
-    }
-
-    if (damageYourself !== 0) player.takeDamage(damageYourself);
-    if (damage !== 0) target.takeDamage(damage);
+    if (damageTasks.length > 0) await Promise.race(damageTasks);
   };
 
+  /**
+   * блестящий
+   */
   private useBrilliant = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
+    const target = await this.getStrongestOpponent(positionPlayer);
 
-    let targets = this.players.filter((playerCur) => !(playerCur === player));
+    const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
-    let target: Player = targets[0];
+    const damageStrength = [1, 2, 5];
+    const damage = damageStrength[strongPower] || 0;
 
-    if (targets.length > 1) {
-      targets.sort((a, b) => b.hitPoints - a.hitPoints);
-      if (targets[0].hitPoints !== targets[1].hitPoints) {
-        target = targets[0] as Player;
-      } else {
-        targets = targets.filter((cur, index, array) => cur.hitPoints === array[0].hitPoints);
-        [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
-      }
-    }
-
-    const amountDice = [...player.spell]
-      .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === cardCurrent.magicSign ? 1 : 0)), 0);
-    const throwResult = await player.makeDiceRoll(amountDice);
-    const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
-
-    let damage = 0;
-
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damage = 1;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 2;
-        break;
-      case PowerMagic.strongThrow:
-        damage = 5;
-        break;
-      default:
-        throw new Error('strong power is wrong');
-    }
-    target.takeDamage(damage);
+    if (target && damage) await target.takeDamage(damage);
   };
 
-  private useTasty = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  /**
+   * вкусняцкий
+   */
+  private useTasty = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const targets = this.players
-      .filter((playerCur) => !(playerCur === player) && (playerCur.hitPoints % 2 === 1));
-    if (targets.length !== 0) {
-      const damage = getNumberUniqueMagicSign([...player.spell]);
-      targets.forEach((playerCur) => playerCur.takeDamage(damage));
-    }
+    const damage = getNumberUniqueMagicSign([...player.spell]);
+    const damageTasks = this.players
+      .filter((playerCur) => playerCur !== player && playerCur.hitPoints % 2 === 1)
+      .map((targetPlayer) => targetPlayer.takeDamage(damage));
+
+    if (damageTasks.length > 0) await Promise.race(damageTasks);
   };
 
-  // убрать цикл
-  private useCubic = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
-    const player = this.players[positionPlayer];
+  /**
+   * кубикованый
+   */
+  private useCubic = async (positionPlayer: number): Promise<void> => {
+    const currentPlayer = this.players[positionPlayer];
 
-    const targets = this.players.filter((playerCur) => !(playerCur === player));
+    const opponents = this.players.filter((playerCur) => playerCur !== currentPlayer && playerCur.hitPoints);
+    const resultDiceRollPlayer = await currentPlayer.makeDiceRoll(2);
+    const opponentsResults = await makeDiceRolls(opponents);
 
-    const resultDiceRollPlayer = await player.makeDiceRoll(2);
-    resultDiceRollPlayer.pop();
-    for (let i = 0; i < targets.length; i++) {
-      const target = targets[i];
-      // eslint-disable-next-line no-await-in-loop
-      const [resultDiceRollTarget] = await target.makeDiceRoll(1);
-      if (resultDiceRollPlayer.includes(resultDiceRollTarget)) {
-        target.takeDamage(resultDiceRollTarget);
-      }
-    }
+    const targets: Array<{target: Player, damage: number}> = opponentsResults
+      .filter((rollResult) => resultDiceRollPlayer.includes(rollResult.rolls[0]))
+      .map(({ player, rolls }) => (
+        { target: player, damage: resultDiceRollPlayer[resultDiceRollPlayer.indexOf(rolls[0])] || 0 }
+      ));
+
+    if (targets.length === 0) return;
+    await Promise.race(targets.map(({ target, damage }) => target.takeDamage(damage)));
   };
 
+  /**
+   * крутой
+   */
   private useSharp = async (positionPlayer: number): Promise<void> => {
     const damageSharp = 3;
 
@@ -784,23 +721,6 @@ export class Spells {
       damageTasks.push((<Player> rightOpponent).takeDamage(damageSharp));
     }
     await Promise.race(damageTasks);
-
-    // if (this.numberPlayers === 2) {
-    //   const targetIndex: number = positionPlayer - 1;
-    //   const target = this.players[targetIndex];
-    //   target.takeDamage(damageSharp);
-    // } else {
-    //   let targetIndexOne: number = positionPlayer - 1;
-    //   if (targetIndexOne < 0) targetIndexOne += this.numberPlayers;
-    //   let targetIndexTwo: number = positionPlayer + 1;
-    //   if (targetIndexTwo >= this.numberPlayers) targetIndexTwo -= this.numberPlayers;
-
-    //   const targetOne = this.players[targetIndexOne];
-    //   const targetTwo = this.players[targetIndexTwo];
-
-    //   targetOne.takeDamage(damageSharp);
-    //   targetTwo.takeDamage(damageSharp);
-    // }
   };
 
   private useEmpty = async (): Promise<void> => {

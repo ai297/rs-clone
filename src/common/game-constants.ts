@@ -11,3 +11,4 @@ export const START_GAME_DELAY = 5000;
 export const MAX_AWAIT_TIME = 10000;
 export const SELECT_TARGET_TIME = 15000;
 export const SERVER_DELAY = 1000;
+export const TARGET_ALL = 'ALL';
