@@ -1,6 +1,5 @@
 import { Player } from '../../player';
 import { forEachAsync, ICard, MAX_WINNERS } from '../../../common';
-import { CardHandler } from './type';
 import { Spells } from './spells';
 import { IGameForCasting } from '../interface';
 
@@ -25,8 +24,8 @@ export class CastingSpells {
         // console.log(currentCard.id);
         await player.castCard(currentCard.id);
 
-        const handler = await this.spells.getHandler(currentCard.id);
-        if (handler) await (handler as CardHandler)(positionPlayer, currentCard);
+        const handler = this.spells.getHandler(currentCard.id);
+        await handler(positionPlayer, currentCard);
         // this.players.forEach((cur, index) => console.log('pozit player', index, 'hit point', cur.hitPoints));
 
         const deadThisCast: Array<Player> = this.players.filter((current: Player) => current.hitPoints < 1);

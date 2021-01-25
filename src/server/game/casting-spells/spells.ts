@@ -65,7 +65,7 @@ export class Spells {
       .set('sharp', this.useSharp);
   }
 
-  public async getHandler(currentCard: string): Promise<CardHandler> {
+  public getHandler(currentCard: string): CardHandler {
     const handler = this.spells.get(currentCard);
     if (handler) return handler;
     return this.useEmpty;
@@ -944,31 +944,36 @@ export class Spells {
     }
   };
 
-  private useSharp = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
-    const player = this.players[positionPlayer];
-
+  private useSharp = async (positionPlayer: number): Promise<void> => {
     const damageSharp = 3;
 
-    if (this.numberPlayers === 2) {
-      const targetIndex: number = positionPlayer - 1;
-      const target = this.players[targetIndex];
-      target.takeDamage(damageSharp);
-    } else {
-      let targetIndexOne: number = positionPlayer - 1;
-      if (targetIndexOne < 0) targetIndexOne += this.numberPlayers;
-      let targetIndexTwo: number = positionPlayer + 1;
-      if (targetIndexTwo >= this.numberPlayers) targetIndexTwo -= this.numberPlayers;
+    const positionLeft = positionPlayer + 1;
+    const positionRight = positionPlayer - 1;
+    const damageTasks: Array<Promise<void>> = [];
+    if (this.players[positionLeft]) damageTasks.push((<Player> this.players[positionLeft]).takeDamage(damageSharp));
+    if (this.players[positionRight]) damageTasks.push((<Player> this.players[positionRight]).takeDamage(damageSharp));
+    await Promise.race(damageTasks);
 
-      const targetOne = this.players[targetIndexOne];
-      const targetTwo = this.players[targetIndexTwo];
+    // if (this.numberPlayers === 2) {
+    //   const targetIndex: number = positionPlayer - 1;
+    //   const target = this.players[targetIndex];
+    //   target.takeDamage(damageSharp);
+    // } else {
+    //   let targetIndexOne: number = positionPlayer - 1;
+    //   if (targetIndexOne < 0) targetIndexOne += this.numberPlayers;
+    //   let targetIndexTwo: number = positionPlayer + 1;
+    //   if (targetIndexTwo >= this.numberPlayers) targetIndexTwo -= this.numberPlayers;
 
-      targetOne.takeDamage(damageSharp);
-      targetTwo.takeDamage(damageSharp);
-    }
+    //   const targetOne = this.players[targetIndexOne];
+    //   const targetTwo = this.players[targetIndexTwo];
+
+    //   targetOne.takeDamage(damageSharp);
+    //   targetTwo.takeDamage(damageSharp);
+    // }
   };
 
   private useEmpty = async (): Promise<void> => {
-    console.log('No card in the deck!');
+    console.log('No card handler!');
     return Promise.resolve();
   };
 }
