@@ -2,6 +2,7 @@ export enum CSSClasses {
   // base
   Component = 'component',
   Button = 'button',
+  Avatar = 'avatar',
   // start screen
   StartScreen = 'start-screen',
   StartScreenHidden = 'start-screen--hidden',
