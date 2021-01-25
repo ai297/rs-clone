@@ -145,7 +145,10 @@ export class GameService {
 
   async selectSpell(cardIds: Array<string>): Promise<void> {
     await this.connection.dispatch(HubEventsServer.SelectSpell, cardIds);
-    this.playerCards = this.playerCards.filter((card) => !cardIds.includes(card.id));
+    cardIds.forEach((cardId) => {
+      const cardIndex = this.playerCards.findIndex((card) => card.id === cardId);
+      if (cardIndex >= 0) this.playerCards.splice(cardIndex, 1);
+    });
   }
 
   /**

@@ -159,12 +159,16 @@ export class Player {
   }
 
   addSpellCards(cardIds: Array<string>): void {
-    // кладем в активное заклинание
-    this.currentSpell = new PlayerSpell(this.handCardsValue.filter((card) => cardIds.includes(card.id)));
-    // убираем из руки
-    const spellCards = [...this.currentSpell].map((card) => card.id);
-    this.handCardsValue = this.handCardsValue.filter((card) => !spellCards.includes(card.id));
-
+    // create new spell (only with cards which contains in hand)
+    const spellCards = cardIds.filter((cardId) => this.handCards.findIndex((card) => card.id === cardId) >= 0)
+      .map((cardId) => <ICard> this.handCards.find((card) => card.id === cardId));
+    this.currentSpell = new PlayerSpell(spellCards);
+    // remove spell cards from hand
+    spellCards.forEach((card) => {
+      const cardIndex = this.handCards.findIndex((handCard) => handCard.id === card.id);
+      if (cardIndex >= 0) this.handCards.splice(cardIndex, 1);
+    });
+    // send notification to clients
     const message: ISpellSelected = { playerId: this.id, spellCards: this.currentSpell.length };
     this.connection.sendOthers(HubEventsClient.SpellSelected, message);
     if (this.onSpellSelected) this.onSpellSelected();
