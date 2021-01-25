@@ -1,4 +1,6 @@
+import { ICard } from '../card';
+
 export interface ICastCard {
   playerId: string,
-  cardId: string,
+  card: ICard,
 }

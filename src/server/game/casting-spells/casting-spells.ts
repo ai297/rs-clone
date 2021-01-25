@@ -22,7 +22,7 @@ export class CastingSpells {
 
       await forEachAsync(cards, async (currentCard: ICard) => {
         // console.log(currentCard.id);
-        await player.castCard(currentCard.id);
+        await player.castCard(currentCard);
 
         const handler = this.spells.getHandler(currentCard.id);
         await handler(positionPlayer, currentCard);

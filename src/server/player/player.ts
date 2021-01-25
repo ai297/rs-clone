@@ -84,8 +84,8 @@ export class Player {
     return cards;
   }
 
-  async castCard(cardId: string): Promise<void> {
-    const message: ICastCard = { playerId: this.id, cardId };
+  async castCard(card: ICard): Promise<void> {
+    const message: ICastCard = { playerId: this.id, card };
     this.connection.sendOthers(HubEventsClient.CastCard, message);
     await race(this.connection.dispatch(HubEventsClient.CastCard, message));
   }

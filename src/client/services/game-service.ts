@@ -253,9 +253,8 @@ export class GameService {
   }
 
   private async castCard(message: ICastCard): Promise<IHubResponse<null>> {
-    const castingCard = <ICard> this.castingSpellCards.find((card) => card.id === message.cardId);
     if (this.onCardCast) {
-      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), castingCard);
+      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card);
     }
     return HubResponse.Ok();
   }
