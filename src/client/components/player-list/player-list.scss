@@ -24,11 +24,11 @@
     }
 
     &.empty-item {
-      background: $red-grey-color-light;
+      background: $substrate-color-light;
       border: 3px solid $secondary-warning-color-light;
 
       .player__avatar {
-        background: $red-grey-color-light;
+        background: $substrate-color-light;
         box-shadow: inset 0px 0px 3px $shadow-color-dark;
       }
 
