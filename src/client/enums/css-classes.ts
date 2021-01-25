@@ -3,6 +3,7 @@ export enum CSSClasses {
   Component = 'component',
   Button = 'button',
   Avatar = 'avatar',
+  Timer = 'timer',
   // start screen
   StartScreen = 'start-screen',
   StartScreenHidden = 'start-screen--hidden',
