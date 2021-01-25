@@ -22,6 +22,10 @@
     img {
       border: 1px solid $secondary-warning-color;
       border-radius: $primary-border-radius;
+
+      &.full-hero--hidden {
+        opacity: 0;
+      }
     }
   }
 

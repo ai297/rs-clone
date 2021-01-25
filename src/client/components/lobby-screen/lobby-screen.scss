@@ -84,13 +84,37 @@
     max-width: 42rem;
     @include link-input;
 
-    &::before {
-      content: url('../assets/icons/copy.svg');
+    .copy-icon {
       cursor: pointer;
       position: absolute;
       height: 1.5rem;
       width: 1.5rem;
-      right: 5px;
+      right: .25rem;
+      bottom: .5rem; 
+
+      svg {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      &:hover {
+        path {
+          fill-opacity: 1;
+        }
+      }
+    }
+
+    .copy-tooltip {
+      position: absolute;
+      transition: all .5s ease-in-out;
+      font-size: 1rem;
+      right: -1rem;
+      top: -2rem;
+      background: $shadow-color-darkest;
+      border-radius: $primary-border-radius;
+      border: 1px solid $primary-font-color-light;
+      padding: .2rem;
     }
   }
 

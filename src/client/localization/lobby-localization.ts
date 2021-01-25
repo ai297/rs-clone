@@ -5,4 +5,5 @@ export interface ILobbyLocalization {
   GameLink: string,
   PlayerList: string,
   AddBot: string,
+  Copy: string
 }

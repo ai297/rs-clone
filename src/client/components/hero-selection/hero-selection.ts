@@ -28,14 +28,12 @@ export class HeroSelection extends BaseComponent {
     const heroes = createElement(Tags.Div, [CSSClasses.HeroSelectionHeroes]);
     heroesWrapper.append(heroes);
     this.fullHero = createElement(Tags.Div, [CSSClasses.HeroSelectionFullHero]);
-    this.fullHero.innerHTML = `<img src="${ImagesPaths.HeroesFullSize}pisster.jpg" alt="pisster">`;
+    this.fullHero.innerHTML = `<img src="${ImagesPaths.HeroesFullSize}princess_holiday.jpg" alt="pisster">`;
     this.heroesRepository.getAllHeroes().then((data: IHero[]) => {
       data.forEach((elem: IHero) => {
         const hero = createElement(Tags.Div, [CSSClasses.Hero]);
         hero.innerHTML = `<img src="${ImagesPaths.HeroesAvatars}${elem.image}.png" alt="${elem.id}">`;
-        hero.addEventListener('click', (event) => {
-          this.selectHero(event, elem);
-        });
+        hero.addEventListener('click', () => this.selectHero(elem));
         this.heroes.set(elem.id, hero);
         heroes.append(hero);
         if (this.disabledHeroes.includes(elem.id)) {
@@ -67,16 +65,20 @@ export class HeroSelection extends BaseComponent {
     this.isActive = !value;
   }
 
-  private selectHero(event: Event, hero: IHero): void {
+  private selectHero(hero: IHero): void {
     if (this.isActive) {
-      this.selectedHero?.classList.remove(CSSClasses.HeroSelected);
-      const target: HTMLElement | null = (<HTMLElement>event.target).closest(`.${CSSClasses.Hero}`);
-      if (target) {
-        this.selectedHero = target;
-        this.selectedHero.classList.add(CSSClasses.HeroSelected);
-      }
-      this.fullHero.innerHTML = `<img src="${ImagesPaths.HeroesFullSize}${hero.id}.jpg" alt="${hero.id}">`;
+      this.showSelectedHero(hero);
       this.onSelect(hero);
     }
+  }
+
+  public showSelectedHero(hero: IHero): void {
+    this.selectedHero?.classList.remove(CSSClasses.HeroSelected);
+    const heroElement = this.heroes.get(hero.id);
+    if (heroElement) {
+      this.selectedHero = heroElement;
+      this.selectedHero.classList.add(CSSClasses.HeroSelected);
+    }
+    this.fullHero.innerHTML = `<img src="${ImagesPaths.HeroesFullSize}${hero.id}.jpg" alt="${hero.id}">`;
   }
 }

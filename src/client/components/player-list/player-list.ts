@@ -11,11 +11,11 @@ export class PlayerList extends BaseComponent {
 
   private playerList: HTMLElement = createElement(Tags.Div, [CSSClasses.PlayerList]);
 
-  constructor(private gameCreator: boolean) {
+  constructor(private gameCreator: boolean, private addBot: () => void) {
     super([CSSClasses.PlayerListWrapper]);
     this.element.append(this.playerList);
     for (let i = 0; i < MAX_PLAYERS; i++) {
-      const emptyItem = new EmptyItem(this.gameCreator);
+      const emptyItem = new EmptyItem(this.gameCreator, this.addBot);
       this.emptyItems.push(emptyItem);
       this.playerList.append(emptyItem.element);
     }
@@ -32,7 +32,7 @@ export class PlayerList extends BaseComponent {
 
   removePlayer(id: string): void {
     if (!this.players[id]) return;
-    const emptyItem = new EmptyItem(this.gameCreator);
+    const emptyItem = new EmptyItem(this.gameCreator, this.addBot);
     this.emptyItems.push(emptyItem);
     this.players[id]?.element.remove();
     delete this.players[id];

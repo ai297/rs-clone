@@ -33,6 +33,7 @@ export enum CSSClasses {
   // hero selection
   HeroSelection = 'hero-selection',
   HeroSelectionFullHero = 'hero-selection__full-hero',
+  FullHeroHidden = 'full-hero--hidden',
   HeroSelectionHeroesWrapper = 'hero-selection__heroes-wrapper',
   HeroSelectionHeroes = 'hero-selection__heroes',
   HeroSelectionDisabled = 'hero-selection--disabled',
@@ -69,6 +70,8 @@ export enum CSSClasses {
   LobbySubtitle = 'lobby__subtitle',
   GameLinkWrapper = 'lobby__link-wrapper',
   GameLink = 'lobby__game-link',
+  CopyIcon = 'copy-icon',
+  CopyTooltip = 'copy-tooltip',
   NameLabel = 'lobby__name-label',
   NameInput = 'lobby__name-input',
   SelectHeroButton = 'lobby__select-hero',

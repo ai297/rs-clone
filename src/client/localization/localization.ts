@@ -10,6 +10,7 @@ export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
   GameLink: 'Позови врагов',
   PlayerList: 'Готовы к бою',
   AddBot: 'Добавить бота',
+  Copy: 'Ссылка скопирована',
 };
 
 export const START_SCREEN_DEFAULT_LOCALIZATION: IStartScreenLocalization = {
