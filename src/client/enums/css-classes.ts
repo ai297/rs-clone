@@ -40,6 +40,8 @@ export enum CSSClasses {
   OpponentCardItem = 'opponents-cards__item',
   // player display (game screen)
   GamePlayerDisplayContainer = 'game-player__container',
+  GamePlayerDisplayContainerOpponent = 'game-player__container--opponent',
+  GamePlayerDisplayContainerCurrent = 'game-player__container--current',
   GamePlayerName = 'game-player__name',
   GamePlayerHero = 'game-player__hero',
   GamePlayerAvatar = 'game-player__avatar',
@@ -47,6 +49,8 @@ export enum CSSClasses {
   // animations classes
   InGameAddHealthAnimation = 'game-player__animation--recovery',
   InGameBringDamageAnimation = 'game-player__animation--damage',
+  GamePlayerPointsAnimation = 'game-player__animation--container',
+  GamePlayerPointsHidden = 'game-player__animation--hidden',
   // lobby
   Lobby = 'lobby',
   GameLink = 'lobby__game-link',
@@ -62,6 +66,7 @@ export enum CSSClasses {
   GameUILayer = 'game-screen__ui-layer',
   GameOpponentsInfo = 'game-screen__opponents-info-container',
   GameOpponentSection = 'game-screen__opponent-section',
+  GameOpponentSectionDead = 'game-screen__opponent-section--dead',
   GamePlayerInfo = 'game-screen__player-info-container',
   GameControls = 'game-screen__game-buttons-container',
   // player cards

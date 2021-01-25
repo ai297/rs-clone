@@ -1,0 +1,168 @@
+.game-player {
+  &__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 23.5rem;
+    min-height: 6.7rem;
+    margin: 1rem 1rem 1rem 2rem;
+    padding-left: 5.9rem;
+
+    &--dead {
+      &.game-player__container--opponent {
+        background-color: $primary-dark-color;
+      }
+
+      .game-player__hero {
+        color: $primary-attention-color;
+      }
+    }
+
+    &--opponent {
+      border-radius: 1.5rem;
+      background-color: $shadow-color-darkest;
+
+      .game-player__health {
+        border-bottom-right-radius: 1.5rem;
+      }
+    }
+
+    &--current {
+      justify-content: center;
+
+      .game-player__hero {
+        text-shadow: 0.2rem 0.15rem 0.1rem $primary-dark-color;
+        // -webkit-text-stroke: 0.1rem $primary-dark-color;
+      }
+
+      .game-player__health {
+        margin-top: 0.5rem;
+        padding-left: 2.25rem;
+        border-radius: 0px 20px 20px 0px;
+
+        &::before {
+          top: -11px;
+          left: -18px;
+        }
+      }
+    }
+  }
+
+  &__avatar {
+    position: absolute;
+    top: -6%;
+    left: -7%;
+    width: 7.5rem;
+    height: 7.5rem;
+    border: 0.2rem solid $primary-dark-color;
+    border-radius: 50%;
+  }
+
+  &__name,
+  &__hero {
+    margin-left: 0.7rem;
+    font-size: 1.25rem;
+  }
+
+  &__name {
+    @include primary-font;
+    margin-top: 0.25rem;
+  }
+
+  &__hero {
+    font-family: $headers-font;
+    font-weight: bold;
+    color: $secondary-font-color;
+    line-height: 120%;
+  }
+
+  &__health {
+    @include primary-font;
+    position: relative;
+    margin-top: 3px;
+    padding-left: 1.75rem;
+    font-size: 1.5rem;
+    border: 2px solid $primary-dark-color;
+    background-color: $primary-dark-color;
+
+    &::before {
+      content: url('../assets/skull-icon.svg');
+      position: absolute;
+      top: -11px;
+      left: -26px;
+      height: 3rem;
+      width: 3rem;
+    }
+  }
+}
+
+.game-player__animation {
+  &--container {
+    position: absolute;
+    z-index: 100;
+    font-weight: bold;
+    font-family: $headers-font;
+    -webkit-text-stroke: 0.1rem $shadow-color-extra-light;
+  }
+
+  &--recovery {
+    position: absolute;
+    top: 500px;
+    left: 100px;
+    font-size: 15rem;
+    color: $accent-color;
+    transform: scale(0) translate(0px, -2000px);
+    transition: all 2s ease-in;
+  }
+
+  &--damage {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    height: 1px;
+    width: 1px;
+    font-size: 3rem;
+    color: $secondary-attention-color;
+    transform: scale(20) translate(-100px, 50px);
+    transition: all 3s ease-in;
+  }
+}
+
+.game-player__container--opponent:first-child {
+  .game-player__animation--recovery {
+    top: 500px;
+    left: 500px;
+    transform: scale(0) translate(-1500px, -2000px);
+  }
+  .game-player__animation--damage {
+    transform: scale(20) translate(300px, 50px);
+  }
+}
+
+.game-player__container--opponent:last-child {
+  .game-player__animation--recovery {
+    top: 500px;
+    left: -300px;
+    transform: scale(0) translate(1700px, -2000px);
+  }
+  .game-player__animation--damage {
+    transform: scale(20) translate(-300px, 50px);
+  }
+}
+
+.game-player__container--current {
+  .game-player__animation--recovery {
+    top: -200px;
+    left: 500px;
+    transform: scale(0) translate(-1700px, 800px);
+  }
+  .game-player__animation--damage {
+    transform: scale(20) translate(200px, -500px);
+  }
+}
+
+.game-player__animation--hidden {
+  display: none;
+}

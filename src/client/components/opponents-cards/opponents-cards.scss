@@ -1,18 +1,17 @@
-// styles for test
 .opponents-cards {
   display: flex;
-  justify-content: space-evenly;
-  width: 150px;
-  height: 60px;
-  padding: 3px;
-  background-color: lightslategray;
+  flex-direction: row;
+  justify-content: center;
+  height: 6.25rem;
 
   &__item {
-    width: 40px;
+    width: 4.4rem;
+    margin: 0 0.7rem;
     background-image: url('../assets/cards/cover-card.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 5px;
+    border-radius: 0.5rem;
+    filter: drop-shadow(0px -1px 4px $shadow-color-black);
   }
 }

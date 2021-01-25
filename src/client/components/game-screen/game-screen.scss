@@ -34,7 +34,6 @@
   &__opponent-section {
     flex: 0 0 30%;
     min-width: 20rem;
-    text-align: center;
   }
 
   &__card-section {
@@ -64,8 +63,9 @@
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 30%;
+    width: 31%;
     min-width: 22rem;
+    padding-left: 0.3;
   }
 
   &__game-buttons-container {
