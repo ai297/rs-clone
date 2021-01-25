@@ -492,13 +492,13 @@ export class Spells {
     return Promise.resolve();
   };
 
-  private useProfessor = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
+  private useProfessor = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
     const targets = this.players.filter((playerCur) => !(playerCur === player));
-    const [target] = await throwCheck(targets, TARGET_SMALLEST_CUBE);
+    const target = targets[getRandomInteger(0, targets.length - 1)];
     const PROFESSOR_DAMAGE = 3;
-    target.takeDamage(PROFESSOR_DAMAGE);
+    await target?.takeDamage(PROFESSOR_DAMAGE);
   };
 
   private useZmeyGorynych = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
