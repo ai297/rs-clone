@@ -85,4 +85,10 @@ export enum CSSClasses {
   LoserItem = 'loser',
   // game screen
   GameScreenButton = 'game-button__ready',
+  // dice roller
+  Dice = 'dice',
+  DiceContainer = 'dice-container',
+  DiceRoller = 'dice-roller',
+  DiceRollerShow = 'dice-roller--show',
+  DiceRollingAnimation = 'dice--rolling',
 }
