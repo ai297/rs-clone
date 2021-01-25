@@ -75,6 +75,27 @@ export class Spells {
     return this.spells.has(key);
   }
 
+  private getNextOpponent(position: number, isLeft = true): Player | null {
+    // проверка входных данных
+    if (position > this.players.length - 1 || position < 0) return null;
+
+    const currentPlayer = <Player> this.players[position];
+    // на всякий случай исключаем "убитых" героев что бы заклинание могло попасть в следующую цель
+    const alivePlayers = this.players.filter((player) => player.hitPoints > 0);
+    // если сам игрок уже не живой - он неможет применять заклинание. Так же, если кроме него никого больше нет в живых
+    if (currentPlayer.hitPoints <= 0 || alivePlayers.length < 2) return null;
+
+    const currentPlayerPosition = alivePlayers.findIndex((player) => player === currentPlayer);
+    let targetPosition;
+    if (isLeft) targetPosition = currentPlayerPosition === alivePlayers.length - 1 ? 0 : currentPlayerPosition + 1;
+    else targetPosition = currentPlayerPosition === 0 ? alivePlayers.length - 1 : currentPlayerPosition - 1;
+    return <Player> alivePlayers[targetPosition];
+  }
+
+  private getLeftOpponent(position: number): Player | null { return this.getNextOpponent(position); }
+
+  private getRightOpponent(position: number): Player | null { return this.getNextOpponent(position, false); }
+
   private useFistNatureCard = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
     let targetIndex: number = positionPlayer + 1;
@@ -413,39 +434,49 @@ export class Spells {
     const throwResult = await player.makeDiceRoll(amountDice);
     const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
 
-    let damage = 0;
+    const damageStrength: Array<number> = [1, 2, 4];
+    const damage: number = damageStrength[strongPower] || 0;
+    // let damage = 0;
+    // switch (strongPower) {
+    //   case PowerMagic.weakThrow:
+    //     damage = 1;
+    //     break;
+    //   case PowerMagic.averageThrow:
+    //     damage = 2;
+    //     break;
+    //   case PowerMagic.strongThrow:
+    //     damage = 4;
+    //     break;
+    //   default:
+    //     throw new Error('strong power is wrong');
+    // }
 
-    switch (strongPower) {
-      case PowerMagic.weakThrow:
-        damage = 1;
-        break;
-      case PowerMagic.averageThrow:
-        damage = 2;
-        break;
-      case PowerMagic.strongThrow:
-        damage = 4;
-        break;
-      default:
-        throw new Error('strong power is wrong');
+    const leftOpponent = this.getLeftOpponent(positionPlayer);
+    const rightOpponent = this.getRightOpponent(positionPlayer);
+    const damageTasks: Array<Promise<void>> = [];
+    if (leftOpponent) damageTasks.push((<Player> leftOpponent).takeDamage(damage));
+    if (rightOpponent && rightOpponent !== leftOpponent) {
+      damageTasks.push((<Player> rightOpponent).takeDamage(damage));
     }
+    await Promise.race(damageTasks);
 
     // если противник один то он ловит удар
-    if (this.numberPlayers === 2) {
-      const targetIndex: number = positionPlayer - 1;
-      const target = this.players[targetIndex];
-      target.takeDamage(damage);
-    } else {
-      let targetIndexOne: number = positionPlayer - 1;
-      if (targetIndexOne < 0) targetIndexOne += this.numberPlayers;
-      let targetIndexTwo: number = positionPlayer + 1;
-      if (targetIndexTwo >= this.numberPlayers) targetIndexTwo -= this.numberPlayers;
+    // if (this.numberPlayers === 2) {
+    //   const targetIndex: number = positionPlayer - 1;
+    //   const target = this.players[targetIndex];
+    //   target.takeDamage(damage);
+    // } else {
+    //   let targetIndexOne: number = positionPlayer - 1;
+    //   if (targetIndexOne < 0) targetIndexOne += this.numberPlayers;
+    //   let targetIndexTwo: number = positionPlayer + 1;
+    //   if (targetIndexTwo >= this.numberPlayers) targetIndexTwo -= this.numberPlayers;
 
-      const targetOne = this.players[targetIndexOne];
-      const targetTwo = this.players[targetIndexTwo];
+    //   const targetOne = this.players[targetIndexOne];
+    //   const targetTwo = this.players[targetIndexTwo];
 
-      targetOne.takeDamage(damage);
-      targetTwo.takeDamage(damage);
-    }
+    //   targetOne.takeDamage(damage);
+    //   targetTwo.takeDamage(damage);
+    // }
   };
 
   private useMidnightMerlin = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
@@ -927,6 +958,7 @@ export class Spells {
     }
   };
 
+  // убрать цикл
   private useCubic = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
 
@@ -947,11 +979,13 @@ export class Spells {
   private useSharp = async (positionPlayer: number): Promise<void> => {
     const damageSharp = 3;
 
-    const positionLeft = positionPlayer + 1;
-    const positionRight = positionPlayer - 1;
+    const leftOpponent = this.getLeftOpponent(positionPlayer);
+    const rightOpponent = this.getRightOpponent(positionPlayer);
     const damageTasks: Array<Promise<void>> = [];
-    if (this.players[positionLeft]) damageTasks.push((<Player> this.players[positionLeft]).takeDamage(damageSharp));
-    if (this.players[positionRight]) damageTasks.push((<Player> this.players[positionRight]).takeDamage(damageSharp));
+    if (leftOpponent) damageTasks.push((<Player> leftOpponent).takeDamage(damageSharp));
+    if (rightOpponent && rightOpponent !== leftOpponent) {
+      damageTasks.push((<Player> rightOpponent).takeDamage(damageSharp));
+    }
     await Promise.race(damageTasks);
 
     // if (this.numberPlayers === 2) {
