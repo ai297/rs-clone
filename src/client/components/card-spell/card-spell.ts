@@ -1,7 +1,6 @@
+import { ICard, CardTypes, MagicSigns } from '../../../common';
 import { BaseComponent } from '../base-component';
 import { CSSClasses, ImagesPaths } from '../../enums';
-import { ICard } from '../../../common/interfaces';
-import { CardTypes, MagicSigns } from '../../../common';
 
 const LOCALE_TYPES = ['источник', 'качество', 'действие'];
 const LOCALE_ELEMENTS = ['тайна', 'тьма', 'природа', 'стихия', 'иллюзия'];
@@ -11,37 +10,33 @@ export class CardSpell extends BaseComponent {
   constructor(private card: ICard) {
     super([CSSClasses.СardСontainer]);
 
-    const {
-      id, title, type, magicSign, src, text, initiative,
-    } = this.card;
-
-    const temp = type;
-    const typeCard = CardTypes[temp];
-    const temp2 = magicSign;
-    const magicSignCard = MagicSigns[temp2];
+    const typeCard = CardTypes[card.type];
+    const magicSignCard = MagicSigns[card.magicSign];
 
     let initiativeElem = '';
 
-    if (type === CardTypes.action) {
-      initiativeElem = `<div class="${CSSClasses.СardType}-icon">${initiative}</div>`;
+    if (card.type === CardTypes.action) {
+      initiativeElem = `<div class="${CSSClasses.СardType}-icon">${card.initiative}</div>`;
     }
 
     const cardTemplate = `
       <div class="${CSSClasses.Сard} ${CSSClasses.СardType}--${typeCard} ${CSSClasses.СardElement}--${magicSignCard}">
         <div class="${CSSClasses.СardContent}">
-          <div class="${CSSClasses.СardImage}">
-            <img src="${IMG_PATH}${typeCard}/${src}.jpg" alt="${id} image">
+          <div class="${CSSClasses.СardImage}" style="background-image: url(${IMG_PATH}${typeCard}/${card.src}.jpg)">
           </div>
           <div class="${CSSClasses.СardTitle}">
-            <div>${title}</div>
+            <div>${card.title}</div>
           </div>
           ${initiativeElem}
             <div class="${CSSClasses.СardText}">
-              ${text}
+              ${card.text}
             </div>
         </div>
-        <div class="${CSSClasses.СardElement}--label">${LOCALE_ELEMENTS[magicSign]}</div>
-        <div class="${CSSClasses.СardType}--label">${LOCALE_TYPES[type]}</div>
+        <div class="${CSSClasses.СardElement}--label">${LOCALE_ELEMENTS[card.magicSign]}</div>
+        <div class="${CSSClasses.СardType}--label">
+          ${LOCALE_TYPES[card.type]}<span>${LOCALE_TYPES[card.type][0].toUpperCase()}</span>
+        </div>
+        <div class="${CSSClasses.СardBackside}"></div>
       </div>
     `;
 
@@ -55,4 +50,8 @@ export class CardSpell extends BaseComponent {
   get cardType(): CardTypes {
     return this.card.type;
   }
+
+  get isFlipped(): boolean { return this.element.classList.contains(CSSClasses.CardFlipped); }
+
+  flip(force?: boolean): void { this.element.classList.toggle(CSSClasses.CardFlipped, force); }
 }
