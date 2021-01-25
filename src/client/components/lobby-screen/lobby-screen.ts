@@ -176,8 +176,8 @@ export class LobbyScreen extends BaseComponent {
       };
       try {
         await this.gameService.createHero(request);
-      } catch {
-        alert('Не удалось создать игрока');
+      } catch (err: unknown) {
+        alert(`Не удалось создать игрока: ${(<Error> err)?.message}`);
         this.disableLobby(false);
       }
     }

@@ -23,6 +23,8 @@ export class Game implements IGameForCasting {
 
   private isGameStarted = false;
 
+  private isCastingStep = false;
+
   constructor(
     private cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
@@ -42,6 +44,8 @@ export class Game implements IGameForCasting {
 
   get isStarted(): boolean { return this.isGameStarted; }
 
+  get isCasting(): boolean { return this.isCastingStep; }
+
   startGame(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.players.length < MIN_PLAYERS) reject(Error('Few players to start the game'));
@@ -60,6 +64,8 @@ export class Game implements IGameForCasting {
 
   private giveCards(): void {
     if (this.onNextMove) this.onNextMove();
+    this.isCastingStep = false;
+
     const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
     activePlayers.forEach((player) => {
       console.log(`give cards to player ${player.name}`);
@@ -89,6 +95,8 @@ export class Game implements IGameForCasting {
   }
 
   private async castSpells(): Promise<void> {
+    this.isCastingStep = true;
+
     const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
     const casting = new CastingSpells(activePlayers, this);
 
@@ -112,6 +120,7 @@ export class Game implements IGameForCasting {
 
   endGame = (): void => {
     this.isEndGame = true;
+    this.isCastingStep = false;
     const winners = this.players.filter((player) => player.hitPoints > 0);
     if (this.onGameEnd) this.onGameEnd(winners);
   };

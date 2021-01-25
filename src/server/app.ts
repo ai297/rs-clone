@@ -1,19 +1,16 @@
 import { Server } from 'http';
 import { ConnectionEvents, ConnectionService } from './connection';
-import { CardRepository, GameService, PlayerService } from './services';
+import { CardRepository, GameService } from './services';
 
 export default class App {
   private readonly connectionService: ConnectionService;
-
-  private readonly playerService: PlayerService;
 
   private readonly gameService: GameService;
 
   constructor(private server: Server) {
     const cardsRepository = new CardRepository();
     this.connectionService = new ConnectionService();
-    this.playerService = new PlayerService();
-    this.gameService = new GameService(cardsRepository, this.connectionService, this.playerService);
+    this.gameService = new GameService(cardsRepository, this.connectionService);
 
     // TODO: don't forget delete console logs
     this.connectionService.addEventListener(
