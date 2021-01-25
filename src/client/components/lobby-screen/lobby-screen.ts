@@ -5,6 +5,7 @@ import {
   ICreatePlayerRequest,
   IHero,
   IPlayerInfo,
+  getRandomInteger,
 } from '../../../common';
 import { HeroSelection } from '../hero-selection/hero-selection';
 import { PlayerList } from '../player-list/player-list';
@@ -15,7 +16,7 @@ import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localizati
 import { HeroesRepository } from '../../services';
 
 export class LobbyScreen extends BaseComponent {
-  private heroSelection : HeroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this));
+  private heroSelection! : HeroSelection;
 
   private playerList : PlayerList = new PlayerList();
 
@@ -41,12 +42,14 @@ export class LobbyScreen extends BaseComponent {
   ) {
     super([CSSClasses.Lobby]);
     this.loc = localization || LOBBY_DEFAULT_LOCALIZATION;
-    this.createMarkup();
+    const disabledHeroes = this.gameService.currentPlayers.map((elem) => elem.heroId);
+    this.heroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this), disabledHeroes);
     this.gameService.currentPlayers.forEach((elem) => {
       this.addPlayer(elem);
     });
     this.gameService.onPlayerJoined = this.onPlayerJoined.bind(this);
     this.gameService.onPlayerLeaved = this.onPlayerLeaved.bind(this);
+    this.createMarkup();
   }
 
   private onPlayerJoined(playerInfo: IPlayerInfo): void {
@@ -56,7 +59,7 @@ export class LobbyScreen extends BaseComponent {
       this.currentHero = null;
       this.readyToSelect();
     }
-    if (this.gameService.currentPlayers.length > MIN_PLAYERS && this.startGameButton) {
+    if (this.gameService.currentPlayers.length >= MIN_PLAYERS && this.startGameButton) {
       this.startGameButton.disabled = false;
     }
   }
@@ -109,11 +112,30 @@ export class LobbyScreen extends BaseComponent {
     if (this.gameCreator) {
       this.startGameButton = new BaseButton(
         this.loc.StartGame,
-        this.gameService.startGame,
+        () => this.startGameHandler(),
         [CSSClasses.StartGameButton, CSSClasses.StartGameButtonDisabled],
       );
       this.startGameButton.disabled = true;
       this.element.append(this.startGameButton.element);
+
+      // const addBotButton = new BaseButton('Добавить бота', async () => {
+      //   const heroes = await this.heroesRepository.getAllHeroes();
+      //   const hero = heroes[getRandomInteger(0, heroes.length - 1)];
+      //   try {
+      //     await this.gameService.createBot(hero.id);
+      //   } catch (e: unknown) {
+      //     alert((e as Error)?.message);
+      //   }
+      // });
+      // this.element.append(addBotButton.element);
+    }
+  }
+
+  private async startGameHandler(): Promise<void> {
+    try {
+      await this.gameService.startGame();
+    } catch (error) {
+      alert(error);
     }
   }
 
@@ -144,7 +166,7 @@ export class LobbyScreen extends BaseComponent {
     }
   }
 
-  async setHero(): Promise<void> {
+  private async setHero(): Promise<void> {
     if (!this.isDisabled) {
       this.disableLobby(true);
       const request: ICreatePlayerRequest = {
@@ -154,8 +176,8 @@ export class LobbyScreen extends BaseComponent {
       };
       try {
         await this.gameService.createHero(request);
-      } catch {
-        alert('Не удалось создать игрока');
+      } catch (err: unknown) {
+        alert(`Не удалось создать игрока: ${(<Error> err)?.message}`);
         this.disableLobby(false);
       }
     }

@@ -4,23 +4,27 @@ import {
   DICE_MAX_VALUE,
   DICE_MIN_VALUE,
   MAX_AWAIT_TIME,
+  SELECT_TARGET_TIME,
+  SERVER_DELAY,
   delay,
   HubEventsClient,
   HubEventsServer,
   HubResponse,
-  ICallbackHandler,
   ICard,
   IHealthUpdate,
   ISpellSelected,
-  IDiceRoll, getRandomInteger, ISelectTarget,
+  IDiceRoll,
+  getRandomInteger,
+  ISelectTarget,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ClientConnection } from '../connection';
-import { PlayerEvents } from './player-events';
 import { PlayerSpell } from './player-spell';
 
-function race<T>(task: Promise<T>, data?: T): Promise<T> {
+function race<T>(task: Promise<T>, data?: T, time?: number): Promise<T> {
   return new Promise<T>((resolve) => {
-    delay(MAX_AWAIT_TIME).then(() => {
+    delay(time ? time + SERVER_DELAY : MAX_AWAIT_TIME + SERVER_DELAY).then(() => {
       resolve(data as T);
     });
     task.then(resolve).catch(() => resolve(data as T));
@@ -31,8 +35,6 @@ export class Player {
   private handCardsValue: Array<ICard> = [];
 
   private currentSpell: PlayerSpell = PlayerSpell.Empty;
-
-  private listeners: Map<PlayerEvents, Set<ICallbackHandler>> = new Map<PlayerEvents, Set<ICallbackHandler>>();
 
   private hitPointsValue = START_HEALTH;
 
@@ -59,6 +61,8 @@ export class Player {
 
   get hitPoints(): number { return this.hitPointsValue; }
 
+  onSpellSelected?: () => void;
+
   changeConnection(connection: ClientConnection): void {
     if (connection.id === this.connection.id) return;
     this.removeConnectionListeners();
@@ -67,15 +71,23 @@ export class Player {
     this.addConnectionListeners();
   }
 
-  addListener(event: PlayerEvents, handler: ICallbackHandler): void {
-    if (!this.listeners.has(event)) this.listeners.set(event, new Set<ICallbackHandler>());
-    const eventListeners = <Set<ICallbackHandler>> this.listeners.get(event);
-    eventListeners.add(handler);
-  }
-
   async addCardsHand(cards: Array<ICard>): Promise<void> {
     this.handCardsValue = [...this.handCardsValue, ...cards];
     await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
+  }
+
+  async startSpellCasting(): Promise<ICard[]> {
+    const cards = [...this.spell];
+    const message: ICastSpell = { playerId: this.id, cards };
+    this.connection.sendOthers(HubEventsClient.CastSpell, message);
+    await race(this.connection.dispatch(HubEventsClient.CastSpell, message));
+    return cards;
+  }
+
+  async castCard(cardId: string): Promise<void> {
+    const message: ICastCard = { playerId: this.id, cardId };
+    this.connection.sendOthers(HubEventsClient.CastCard, message);
+    await race(this.connection.dispatch(HubEventsClient.CastCard, message));
   }
 
   transferSpellCards(): Array<ICard> {
@@ -100,7 +112,7 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: true,
     };
-    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    this.connection.sendOthers(HubEventsClient.UpdateHealath, message);
     await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
@@ -115,22 +127,35 @@ export class Player {
       currentHealth: this.hitPoints,
       isDamage: false,
     };
-    this.dispatchCallbacks(PlayerEvents.UpdateHealths, message);
+    this.connection.sendOthers(HubEventsClient.UpdateHealath, message);
     await race(this.connection.dispatch<void>(HubEventsClient.UpdateHealath, message));
   }
 
-  async makeDiceRoll(number: number, bonus = 0): Promise<number> {
+  async makeDiceRoll(number: number, bonus = 0): Promise<Array<number>> {
     const rolls: Array<number> = [];
-    let result = 0;
     for (let i = 0; i < number; i++) {
       const roll = DICE_MIN_VALUE + Math.floor(Math.random() * DICE_MAX_VALUE);
-      result += roll;
       rolls.push(roll);
     }
     const message: IDiceRoll = { playerId: this.id, rolls, bonus };
-    this.dispatchCallbacks(PlayerEvents.MakeDiceRoll, message);
+    // console.log(`${this.name} rolls ${number} dice result - `, rolls);
+    this.connection.sendOthers(HubEventsClient.DiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    return result + bonus;
+    rolls.push(bonus);
+    return rolls;
+  }
+
+  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
+    const message: ISelectTarget = { targets: [...targets], numberOfTargets };
+    const randomResult: Array<string> = [];
+    while (randomResult.length < numberOfTargets && targets.length > 0) {
+      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
+    }
+    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
+    const selectionResult = await race(selectTargetTask, randomResult, SELECT_TARGET_TIME);
+    const result = selectionResult.every((target) => targets.includes(target)) ? selectionResult : randomResult;
+    // console.log(`${this.name} select target`, result);
+    return result;
   }
 
   addSpellCards(cardIds: Array<string>): void {
@@ -141,35 +166,19 @@ export class Player {
     this.handCardsValue = this.handCardsValue.filter((card) => !spellCards.includes(card.id));
 
     const message: ISpellSelected = { playerId: this.id, spellCards: this.currentSpell.length };
-    this.dispatchCallbacks(PlayerEvents.CardsSelected, message);
-  }
-
-  private dispatchCallbacks<T>(event: PlayerEvents, ...args: T[]) {
-    const callback = this.listeners.get(event);
-    callback?.forEach((handler) => handler(...args));
+    this.connection.sendOthers(HubEventsClient.SpellSelected, message);
+    if (this.onSpellSelected) this.onSpellSelected();
   }
 
   private addConnectionListeners(): void {
     this.connection.addEventListener(HubEventsServer.SelectSpell, (cardIds: Array<string>) => {
       this.addSpellCards(cardIds);
+      // console.log(`${this.name} select spell`);
       return HubResponse.Ok();
     });
   }
 
   private removeConnectionListeners(): void {
     this.connection.removeListeners(HubEventsServer.SelectSpell);
-  }
-
-  // в методе нет this пока что
-  // eslint-disable-next-line class-methods-use-this
-  async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
-    const message: ISelectTarget = { targets, numberOfTargets };
-    const randomResult: Array<string> = [];
-    while (randomResult.length < numberOfTargets && targets.length > 0) {
-      randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));
-    }
-    const selectTargetTask = this.connection.dispatch<string[]>(HubEventsClient.SelectTarget, message);
-    const result = await race(selectTargetTask, randomResult);
-    return result;
   }
 }

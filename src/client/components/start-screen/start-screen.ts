@@ -68,7 +68,6 @@ export class StartScreen extends BaseComponent {
   async startNewGame() : Promise<void> {
     try {
       await this.gameService.newGame();
-      this.root.showLobby(true);
     } catch {
       alert('Не удалось создать новую игру');
     }

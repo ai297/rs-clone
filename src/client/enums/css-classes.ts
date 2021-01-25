@@ -2,6 +2,7 @@ export enum CSSClasses {
   // base
   Component = 'component',
   Button = 'button',
+  Avatar = 'avatar',
   // start screen
   StartScreen = 'start-screen',
   StartScreenHidden = 'start-screen--hidden',
@@ -16,7 +17,9 @@ export enum CSSClasses {
   PlayerHero = 'player__hero',
   // cards spell
   Сard = 'card',
+  СardBackside = 'card__backside',
   СardСontainer = 'card-container',
+  CardFlipped = 'card-container--flipped',
   СardType = 'card-type',
   СardElement = 'card-element',
   СardContent = 'card__content',
@@ -87,4 +90,10 @@ export enum CSSClasses {
   LoserItem = 'loser',
   // game screen
   GameScreenButton = 'game-button__ready',
+  // dice roller
+  Dice = 'dice',
+  DiceContainer = 'dice-container',
+  DiceRoller = 'dice-roller',
+  DiceRollerShow = 'dice-roller--show',
+  DiceRollingAnimation = 'dice--rolling',
 }

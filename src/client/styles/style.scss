@@ -21,6 +21,9 @@ main {
   background-color: black;
 }
 
+@import '../components/overlay/overlay.scss';
+@import '../components/base-button/base-button.scss';
+@import '../components/avatar/avatar.scss';
 @import '../components/start-screen/start-screen.scss';
 @import '../components/player-list/player-list.scss';
 @import '../components/card-spell/card-spell.scss';
@@ -29,5 +32,4 @@ main {
 @import '../components/player-display/player-display.scss';
 @import '../components/opponents-cards/opponents-cards.scss';
 @import '../components/player-cards/player-cards.scss';
-@import '../components/overlay/overlay.scss';
-@import '../components/base-button/base-button.scss';
+@import '../components/dice-roller/dice-roller.scss';

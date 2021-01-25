@@ -3,5 +3,6 @@ export interface IPlayerInfo {
   userName: string,
   heroId: string,
   health: number,
-  position: number
+  position: number,
+  spellLength: number,
 }

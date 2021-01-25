@@ -80,7 +80,7 @@ class App implements IRootComponent {
           reject(Error('Cannot connect to server...'));
         },
       );
-      this.gameService = new GameService(connection);
+      this.createGameService(connection);
       this.staticScreens.set(StaticScreens.Start, new StartScreen(this.gameService));
     });
   }
@@ -90,10 +90,18 @@ class App implements IRootComponent {
     return `${this.baseURL}/#${gameId}`;
   }
 
+  private createGameService(connection: ServerConnection): void {
+    this.gameService = new GameService(
+      connection,
+      (isCreator) => this.showLobby(isCreator),
+      () => this.showGame(),
+      () => {},
+      () => this.showStatic(StaticScreens.Start),
+    );
+  }
+
   private joinGame(gameId: string): void {
-    this.gameService.joinGame(gameId).then(() => {
-      this.showLobby();
-    }).catch((e) => {
+    this.gameService.joinGame(gameId).catch((e) => {
       // TODO: show join game error screen here
       console.log((<Error> e).message);
       this.showStatic(StaticScreens.Start);
