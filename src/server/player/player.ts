@@ -84,8 +84,8 @@ export class Player {
     return cards;
   }
 
-  async castCard(cardId: string): Promise<void> {
-    const message: ICastCard = { playerId: this.id, cardId };
+  async castCard(card: ICard): Promise<void> {
+    const message: ICastCard = { playerId: this.id, card };
     this.connection.sendOthers(HubEventsClient.CastCard, message);
     await race(this.connection.dispatch(HubEventsClient.CastCard, message));
   }
@@ -137,11 +137,11 @@ export class Player {
       const roll = DICE_MIN_VALUE + Math.floor(Math.random() * DICE_MAX_VALUE);
       rolls.push(roll);
     }
-    const message: IDiceRoll = { playerId: this.id, rolls, bonus };
+    const message: IDiceRoll = { playerId: this.id, rolls: [...rolls], bonus };
     // console.log(`${this.name} rolls ${number} dice result - `, rolls);
     this.connection.sendOthers(HubEventsClient.DiceRoll, message);
     await race(this.connection.dispatch<void>(HubEventsClient.DiceRoll, message));
-    rolls.push(bonus);
+    if (bonus) rolls.push(bonus);
     return rolls;
   }
 
@@ -159,12 +159,16 @@ export class Player {
   }
 
   addSpellCards(cardIds: Array<string>): void {
-    // кладем в активное заклинание
-    this.currentSpell = new PlayerSpell(this.handCardsValue.filter((card) => cardIds.includes(card.id)));
-    // убираем из руки
-    const spellCards = [...this.currentSpell].map((card) => card.id);
-    this.handCardsValue = this.handCardsValue.filter((card) => !spellCards.includes(card.id));
-
+    // create new spell (only with cards which contains in hand)
+    const spellCards = cardIds.filter((cardId) => this.handCards.findIndex((card) => card.id === cardId) >= 0)
+      .map((cardId) => <ICard> this.handCards.find((card) => card.id === cardId));
+    this.currentSpell = new PlayerSpell(spellCards);
+    // remove spell cards from hand
+    spellCards.forEach((card) => {
+      const cardIndex = this.handCards.findIndex((handCard) => handCard.id === card.id);
+      if (cardIndex >= 0) this.handCards.splice(cardIndex, 1);
+    });
+    // send notification to clients
     const message: ISpellSelected = { playerId: this.id, spellCards: this.currentSpell.length };
     this.connection.sendOthers(HubEventsClient.SpellSelected, message);
     if (this.onSpellSelected) this.onSpellSelected();

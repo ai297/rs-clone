@@ -119,6 +119,7 @@ export class Game implements IGameForCasting {
   };
 
   endGame = (): void => {
+    console.log('game end');
     this.isEndGame = true;
     this.isCastingStep = false;
     const winners = this.players.filter((player) => player.hitPoints > 0);
