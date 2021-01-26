@@ -100,7 +100,7 @@ export class Spells {
 
     const currentPlayer = <Player> this.players[position];
     // на всякий случай исключаем "убитых" героев что бы заклинание могло попасть в следующую цель
-    const alivePlayers = this.players.filter((player) => player.hitPoints > 0);
+    const alivePlayers = this.players.filter((player) => player.isAlive);
     // если сам игрок уже не живой - он неможет применять заклинание. Так же, если кроме него никого больше нет в живых
     if (currentPlayer.hitPoints <= 0 || alivePlayers.length < 2) return null;
 
@@ -132,7 +132,7 @@ export class Spells {
     if (playerPosition > this.players.length - 1 || playerPosition < 0) return [];
 
     const currentPlayer = this.players[playerPosition];
-    const allOpponents = this.players.filter((player) => player !== currentPlayer && player.hitPoints > 0);
+    const allOpponents = this.players.filter((player) => player !== currentPlayer && player.isAlive);
 
     if (targetIds.length <= maxResults) {
       if (targetIds.includes(TARGET_ALL)) return allOpponents;
@@ -317,7 +317,7 @@ export class Spells {
   private useMidnightMerlin = async (positionPlayer: number): Promise<void> => {
     const target = await this.getStrongestOpponent(positionPlayer);
     // урон завязан на количество активных магов
-    const damage = this.players.filter((player) => player.hitPoints > 0).length;
+    const damage = this.players.filter((player) => player.isAlive).length;
 
     if (target && damage) await target.takeDamage(damage);
   };
@@ -327,7 +327,7 @@ export class Spells {
    */
   private useVoodooBen = async (positionPlayer: number): Promise<void> => {
     // цели - все живые соперники
-    const targets = this.players.filter((player, index) => index !== positionPlayer && player.hitPoints > 0);
+    const targets = this.players.filter((player, index) => index !== positionPlayer && player.isAlive);
     const makeDamage = (player: Player, damage: number): Promise<void> => player.takeDamage(damage);
     // все соперники бросают кубики
     const rollResults = await makeDiceRolls(targets);
@@ -387,7 +387,7 @@ export class Spells {
    */
   private useChronoWalker = async (positionPlayer: number): Promise<void> => {
     const currentPlayer = this.players[positionPlayer];
-    const opponents = this.players.filter((p) => p !== currentPlayer && p.hitPoints > 0);
+    const opponents = this.players.filter((p) => p !== currentPlayer && p.isAlive);
     const playerRollBonus = getNumberUniqueMagicSign([...currentPlayer.spell]);
 
     const CARD_DAMAGE = 3;
@@ -461,7 +461,7 @@ export class Spells {
   private useDuelHell = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
     const targetIds = this.players
-      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
+      .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
     const [target] = await this.selectOpponents(positionPlayer, targetIds);
@@ -485,7 +485,7 @@ export class Spells {
    */
   private useFaster = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
-    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
 
     const FASTER_DAMAGE = 1;
 
@@ -509,7 +509,7 @@ export class Spells {
    */
   private useInfernal = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
-    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
 
     const damage = [...player.spell].filter((card: ICard) => card.magicSign === MagicSigns.element).length;
 
@@ -523,7 +523,7 @@ export class Spells {
     const player = this.players[positionPlayer];
 
     const targetIds = this.players
-      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
+      .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
     const [target] = await this.selectOpponents(positionPlayer, targetIds);
@@ -549,7 +549,7 @@ export class Spells {
   private useCatTrouble = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
     const damageTasks: Array<Promise<void>> = [];
 
     if (possibleTargets.length > 1) {
@@ -579,7 +579,7 @@ export class Spells {
   private useHeadBroken = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
 
     const targetIndex = getRandomInteger(0, possibleTargets.length - 1);
     const target = possibleTargets[targetIndex];
@@ -617,7 +617,7 @@ export class Spells {
   private useStunning = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0);
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
     const countDamage = getNumberUniqueMagicSign([...player.spell]);
 
     const targets: Array<Player> = [];
@@ -640,7 +640,7 @@ export class Spells {
     const player = this.players[positionPlayer];
 
     const targetIds = this.players
-      .filter((playerCur) => playerCur !== player && playerCur.hitPoints > 0)
+      .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
     const [target] = await this.selectOpponents(positionPlayer, targetIds);
