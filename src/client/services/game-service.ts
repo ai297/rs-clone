@@ -164,6 +164,9 @@ export class GameService {
     this.gameId = '';
     this.playerId = '';
     this.players = [];
+    this.playerCards = [];
+    this.castingSpellCards = [];
+    this.isCastingStep = false;
     this.onPlayerJoined = undefined;
     this.onPlayerLeaved = undefined;
     this.onNextMove = undefined;
@@ -174,6 +177,7 @@ export class GameService {
     this.onPlayerMakeDiceRoll = undefined;
     this.onSelectTarget = undefined;
     this.onSpellCast = undefined;
+    this.onCardCast = undefined;
   }
 
   private goOut(): IHubResponse<null> {

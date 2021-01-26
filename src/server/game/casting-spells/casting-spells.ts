@@ -15,12 +15,13 @@ export class CastingSpells {
 
   public async castSpells(): Promise<void> {
     const queue: Array<Player> = this.players.slice().sort((a, b) => b.spell.initiative - a.spell.initiative);
+    // TODO: пофиксить одинаковую инициативу
 
-    await forEachAsync(queue, async (player) => {
+    await forEachAsync(queue, async (player, index, breakCast) => {
       const cards: Array<ICard> = await player.startSpellCasting();
       const positionPlayer: number = this.players.findIndex((current) => player === current);
 
-      await forEachAsync(cards, async (currentCard: ICard) => {
+      await forEachAsync(cards, async (currentCard: ICard, cardIndex, breakSpell) => {
         // console.log(currentCard.id);
         await player.castCard(currentCard);
 
@@ -36,7 +37,10 @@ export class CastingSpells {
           // потрошим с покойничка карты и отдаем их в отбой
           this.removeCardsFromCorpse(deadThisCast);
           // проверяем игру на законченность
-          this.checkForEndGame();
+          if (this.checkForEndGame()) {
+            breakSpell();
+            breakCast();
+          }
         }
       });
 
@@ -45,11 +49,13 @@ export class CastingSpells {
     });
   }
 
-  private checkForEndGame(): void {
+  private checkForEndGame(): boolean {
     const numberLivingPlayers: number = this.players.filter((player: Player) => player.hitPoints > 0).length;
     if (numberLivingPlayers <= MAX_WINNERS) {
       this.game.endGame();
+      return true;
     }
+    return false;
   }
 
   private removeCardsFromCorpse(deadThisCast: Array<Player>) {
