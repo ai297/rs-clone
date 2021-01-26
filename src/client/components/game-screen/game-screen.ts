@@ -107,11 +107,11 @@ export class GameScreen extends BaseComponent {
     console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
-      await this.currentPlayerDisplay?.addHealth(/* playerInfo.health, */heal);
+      await this.currentPlayerDisplay?.addHealth(playerInfo.health, heal);
     }
     if (this.opponents.has(playerInfo.id)) {
       const opponent = <GamePlayerDisplay> this.opponents.get(playerInfo.id);
-      await opponent.addHealth(/* playerInfo.health, */heal);
+      await opponent.addHealth(playerInfo.health, heal);
     }
   }
 
@@ -120,11 +120,11 @@ export class GameScreen extends BaseComponent {
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       if (playerInfo.health <= 0) this.readyButton.element.remove(); // current player loose.
-      await this.currentPlayerDisplay?.bringDamage(/* playerInfo.health, */damage);
+      await this.currentPlayerDisplay?.bringDamage(playerInfo.health, damage);
     }
     if (this.opponents.has(playerInfo.id)) {
       const opponent = <GamePlayerDisplay> this.opponents.get(playerInfo.id);
-      await opponent.bringDamage(/* playerInfo.health, */damage);
+      await opponent.bringDamage(playerInfo.health, damage);
     }
   }
 
