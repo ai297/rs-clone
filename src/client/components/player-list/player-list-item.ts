@@ -8,10 +8,10 @@ export class PlayerListItem extends BaseComponent {
 
     const playerName = createElement(Tags.Div, [CSSClasses.PlayerName], this.name);
     const playerHero = createElement(Tags.Div, [CSSClasses.PlayerHero], this.heroName);
-    const playerAvatar = createElement(Tags.Img, [CSSClasses.PlayerAvatar]);
-    playerAvatar.setAttribute('src', avatar);
-    playerAvatar.setAttribute('alt', heroName);
-
-    this.element.append(playerAvatar, playerName, playerHero);
+    const playerInfo = createElement(Tags.Div, [CSSClasses.PlayerInfo]);
+    const playerAvatarWrapper = createElement(Tags.Div, [CSSClasses.PlayerAvatar]);
+    playerAvatarWrapper.innerHTML = `<img src="${avatar}" alt="${heroName}">`;
+    playerInfo.append(playerName, playerHero);
+    this.element.append(playerAvatarWrapper, playerInfo);
   }
 }

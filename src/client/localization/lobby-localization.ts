@@ -3,6 +3,7 @@ export interface ILobbyLocalization {
   SelectHero: string,
   StartGame: string,
   GameLink: string,
-  GameId: string,
   PlayerList: string,
+  AddBot: string,
+  Copy: string
 }

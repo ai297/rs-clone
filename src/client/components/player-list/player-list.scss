@@ -1,3 +1,78 @@
+.player-list-wrapper {
+  margin-top: 1rem;
+  overflow-y: scroll;
+  padding: .5rem;
+  background: $primary-attention-color-light;
+  border-radius: $primary-border-radius;
+  font-family: $primary-font;
+}
+
 .player-list {
   display: flex;
+  flex-direction: column;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    background: $primary-dark-color;
+    border: 3px solid $secondary-warning-color;
+    border-radius: 3rem 1rem;
+    overflow: hidden;
+    padding-right: .5rem;
+    &:not(:last-child) {
+      margin-bottom: .5rem;
+    }
+
+    &.empty-item {
+      background: $substrate-color-light;
+      border: 3px solid $secondary-warning-color-light;
+
+      .player__avatar {
+        background: $substrate-color-light;
+        box-shadow: inset 0px 0px 3px $shadow-color-dark;
+      }
+
+      .bot-button {
+        background: $secondary-warning-color-light;
+        border: 1px solid $secondary-warning-color-light;
+        border-radius: $primary-border-radius;
+        font-size: 1rem;
+        color: $primary-font-color;
+        box-shadow: none;
+        text-shadow: none;
+        margin: 0 auto;
+
+        &:hover {
+          background: $secondary-warning-color;
+          color: $shadow-color-extra-light;
+          text-shadow: none;
+          box-shadow: none;
+        }
+      }
+    }
+
+    .player__avatar {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 2.7rem $primary-border-radius $primary-border-radius $primary-border-radius;
+      margin: .2rem 1rem .2rem .2rem;
+      overflow: hidden;
+    
+      img {
+        display: block;
+        max-width: 100%;
+      }
+    }
+    
+    .player__name {
+      font-size: 2rem;
+      margin-bottom: .5rem;
+      color: $primary-font-color;
+    }
+    
+    .player__hero {
+      font-size: 1rem;
+      color: $secondary-warning-color;
+    }
+  }
 }
