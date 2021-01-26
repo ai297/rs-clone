@@ -1,6 +1,6 @@
 import { Sounds } from '../enums';
 
-export const playSound = async (sound: Sounds): Promise<void> => new Promise((resolve) => {
+export const playSound = (sound: Sounds): Promise<void> => new Promise((resolve) => {
   const audio = new Audio(`./${sound}`);
 
   audio.addEventListener('canplaythrough', () => {
