@@ -22,9 +22,7 @@ export class Timer extends BaseComponent {
   };
 
   private countdownSeconds = (): void => {
-    if (this.secondsValue === 0) {
-      console.log('timer ends');
-    } else {
+    if (this.secondsValue > 0) {
       this.secondsValue -= 1;
 
       const minutes = Math.floor(this.secondsValue / 60).toString().padStart(2, '0');
