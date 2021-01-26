@@ -122,7 +122,8 @@ export class Spells {
 
     if (opponents.length < 1) return null;
     if (opponents.length === 1 || opponents[0].hitPoints !== opponents[1].hitPoints) return opponents[0];
-    const [target] = await throwCheck(opponents, false);
+    const throwCheckOpponents = opponents.filter((opponent) => opponent.hitPoints === opponents[0].hitPoints);
+    const [target] = await throwCheck(throwCheckOpponents, false);
     return target;
   }
 
