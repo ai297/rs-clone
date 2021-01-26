@@ -1,17 +1,17 @@
 import {
   MAX_HEALTH,
   START_HEALTH,
+  MIDDLE_HEALTH_PERСENT,
+  LOW_HEALTH_PERСENT,
+  RECOVERY_ANIMATION_DELAY,
+  DAMAGE_ANIMATION_DELAY,
   createElement,
   delay,
 } from '../../../common';
 import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 
-const MIDDLE_HEALTH_PERСENT = 0.6;
-const LOW_HEALTH_PERСENT = 0.2;
 const DEAD_WIZARD = 'R. I. P.';
-const RECOVERY_ANIMATION_DELAY = 3000;
-const DAMAGE_ANIMATION_DELAY = 2500;
 
 const PRIMARY_SUCCESS_COLOR = '#0EB70B';
 const PRIMARY_SUCCESS_COLOR_OPACITY = 'rgba(14, 183, 11, 0.5)';
@@ -104,7 +104,7 @@ export class GamePlayerDisplay extends BaseComponent {
                       ${colorOpacity} 100%)`;
   }
 
-  addHealth = async (points: number, currentHealth = 0): Promise<void> => {
+  addHealth = async (currentHealth: number, points: number): Promise<void> => {
     this.pointsAnimation.classList.remove(CSSClasses.GamePlayerPointsHidden);
     this.pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
     this.pointsAnimation.textContent = `+${points}`;
@@ -121,7 +121,7 @@ export class GamePlayerDisplay extends BaseComponent {
     this.updateHealth();
   };
 
-  bringDamage = async (points: number, currentHealth = 0): Promise<void> => {
+  bringDamage = async (currentHealth: number, points: number): Promise<void> => {
     this.pointsAnimation.classList.add(CSSClasses.InGameBringDamageAnimation);
     this.pointsAnimation.textContent = `-${points}`;
 
