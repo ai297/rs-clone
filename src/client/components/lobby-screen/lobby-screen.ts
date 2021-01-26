@@ -18,7 +18,7 @@ import { HeroesRepository } from '../../services';
 export class LobbyScreen extends BaseComponent {
   private heroSelection! : HeroSelection;
 
-  private playerList : PlayerList = new PlayerList();
+  private playerList! : PlayerList;
 
   private currentHero : IHero | null = null;
 
@@ -34,6 +34,8 @@ export class LobbyScreen extends BaseComponent {
 
   private isDisabled = false;
 
+  private disabledHeroes: Array<string> = [];
+
   constructor(
     private gameCreator: boolean,
     private heroesRepository: HeroesRepository,
@@ -42,14 +44,26 @@ export class LobbyScreen extends BaseComponent {
   ) {
     super([CSSClasses.Lobby]);
     this.loc = localization || LOBBY_DEFAULT_LOCALIZATION;
-    const disabledHeroes = this.gameService.currentPlayers.map((elem) => elem.heroId);
-    this.heroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this), disabledHeroes);
+    this.playerList = new PlayerList(this.gameCreator, this.addBot.bind(this));
     this.gameService.currentPlayers.forEach((elem) => {
       this.addPlayer(elem);
     });
+    this.heroSelection = new HeroSelection(this.heroesRepository, this.onSelect.bind(this), this.disabledHeroes);
     this.gameService.onPlayerJoined = this.onPlayerJoined.bind(this);
     this.gameService.onPlayerLeaved = this.onPlayerLeaved.bind(this);
     this.createMarkup();
+    if (this.gameService.currentPlayerId) {
+      const currentPlayer = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
+      if (currentPlayer) {
+        this.nameInput.value = currentPlayer.userName;
+        this.disableLobby(true);
+        this.heroesRepository.getHero(currentPlayer.heroId).then((hero) => {
+          if (hero) {
+            this.heroSelection.showSelectedHero(hero);
+          }
+        });
+      }
+    }
   }
 
   private onPlayerJoined(playerInfo: IPlayerInfo): void {
@@ -81,54 +95,97 @@ export class LobbyScreen extends BaseComponent {
           hero.name,
           `${ImagesPaths.HeroesAvatars}${hero.image}.png`,
         );
+        this.disabledHeroes.push(hero.id);
       }
     });
   }
 
-  private createMarkup(): void {
-    const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
-    const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${this.loc.GameLink}: ${gameLink}`);
+  private async addBot() {
+    const heroes = await this.heroesRepository.getAllHeroes();
+    this.createBot(heroes);
+  }
 
+  private async createBot(heroes: Array<IHero>) {
+    const hero = heroes[getRandomInteger(0, heroes.length - 1)];
+    if (this.disabledHeroes.indexOf(hero.id) === -1) {
+      try {
+        await this.gameService.createBot(hero.id);
+      } catch (e: unknown) {
+        alert((e as Error)?.message);
+      }
+    } else {
+      this.createBot(heroes);
+    }
+  }
+
+  private createMarkup(): void {
+    const lobbyMain = createElement(Tags.Div, [CSSClasses.LobbyMain]);
+    const lobbyMainLeft = createElement(Tags.Div, [CSSClasses.LobbyMainLeft]);
+    const lobbyMainRight = createElement(Tags.Div, [CSSClasses.LobbyMainRight]);
+    lobbyMainRight.innerHTML = `<div class="${CSSClasses.LobbySubtitle}">${this.loc.PlayerList}</div>`;
+    lobbyMainRight.append(this.playerList.element);
+    lobbyMain.append(lobbyMainLeft, lobbyMainRight);
+
+    const nameLabel = createElement(Tags.Label, [CSSClasses.LobbySubtitle], this.loc.EnterYourName);
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;
     this.nameInput.setAttribute('type', 'text');
-    this.nameInput.setAttribute('placeholder', this.loc.EnterYourName);
     this.nameInput.oninput = this.readyToSelect.bind(this);
+    nameLabel.append(this.nameInput);
+    lobbyMainLeft.append(nameLabel, this.heroSelection.element);
 
+    const lobbyButtons = createElement(Tags.Div, [CSSClasses.LobbyButtons]);
     this.heroSelectionButton = new BaseButton(
       this.loc.SelectHero,
       this.setHero.bind(this),
       [CSSClasses.SelectHeroButton],
     );
     this.heroSelectionButton.disabled = true;
-
-    this.element.append(
-      gameLinkElement,
-      this.nameInput,
-      this.heroSelection.element,
-      this.playerList.element,
-      this.heroSelectionButton.element,
-    );
+    lobbyButtons.append(this.heroSelectionButton.element);
 
     if (this.gameCreator) {
+      const lobbyHeader = createElement(Tags.Div, [CSSClasses.LobbyHeader]);
+      const gameLink = this.root.getGameUrl(this.gameService.currentGameId);
+      lobbyHeader.innerHTML = `<h3 class="${CSSClasses.LobbySubtitle}">${this.loc.GameLink}:</h3>`;
+      const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${gameLink}`);
+      const copyIcon = createElement(Tags.Div, [CSSClasses.CopyIcon]);
+      copyIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg">
+                              <path stroke="null" fill="#f8cfa9" fill-opacity="0.5" id="svg_2" 
+                              d="m16.385353,1.652503l-11.694276,0c-1.076848,0 -1.949045,0.923274 
+                              -1.949045,2.063182l0,14.442268l1.949045,0l0,-14.442268l11.694276,0l0,
+                              -2.063182zm2.923569,4.126363l-10.719753,0c-1.076848,0 -1.949045,0.923274 
+                              -1.949045,2.063182l0,14.442268c0,1.139908 0.872198,2.063182 1.949045,
+                              2.063182l10.719753,0c1.076848,0 1.949047,-0.923274 1.949047,-2.063182l0,
+                              -14.442268c0,-1.139908 -0.872199,-2.063182 -1.949047,-2.063182zm0,16.50545l
+                              -10.719753,0l0,-14.442268l10.719753,0l0,14.442268z"/>
+                            </svg>`;
+      copyIcon.addEventListener('click', () => {
+        navigator.clipboard.writeText(gameLink)
+          .then(() => {
+            const tooltip = createElement(Tags.Div, [CSSClasses.CopyTooltip], this.loc.Copy);
+            gameLinkElement.append(tooltip);
+            setTimeout(() => tooltip.remove(), 500);
+          })
+          .catch((e) => {
+            alert(`Something went wrong: ${e}`);
+          });
+      });
+      gameLinkElement.append(copyIcon);
+      lobbyHeader.append(gameLinkElement);
+      this.element.append(lobbyHeader);
+
       this.startGameButton = new BaseButton(
         this.loc.StartGame,
         () => this.startGameHandler(),
         [CSSClasses.StartGameButton, CSSClasses.StartGameButtonDisabled],
       );
       this.startGameButton.disabled = true;
-      this.element.append(this.startGameButton.element);
-
-      // const addBotButton = new BaseButton('Добавить бота', async () => {
-      //   const heroes = await this.heroesRepository.getAllHeroes();
-      //   const hero = heroes[getRandomInteger(0, heroes.length - 1)];
-      //   try {
-      //     await this.gameService.createBot(hero.id);
-      //   } catch (e: unknown) {
-      //     alert((e as Error)?.message);
-      //   }
-      // });
-      // this.element.append(addBotButton.element);
+      lobbyButtons.append(this.startGameButton.element);
     }
+
+    this.element.append(
+      lobbyMain,
+      lobbyButtons,
+    );
   }
 
   private async startGameHandler(): Promise<void> {

@@ -15,10 +15,20 @@ html {
 body { overflow: hidden; }
 
 main {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
+  flex-direction: row;
   justify-content: center;
-  background-color: black;
+  background-color: $primary-dark-color;
+}
+
+.component {
+  & *::-webkit-scrollbar { width: .7rem; }
+  & *::-webkit-scrollbar-track { background: none; }
+  & *::-webkit-scrollbar-thumb {
+    background: $primary-dark-color;
+    border-radius: .35rem;
+  }
 }
 
 @import '../components/overlay/overlay.scss';
@@ -33,3 +43,6 @@ main {
 @import '../components/opponents-cards/opponents-cards.scss';
 @import '../components/player-cards/player-cards.scss';
 @import '../components/dice-roller/dice-roller.scss';
+@import '../components/overlay/overlay.scss';
+@import '../components/base-button/base-button.scss';
+@import '../components/lobby-screen/lobby-screen.scss';

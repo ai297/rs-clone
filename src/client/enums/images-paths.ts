@@ -5,4 +5,5 @@ export enum ImagesPaths {
   HeroesFullSize = './images/heroes/full-size/',
   HeroesDeaths = './images/heroes/deaths/',
   Backgrounds = './images/backgrounds/',
+  Icons = './images/icons/',
 }
