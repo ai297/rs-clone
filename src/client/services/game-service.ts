@@ -145,7 +145,10 @@ export class GameService {
 
   async selectSpell(cardIds: Array<string>): Promise<void> {
     await this.connection.dispatch(HubEventsServer.SelectSpell, cardIds);
-    this.playerCards = this.playerCards.filter((card) => !cardIds.includes(card.id));
+    cardIds.forEach((cardId) => {
+      const cardIndex = this.playerCards.findIndex((card) => card.id === cardId);
+      if (cardIndex >= 0) this.playerCards.splice(cardIndex, 1);
+    });
   }
 
   /**
@@ -153,7 +156,7 @@ export class GameService {
    * @param heroId - heroId for bot character
    */
   async createBot(heroId: string): Promise<IPlayerInfo> {
-    const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId);
+    const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId, this.currentGameId);
     return playerInfo;
   }
 
@@ -161,6 +164,9 @@ export class GameService {
     this.gameId = '';
     this.playerId = '';
     this.players = [];
+    this.playerCards = [];
+    this.castingSpellCards = [];
+    this.isCastingStep = false;
     this.onPlayerJoined = undefined;
     this.onPlayerLeaved = undefined;
     this.onNextMove = undefined;
@@ -171,6 +177,7 @@ export class GameService {
     this.onPlayerMakeDiceRoll = undefined;
     this.onSelectTarget = undefined;
     this.onSpellCast = undefined;
+    this.onCardCast = undefined;
   }
 
   private goOut(): IHubResponse<null> {
@@ -250,9 +257,8 @@ export class GameService {
   }
 
   private async castCard(message: ICastCard): Promise<IHubResponse<null>> {
-    const castingCard = <ICard> this.castingSpellCards.find((card) => card.id === message.cardId);
     if (this.onCardCast) {
-      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), castingCard);
+      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card);
     }
     return HubResponse.Ok();
   }

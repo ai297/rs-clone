@@ -48,7 +48,7 @@ export class GameService {
       HubEventsServer.AddPlayer, (req: ICreatePlayerRequest) => this.createPlayer(req, connection),
     );
     connection.addEventListener(
-      HubEventsServer.AddBot, (heroId: string) => this.createBot(connection.currentGameId, heroId),
+      HubEventsServer.AddBot, (heroId: string, gameId: string) => this.createBot(gameId, heroId),
     );
   }
 
@@ -158,11 +158,11 @@ export class GameService {
     const playerNames: string[] = game.players.map((player) => player.name);
     let botName: string;
     do {
-      botName = botNames[getRandomInteger(0, botNames.length - 1)];
+      botName = `[bot] ${botNames[getRandomInteger(0, botNames.length - 1)]}`;
     } while (playerNames.includes(botName));
 
     const botConnection = new SimpleBotConnection(gameId, this.connectionService);
-    const player = new Player(botConnection, botConnection.id, `[bot] ${botName}`, heroId);
+    const player = new Player(botConnection, botConnection.id, botName, heroId);
 
     try {
       game.addPlayer(player);

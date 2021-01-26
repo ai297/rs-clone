@@ -13,3 +13,4 @@ export const SELECT_TARGET_TIME = 15000;
 export const SERVER_DELAY = 1000;
 export const MIDDLE_HEALTH_PERСENT = 0.6;
 export const LOW_HEALTH_PERСENT = 0.2;
+export const TARGET_ALL = 'ALL';

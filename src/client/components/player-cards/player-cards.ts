@@ -60,7 +60,7 @@ export class PlayerCards extends BaseComponent {
     await this.addToHand(...cards);
   };
 
-  setDisable = (disable: true): Promise<void> => {
+  setDisable = (disable = true): Promise<void> => {
     this.updateHandState(undefined, disable);
     // rotate hand cards here
     return Promise.resolve();

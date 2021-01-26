@@ -68,6 +68,7 @@ export class GameScreen extends BaseComponent {
 
   nextMove(): void {
     this.readyButton.disabled = false;
+    this.playerCards.setDisable(false);
     console.log('Следующий ход');
   }
 
@@ -133,13 +134,15 @@ export class GameScreen extends BaseComponent {
     return Promise.resolve();
   }
 
-  private async setSelectSpell(): Promise<void> {
+  private async selectSpell(): Promise<void> {
     this.readyButton.disabled = true;
+    await this.playerCards.setDisable();
     try {
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
     } catch {
       alert('Не удалось выбрать заклинание');
       this.readyButton.disabled = false;
+      this.playerCards.setDisable(false);
     }
   }
 
@@ -191,7 +194,7 @@ export class GameScreen extends BaseComponent {
 
     this.readyButton = new BaseButton(
       this.loc.ReadyButton,
-      () => this.setSelectSpell(),
+      () => this.selectSpell(),
       [CSSClasses.GameScreenButton],
     );
     this.readyButton.disabled = this.gameService.isCasting;

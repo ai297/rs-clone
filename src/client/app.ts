@@ -95,7 +95,7 @@ class App implements IRootComponent {
       connection,
       (isCreator) => this.showLobby(isCreator),
       () => this.showGame(),
-      () => {},
+      () => { console.log('game over'); },
       () => this.showStatic(StaticScreens.Start),
     );
   }
