@@ -61,6 +61,8 @@ export class Player {
 
   get hitPoints(): number { return this.hitPointsValue; }
 
+  get isAlive(): boolean { return this.hitPoints > 0; }
+
   onSpellSelected?: () => void;
 
   changeConnection(connection: ClientConnection): void {

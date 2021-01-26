@@ -29,11 +29,11 @@ export class CastingSpells {
         await handler(positionPlayer, currentCard);
         // this.players.forEach((cur, index) => console.log('pozit player', index, 'hit point', cur.hitPoints));
 
-        const deadThisCast: Array<Player> = this.players.filter((current: Player) => current.hitPoints < 1);
+        const deadThisCast: Array<Player> = this.players.filter((current: Player) => !current.isAlive);
         // если есть покойничек то запускаем его отработку
         if (deadThisCast.length > 0) {
           // обновляем состояние списка игроков
-          this.players = this.players.filter((current: Player) => current.hitPoints > 0);
+          this.players = this.players.filter((current: Player) => current.isAlive);
           // потрошим с покойничка карты и отдаем их в отбой
           this.removeCardsFromCorpse(deadThisCast);
           // проверяем игру на законченность
@@ -50,7 +50,7 @@ export class CastingSpells {
   }
 
   private checkForEndGame(): boolean {
-    const numberLivingPlayers: number = this.players.filter((player: Player) => player.hitPoints > 0).length;
+    const numberLivingPlayers: number = this.players.filter((player: Player) => player.isAlive).length;
     if (numberLivingPlayers <= MAX_WINNERS) {
       this.game.endGame();
       return true;
