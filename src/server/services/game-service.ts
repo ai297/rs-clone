@@ -48,7 +48,7 @@ export class GameService {
       HubEventsServer.AddPlayer, (req: ICreatePlayerRequest) => this.createPlayer(req, connection),
     );
     connection.addEventListener(
-      HubEventsServer.AddBot, (heroId: string) => this.createBot(connection.currentGameId, heroId),
+      HubEventsServer.AddBot, (heroId: string, gameId: string) => this.createBot(gameId, heroId),
     );
   }
 

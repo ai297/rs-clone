@@ -156,7 +156,7 @@ export class GameService {
    * @param heroId - heroId for bot character
    */
   async createBot(heroId: string): Promise<IPlayerInfo> {
-    const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId);
+    const playerInfo = await this.connection.dispatch<IPlayerInfo>(HubEventsServer.AddBot, heroId, this.currentGameId);
     return playerInfo;
   }
 
