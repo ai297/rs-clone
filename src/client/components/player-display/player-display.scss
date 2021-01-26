@@ -118,8 +118,8 @@
     width: 1px;
     font-size: 3rem;
     color: $accent-color;
-    transform: scale(10);
-    transition: all 5s ease-in;
+    transform: scale(2);
+    transition: all 2s ease-in;
   }
 
   &--damage {
@@ -130,16 +130,16 @@
     width: 1px;
     font-size: 3rem;
     color: $secondary-attention-color;
-    transform: scale(10);
-    transition: all 5s ease-in;
+    transform: scale(2);
+    transition: all 2s ease-in;
   }
 }
 
 .game-player__container--current {
   .game-player__animation--damage,
   .game-player__animation--recovery {
-    transform: scale(10) translate(-100px, -100px);
-    transition: all 5s ease-in;
+    transform: scale(3) translate(-50px, -50px);
+    transition: all 2s ease-in;
   }
 }
 

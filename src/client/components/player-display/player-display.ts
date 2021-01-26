@@ -3,8 +3,6 @@ import {
   START_HEALTH,
   MIDDLE_HEALTH_PERСENT,
   LOW_HEALTH_PERСENT,
-  RECOVERY_ANIMATION_DELAY,
-  DAMAGE_ANIMATION_DELAY,
   createElement,
   delay,
 } from '../../../common';
@@ -12,6 +10,8 @@ import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 
 const DEAD_WIZARD = 'R. I. P.';
+const RECOVERY_ANIMATION_DELAY = 2000;
+const DAMAGE_ANIMATION_DELAY = 2000;
 
 const PRIMARY_SUCCESS_COLOR = '#0EB70B';
 const PRIMARY_SUCCESS_COLOR_OPACITY = 'rgba(14, 183, 11, 0.5)';
