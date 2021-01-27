@@ -62,13 +62,14 @@ export class Game implements IGameForCasting {
     });
   }
 
-  private giveCards(): void {
+  private async giveCards(): Promise<void> {
     if (this.onNextMove) this.onNextMove();
     this.isCastingStep = false;
 
     const activePlayers = this.players.filter((current: Player) => current.isAlive);
+    const giveCardTasks: Array<Promise<void>> = [];
     activePlayers.forEach((player) => {
-      console.log(`give cards to player ${player.name}`);
+      // console.log(`give cards to player ${player.name}`);
       // считаем сколько карт надо досдать игроку.
       const needAddIndex = MAX_CARDS_IN_HAND - player.handCards.length;
       // если в колоде осталось меньше чем нужно сдать запускаем обработку
@@ -82,8 +83,11 @@ export class Game implements IGameForCasting {
       const startIndex = this.activeDeck.length - needAddIndex;
 
       const tempCards = this.activeDeck.splice(startIndex);
-      player.addCardsHand(tempCards);
+      giveCardTasks.push(player.addCardsHand(tempCards));
     });
+
+    await Promise.race(giveCardTasks);
+    // TODO: Run timer here
   }
 
   private cardSelectionHandler(): void {

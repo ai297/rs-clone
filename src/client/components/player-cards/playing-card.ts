@@ -43,6 +43,7 @@ export class PlayingCard extends CardSpell {
   async onAppended(duration = 0): Promise<void> {
     await delay(50);
     this.element.classList.remove(CSSClasses.PlayingCardBeforeAppend);
+    this.element.classList.add(CSSClasses.PlayingCardUsed);
     await delay(duration);
   }
 

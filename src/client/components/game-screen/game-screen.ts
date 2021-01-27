@@ -1,4 +1,5 @@
 import {
+  SELECT_SPELL_TIME,
   SELECT_TARGET_TIME,
   delay,
   createElement,
@@ -16,6 +17,7 @@ import { GamePlayerDisplay } from '../player-display/player-display';
 import { HeroesRepository } from '../../services';
 import { OpponentsCards } from '../opponents-cards/opponents-cards';
 import { BaseButton } from '../base-button/base-button';
+import { Timer } from '../timer/timer';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -40,6 +42,8 @@ export class GameScreen extends BaseComponent {
 
   private readyButton!: BaseButton;
 
+  private timer!: Timer;
+
   constructor(
     private readonly gameService: GameService,
     private readonly heroesRepository: HeroesRepository,
@@ -61,20 +65,29 @@ export class GameScreen extends BaseComponent {
     this.gameService.onSelectTarget = (targets, numberOfTargets) => this.showTargetSelection(targets, numberOfTargets);
 
     this.playerCards = new PlayerCards();
-    this.playerCards.addCards(...this.gameService.currentPlayerCards);
+    this.addCards(this.gameService.currentPlayerCards, 0);
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
     this.playSection.append(this.playerCards.element);
+    this.disableControls = true;
+  }
+
+  get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }
+
+  set disableControls(value: boolean) {
+    this.controlsContainer.classList.toggle(CSSClasses.GameControlsDisabled, value);
+    this.readyButton.disabled = value;
   }
 
   nextMove(): void {
-    this.readyButton.disabled = false;
     this.playerCards.setDisable(false);
     console.log('Следующий ход');
   }
 
-  async addCards(cards: Array<ICard>): Promise<void> {
-    console.log('Раздача карт');
+  async addCards(cards: Array<ICard>, timer = SELECT_SPELL_TIME): Promise<void> {
+    // console.log('Раздача карт');
     await this.playerCards.addCards(...cards);
+    this.disableControls = false;
+    this.timer.start(timer / 1000);
   }
 
   async showOpponentCards(playerInfo: IPlayerInfo, cardsInSpell: number): Promise<void> {
@@ -83,6 +96,8 @@ export class GameScreen extends BaseComponent {
   }
 
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
+    this.timer.stop();
+    this.disableControls = true;
     const spellName = cards.sort((cardA, cardB) => cardA.type - cardB.type).map((card) => card.title);
     console.log(`${playerInfo?.userName} кастует заклинание "${spellName.join(' ')}"!`);
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
@@ -147,6 +162,7 @@ export class GameScreen extends BaseComponent {
   }
 
   // #region markup
+
   private createPlayersInfo(players: Array<IPlayerInfo>, currentPlayerId: string): void {
     const playerIndex = players.findIndex((player) => player.id === currentPlayerId);
     if (playerIndex >= 0) this.createCurrentPlayerInfo(players[playerIndex]);
@@ -197,9 +213,12 @@ export class GameScreen extends BaseComponent {
       () => this.selectSpell(),
       [CSSClasses.GameScreenButton],
     );
-    this.readyButton.disabled = this.gameService.isCasting;
+    const buttonContainer = createElement(Tags.Div, [CSSClasses.GameButtonsContainer]);
+    buttonContainer.append(this.readyButton.element);
 
-    this.controlsContainer.append(this.readyButton.element);
+    this.timer = new Timer();
+
+    this.controlsContainer.append(this.timer.element, buttonContainer);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);
     this.element.append(this.opponentsCardsContainer, this.playSection, UILayer);
   }

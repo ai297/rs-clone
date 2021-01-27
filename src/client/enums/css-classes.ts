@@ -88,7 +88,10 @@ export enum CSSClasses {
   GameOpponentSection = 'game-screen__opponent-section',
   GameOpponentSectionDead = 'game-screen__opponent-section--dead',
   GamePlayerInfo = 'game-screen__player-info-container',
-  GameControls = 'game-screen__game-buttons-container',
+  GameControls = 'game-screen__controls',
+  GameControlsDisabled = 'game-screen__controls--disabled',
+  GameButtonsContainer = 'game-screen__buttons-container',
+  GameScreenButton = 'game-button__ready',
   // target selection
   TargetSelection = 'target-selection',
   TargetSelectionTitle = 'target-selection__title',
@@ -105,6 +108,7 @@ export enum CSSClasses {
   PlayingCardDisabled = 'card-container--disable',
   PlayingCardBeforeAppend = 'card-container--before-append',
   PlayingCardBeforeRemove = 'card-container--before-remove',
+  PlayingCardUsed = 'card-container--used',
   // overlay
   Overlay = 'overlay',
   BeforeAppend = 'overlay--before-append',
@@ -115,13 +119,6 @@ export enum CSSClasses {
   GameEndTitle = 'game-end__title',
   PLayerContainer = 'game-end__player',
   ItemAvatar = 'item__avatar',
-  GameScreenButton = 'game-button__ready',
-  // WinnerContainer = 'game-end__winner',
-  // ItemName = 'item__name',
-  // ItemHeroName = 'item__hero-name',
-  // LosersContainer = 'game-end__losers',
-  // LoserItem = 'loser',
-  // game screen
   // dice roller
   Dice = 'dice',
   DiceContainer = 'dice-container',

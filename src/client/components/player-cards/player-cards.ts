@@ -11,10 +11,7 @@ import { BaseComponent } from '../base-component';
 import { PlayingCard } from './playing-card';
 
 const MAX_CARDS_IN_HAND_ROTATION = 30;
-const ADD_HAND_DELAY = 500;
-const SELECT_CARD_DELAY = 300;
-const REMOVE_SPELL_DELAY = 0;
-const REMOVE_HAND_DELAY = 0;
+const ANIMATION_DELAY = 300;
 
 export class PlayerCards extends BaseComponent {
   private readonly handCards: PlayingCard[] = [];
@@ -40,7 +37,7 @@ export class PlayerCards extends BaseComponent {
   }
 
   clearSpell = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(REMOVE_SPELL_DELAY));
+    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(ANIMATION_DELAY));
     this.spellCards.splice(0, this.spellCards.length);
     this.updateHandState();
     if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
@@ -49,7 +46,7 @@ export class PlayerCards extends BaseComponent {
   };
 
   clearHand = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(REMOVE_HAND_DELAY));
+    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(ANIMATION_DELAY));
     this.handCards.splice(0, this.handCards.length);
     await Promise.all(beforeRemoveCallbacks);
     this.handElement.innerHTML = '';
@@ -57,6 +54,7 @@ export class PlayerCards extends BaseComponent {
 
   addCards = async (...cardsInfo: ICard[]): Promise<void> => {
     const cards = cardsInfo.map((cardInfo) => new PlayingCard(cardInfo));
+    cards.forEach((card) => card.flip());
     await this.addToHand(...cards);
   };
 
@@ -79,7 +77,7 @@ export class PlayerCards extends BaseComponent {
     this.handCards.splice(selectCardIndex, 1);
 
     card.clearTransform();
-    await card.beforeRemove(SELECT_CARD_DELAY);
+    await card.beforeRemove(ANIMATION_DELAY);
     card.element.remove();
     await card.onRemoved();
 
@@ -112,7 +110,7 @@ export class PlayerCards extends BaseComponent {
     const card = <PlayingCard> this.spellCards.splice(selectCardIndex, 1)[0];
     if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
-    await card.beforeRemove(REMOVE_SPELL_DELAY);
+    await card.beforeRemove(ANIMATION_DELAY);
     card.element.remove();
     await card.onRemoved();
 
@@ -130,7 +128,9 @@ export class PlayerCards extends BaseComponent {
     this.handElement.append(card.element);
     await card.onAppended();
     this.rotateHandCards();
-    await delay(ADD_HAND_DELAY);
+    await delay(ANIMATION_DELAY / 2);
+    card.flip(false);
+    await delay(ANIMATION_DELAY / 2);
     await this.addToHand(...cards);
   }
 

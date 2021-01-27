@@ -11,9 +11,9 @@
   &__opponent-cards {
     position: relative;
     z-index: 2;
-    flex: 0 0 30%;
-    max-height: 22rem;
-    min-height: 15rem;
+    flex: 0 1 30%;
+    max-height: 25rem;
+    min-height: 12rem;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -63,20 +63,48 @@
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 31%;
+    width: 30%;
     min-width: 22rem;
     padding-left: 0.3;
   }
 
-  &__game-buttons-container {
+  &__controls {
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 30%;
-    min-width: 22rem;
+    width: 20%;
+    min-width: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all .5s ease-in-out;
+
+    &--disabled {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .timer {
+      margin: 1rem;
+      width: 10rem;
+      color: $accent-color;
+      font-family: $headers-font;
+      font-size: 4rem;
+      letter-spacing: .1em;
+      -webkit-text-stroke-width: .2rem;
+      -webkit-text-stroke-color: $primary-dark-color;
+      // text-shadow: .25rem 0 0 $primary-dark-color, -.25rem 0 0 $primary-dark-color, 0 .25rem 0 $primary-dark-color,
+      //             0 -.25rem 0 $primary-dark-color, .15rem .15rem $primary-dark-color, -.15rem -.15rem 0 $primary-dark-color,
+      //             .15rem -.15rem 0 $primary-dark-color, -.15rem .15rem 0 $primary-dark-color;
+    }
+  }
+
+  &__buttons-container {
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
-.game-button__ready {
-  pointer-events: auto;
-}
+.game-button__ready { pointer-events: auto; }

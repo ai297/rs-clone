@@ -3,7 +3,7 @@
   flex-direction: column;
 
   &__selected-cards-container {
-    flex: 0 0 50%;
+    flex: 1 0 55%;
     min-height: 14rem;
     display: flex;
     flex-direction: row;
@@ -18,20 +18,32 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      font-size: .9rem;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all .5s;
+      transition: all .3s;
 
-      &.card-container--before-append { max-width: 0%; }
-      &.card-container--before-remove { max-width: 0%; }
+      &.card-container--before-append {
+        max-width: 0%;
+        & > .card { transform: rotateY(90deg); }
+      }
+      &.card-container--before-remove {
+        max-width: 0%;
+        opacity: 0;
+        transform: translateX(-25vw) translateY(100%);
+      }
 
-      &:hover { transform: rotate(-15deg); }
+      &:hover {
+        z-index: 2;
+        transform: scale(1.1);
+        & > .card { box-shadow: $primary-dark-color 0 0 1.5em; }
+      }
     }
   }
 
   &__hand-container {
     position: relative;
-    flex: 1 1 50%;
+    flex: 0 0 45%;
+    max-height: 18rem;
     max-width: 100%;
     display: flex;
     flex-direction: row-reverse;
@@ -46,17 +58,20 @@
       align-items: flex-start;
       justify-content: center;
       font-size: 1rem;
-      transition: all .5s;
+      transition: all .3s;
       z-index: 1;
 
       &:hover { z-index: 2; }
 
-      &.card-container--before-append {
+      &.card-container--before-append:not(.card-container--used) {
         max-width: 0%;
-        transform: translateX(-50vw);
+        transform: translateX(-50vw) translateY(-120%);
+      }
+      &.card-container--before-append.card-container--used {
+        max-width: 0%;
+        & > .card { transform: rotateY(90deg); }
       }
       &.card-container--before-remove {
-        transition: all .3s;
         max-width: 0%;
         transform: translateY(-100%);
         opacity: 0;
@@ -80,11 +95,10 @@
       & > .card {
         flex-shrink: 0;
         cursor: pointer;
-        transition: all .5s;
       }
       &:not(.card-container--disable) > .card:hover {
         transform: translateY(-100%) scale(1.75);
-        box-shadow: cyan 0 0 2em;
+        box-shadow: $shadow-color 0 0 2em;
       }
     }
   }
