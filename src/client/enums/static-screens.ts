@@ -1,1 +1,1 @@
-export enum StaticScreens { Start, Tutorial, Settings }
+export enum StaticScreens { Start, Tutorial, Settings, About }

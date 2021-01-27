@@ -5,4 +5,5 @@ export enum Tags {
   Img = 'img',
   Input = 'input',
   Label = 'label',
+  H1 = 'h1',
 }

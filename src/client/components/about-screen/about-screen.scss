@@ -1,0 +1,41 @@
+.team-mate {
+  &__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 23.5rem;
+    min-height: 6.7rem;
+    margin: 1rem 1rem 1rem 2rem;
+    padding-left: 5.9rem;
+    justify-content: center;
+  }
+
+  &__avatar {
+    position: absolute;
+    top: -6%;
+    left: -7%;
+    width: 7.5rem;
+    height: 7.5rem;
+    border: 0.2rem solid $primary-dark-color;
+    border-radius: 50%;
+  }
+
+  &__name,
+  &__hero {
+    margin-left: 0.7rem;
+    font-size: 1.25rem;
+  }
+
+  &__hero {
+    @include primary-font;
+    margin-top: 0.25rem;
+  }
+
+  &__name {
+    font-family: $headers-font;
+    font-weight: bold;
+    color: $secondary-font-color;
+    line-height: 120%;
+  }
+}
