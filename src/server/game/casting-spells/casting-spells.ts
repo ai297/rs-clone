@@ -10,7 +10,7 @@ export class CastingSpells {
     private players: Array<Player>,
     private game: IGameForCasting,
   ) {
-    this.spells = new Spells(this.players, game);
+    this.spells = new Spells([...this.players], game);
   }
 
   public async castSpells(): Promise<void> {

@@ -161,6 +161,7 @@ export class Player {
   }
 
   addSpellCards(cardIds: Array<string>): void {
+    if (this.spell !== PlayerSpell.Empty) return;
     // create new spell (only with cards which contains in hand)
     const spellCards = cardIds.filter((cardId) => this.handCards.findIndex((card) => card.id === cardId) >= 0)
       .map((cardId) => <ICard> this.handCards.find((card) => card.id === cardId));
