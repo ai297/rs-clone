@@ -116,4 +116,8 @@ export enum CSSClasses {
   DiceRoller = 'dice-roller',
   DiceRollerShow = 'dice-roller--show',
   DiceRollingAnimation = 'dice--rolling',
+  // popup
+  Popup = 'popup',
+  PopupText = 'popup__text',
+  PopupButton = 'popup__button',
 }
