@@ -80,8 +80,7 @@
     transition: all .5s ease-in-out;
 
     &--disabled {
-      pointer-events: none;
-      opacity: 0;
+      transform: translateY(150%);
     }
 
     .timer {

@@ -79,7 +79,8 @@ export class GameScreen extends BaseComponent {
   }
 
   nextMove(): void {
-    this.playerCards.setDisable(false);
+    const player = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
+    if (player?.health) this.playerCards.setDisable(false);
     console.log('Следующий ход');
   }
 
@@ -98,8 +99,10 @@ export class GameScreen extends BaseComponent {
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
     this.timer.stop();
     this.disableControls = true;
+
     const spellName = cards.sort((cardA, cardB) => cardA.type - cardB.type).map((card) => card.title);
     console.log(`${playerInfo?.userName} кастует заклинание "${spellName.join(' ')}"!`);
+
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
   }

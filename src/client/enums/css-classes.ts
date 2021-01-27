@@ -103,6 +103,7 @@ export enum CSSClasses {
   TargetTime = 'target-selection__time',
   // player cards
   PlayerCards = 'player-cards',
+  PlayerCardsDisabled = 'player-cards--disabled',
   PlayerCardsHand = 'player-cards__hand-container',
   PlayerCardsSelected = 'player-cards__selected-cards-container',
   PlayingCardDisabled = 'card-container--disable',

@@ -9,6 +9,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    transition: all .5s ease-in-out;
 
     & > .card-container {
       flex: 0 0 auto;
@@ -22,11 +23,13 @@
       cursor: pointer;
       transition: all .3s;
 
-      &.card-container--before-append {
+      & > .card { flex-shrink: 0; }
+
+      &--before-append {
         max-width: 0%;
         & > .card { transform: rotateY(90deg); }
       }
-      &.card-container--before-remove {
+      &--before-remove {
         max-width: 0%;
         opacity: 0;
         transform: translateX(-25vw) translateY(100%);
@@ -48,6 +51,7 @@
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
+    transition: all .3s ease-out;
 
     & > .card-container {
       flex: 1 1 12%;
@@ -58,20 +62,20 @@
       align-items: flex-start;
       justify-content: center;
       font-size: 1rem;
-      transition: all .3s;
+      transition: all .5s;
       z-index: 1;
 
       &:hover { z-index: 2; }
 
-      &.card-container--before-append:not(.card-container--used) {
+      &--before-append:not(.card-container--used) {
         max-width: 0%;
         transform: translateX(-50vw) translateY(-120%);
       }
-      &.card-container--before-append.card-container--used {
+      &--before-append.card-container--used {
         max-width: 0%;
         & > .card { transform: rotateY(90deg); }
       }
-      &.card-container--before-remove {
+      &--before-remove {
         max-width: 0%;
         transform: translateY(-100%);
         opacity: 0;
@@ -99,6 +103,23 @@
       &:not(.card-container--disable) > .card:hover {
         transform: translateY(-100%) scale(1.75);
         box-shadow: $shadow-color 0 0 2em;
+      }
+    }
+  }
+
+  &--disabled > &__hand-container { transform: translateY(70%); }
+
+  &--disabled > &__selected-cards-container {
+    justify-content: flex-end;
+    transform: translateX(20%) translateY(50%);
+
+    & > .card-container {
+      max-width: 1%;
+      pointer-events: none;
+
+      &--before-remove {
+        opacity: 0;
+        transform: translateX(25vw);
       }
     }
   }
