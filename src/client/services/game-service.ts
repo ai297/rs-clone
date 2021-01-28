@@ -38,7 +38,7 @@ export class GameService {
     private readonly connection: ServerConnection,
     private readonly onGameCreated?: (isCreator: boolean) => void,
     private readonly onGameStarted?: () => void,
-    private readonly onGameEnded?: () => void,
+    private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => void,
     private readonly onGoOut?: () => void,
   ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
@@ -46,8 +46,8 @@ export class GameService {
       if (this.onGameStarted) this.onGameStarted();
       return HubResponse.Ok();
     });
-    connection.addEventListener(HubEventsClient.EndGame, () => {
-      if (this.onGameEnded) this.onGameEnded();
+    connection.addEventListener(HubEventsClient.EndGame, (alivePlayers: Array<IPlayerInfo>) => {
+      if (this.onGameEnded) this.onGameEnded(alivePlayers);
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.NextMove, () => {

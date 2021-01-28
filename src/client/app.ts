@@ -4,11 +4,13 @@ import
   StartScreen,
   LobbyScreen,
   GameScreen,
+  GameEndScreen,
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
+import { IPlayerInfo } from '../common';
 
 class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
@@ -61,6 +63,11 @@ class App implements IRootComponent {
     await this.show(new GameScreen(this.gameService, this.heroesRepository));
   };
 
+  showGameEnd = async (alivePlayers: Array<IPlayerInfo>): Promise<void> => {
+    await this.show(new GameEndScreen(this.gameService, alivePlayers, this.heroesRepository,
+      () => this.showStatic(StaticScreens.Start)));
+  };
+
   start(gameId?: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       // TODO: show preloader before connect to server here
@@ -95,7 +102,7 @@ class App implements IRootComponent {
       connection,
       (isCreator) => this.showLobby(isCreator),
       () => this.showGame(),
-      () => { console.log('game over'); },
+      (alivePlayers: Array<IPlayerInfo>) => this.showGameEnd(alivePlayers),
       () => this.showStatic(StaticScreens.Start),
     );
   }

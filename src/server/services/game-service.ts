@@ -113,7 +113,8 @@ export class GameService {
     if (!this.games.has(gameId)) return;
     console.log('game end', gameId);
     this.games.delete(gameId);
-    this.connectionService.dispatch(gameId, HubEventsClient.EndGame, winners.map((player) => player.id));
+    const data = winners.map((player, index) => GameService.getPlayerInfo(player, index));
+    this.connectionService.dispatch(gameId, HubEventsClient.EndGame, data);
   }
 
   createPlayer(request: ICreatePlayerRequest, connection: ClientConnection): IHubResponse<IPlayerInfo | string> {

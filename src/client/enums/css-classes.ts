@@ -102,14 +102,17 @@ export enum CSSClasses {
   BeforeRemove = 'overlay--before-remove',
   // win screen
   GameEndScreen = 'game-end-screen',
-  WinnerContainer = 'game-end__winner',
-  ItemName = 'item__name',
-  ItemHeroName = 'item__hero-name',
+  GameEndWrapper = 'game-end__wrapper',
+  GameEndTitle = 'game-end__title',
+  PLayerContainer = 'game-end__player',
   ItemAvatar = 'item__avatar',
-  LosersContainer = 'game-end__losers',
-  LoserItem = 'loser',
-  // game screen
   GameScreenButton = 'game-button__ready',
+  // WinnerContainer = 'game-end__winner',
+  // ItemName = 'item__name',
+  // ItemHeroName = 'item__hero-name',
+  // LosersContainer = 'game-end__losers',
+  // LoserItem = 'loser',
+  // game screen
   // dice roller
   Dice = 'dice',
   DiceContainer = 'dice-container',

@@ -1,4 +1,6 @@
 export interface IGameEndLocalization {
   WinnerTitle: string,
-  LosersTitle: string,
+  LoserTitle: string,
+  NoWinnersTitle: string,
+  HomeButton: string
 }
