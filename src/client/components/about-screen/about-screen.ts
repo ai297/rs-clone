@@ -11,39 +11,38 @@ export class AboutScreen extends BaseComponent {
       const data = await response.json();
       this.showData(data);
     } catch {
-      // this.showErrorMessage();
-      // // или
       this.element.innerText = 'Что-то пошло не так...';
     }
   }
 
   constructor(localization = 'ru') {
-    super([CSSClasses.AboutProject]);
-
-    const loc = localization;
+    super([CSSClasses.AboutScreen]);
 
     this.load();
   }
 
   showData(data: { title: string; content: string; team: Array<any>; }): void {
-    const title = createElement(Tags.H1, [CSSClasses.AboutProjectTitle], data.title);
-    const content = createElement(Tags.Div, [CSSClasses.AboutProjectText]);
-    const team = createElement(Tags.Div, [CSSClasses.AboutProjectTeam]);
+    const container = createElement(Tags.Div, [CSSClasses.AboutContainer]);
+    const headerImage = createElement(Tags.Div, [CSSClasses.AboutHeaderImage]);
+    const title = createElement(Tags.H1, [CSSClasses.AboutTitle], data.title);
+    const content = createElement(Tags.Div, [CSSClasses.AboutText]);
+    const team = createElement(Tags.Div, [CSSClasses.AboutTeam]);
     const membersData: Array<HTMLElement> = [];
 
     content.innerHTML = data.content;
     data.team.forEach((member): void => {
-      const markup = this.createMarkup(member.memberName, member.description, member.photo, member.gitAdress);
+      const markup = this.createTeamMarkup(member.memberName, member.description, member.photo, member.gitAdress);
 
       membersData.push(markup);
     });
 
     team.append(...membersData);
-    this.element.append(title, content, team);
+    container.append(headerImage, title, content, team);
+    this.element.append(container);
   }
 
   // eslint-disable-next-line class-methods-use-this
-  createMarkup(
+  createTeamMarkup(
     memberName: string,
     description: string,
     photo: string,

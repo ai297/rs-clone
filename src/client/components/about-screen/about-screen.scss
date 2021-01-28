@@ -1,12 +1,87 @@
+.about-screen {
+  width: 100%;
+  background-image: url('../assets/images/backgrounds/about.jpg');
+  background-position: center;
+  background-size: cover;
+  overflow-y: scroll;
+
+  &__container {
+    @include primary-font;
+    max-width: 1400px;
+    width: 83%;
+    margin: 0 auto;
+    padding: 1rem 10% 2rem 10%;
+    border-left: 4px solid $secondary-warning-color;
+    border-right: 4px solid $secondary-warning-color;
+    background-color: $shadow-color-darkest;
+    color: $primary-font-color;
+  }
+
+  &__header-image {
+    height: 306px;
+    max-height: 50vh;
+    margin-bottom: 2rem;
+    background-image: url('../assets/images/about-header.jpg');
+    background-position: top;
+    background-size: cover;
+    box-shadow: 1px 1px 3px $shadow-color,
+               -1px -1px 3px $shadow-color;
+  }
+
+  &__title {
+    @include headers-font;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: -2px 0 $primary-dark-color,
+                  0 2px $primary-dark-color,
+                  2px 0 $primary-dark-color,
+                  0 -2px $primary-dark-color;
+  }
+
+  &__text {
+    @include primary-font;
+    font-size: 1.25rem;
+
+    & > p {
+      margin-bottom: 1.1rem;
+    }
+
+    & > h2 {
+      margin-top: 2rem;
+      margin-bottom: 1.3rem;
+    }
+    & span.decorative {
+      font-family: $headers-font;
+      color: $primary-attention-color;
+    }
+
+    & a,
+    & a:visited {
+      color: $secondary-font-color;
+      text-decoration: none;
+    }
+    & a:hover,
+    & a:active {
+      font-weight: bold;
+    }
+  }
+
+  &__team {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr repeat(4);
+    gap: 0.7rem;
+  }
+}
+
 .team-mate {
   &__container {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    max-width: 23.5rem;
     min-height: 6.7rem;
-    margin: 1rem 1rem 1rem 2rem;
+    margin: 0.7rem 1rem 0.7rem 2rem;
     padding-left: 5.9rem;
     justify-content: center;
   }
@@ -17,7 +92,7 @@
     left: -7%;
     width: 7.5rem;
     height: 7.5rem;
-    border: 0.2rem solid $primary-dark-color;
+    border: 0.2rem solid $secondary-font-color;
     border-radius: 50%;
   }
 
