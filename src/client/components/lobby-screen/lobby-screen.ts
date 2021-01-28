@@ -63,6 +63,7 @@ export class LobbyScreen extends BaseComponent {
           }
         });
       }
+      this.readyToStart();
     }
   }
 
@@ -73,16 +74,22 @@ export class LobbyScreen extends BaseComponent {
       this.currentHero = null;
       this.readyToSelect();
     }
-    if (this.gameService.currentPlayers.length >= MIN_PLAYERS && this.startGameButton) {
-      this.startGameButton.disabled = false;
-    }
+    this.readyToStart();
   }
 
   private onPlayerLeaved(playerInfo: IPlayerInfo): void {
     this.playerList.removePlayer(playerInfo.id);
     this.heroSelection.makeDisabled(playerInfo.heroId, false);
-    if (this.gameService.currentPlayers.length < MIN_PLAYERS && this.startGameButton) {
-      this.startGameButton.disabled = true;
+    this.readyToStart();
+  }
+
+  private readyToStart() {
+    if (this.startGameButton) {
+      if (this.gameService.currentPlayers.length >= MIN_PLAYERS) {
+        this.startGameButton.disabled = false;
+      } else {
+        this.startGameButton.disabled = true;
+      }
     }
   }
 
