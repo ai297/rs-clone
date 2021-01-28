@@ -31,6 +31,10 @@ export enum CSSClasses {
   СardImage = 'card__image',
   СardTitle = 'card__title',
   СardText = 'card__text',
+  CardDisabled = 'card-container--disable',
+  CardBeforeAppend = 'card-container--before-append',
+  CardBeforeRemove = 'card-container--before-remove',
+  CardUsed = 'card-container--used',
   // hero selection
   HeroSelection = 'hero-selection',
   HeroSelectionFullHero = 'hero-selection__full-hero',
@@ -110,10 +114,10 @@ export enum CSSClasses {
   PlayerCardsDisabled = 'player-cards--disabled',
   PlayerCardsHand = 'player-cards__hand-container',
   PlayerCardsSelected = 'player-cards__selected-cards-container',
-  PlayingCardDisabled = 'card-container--disable',
-  PlayingCardBeforeAppend = 'card-container--before-append',
-  PlayingCardBeforeRemove = 'card-container--before-remove',
-  PlayingCardUsed = 'card-container--used',
+  // spell casting
+  SpellCasting = 'spell-casting',
+  SpellCastingCards = 'spell-casting__cards',
+  SpellCastingMessage = 'spell-casting__message',
   // overlay
   Overlay = 'overlay',
   BeforeAppend = 'overlay--before-append',
@@ -143,4 +147,8 @@ export enum CSSClasses {
   Popup = 'popup',
   PopupText = 'popup__text',
   PopupButton = 'popup__button',
+  // player message
+  PlayerMessage = 'player-message',
+  PlayerMessageContent = 'player-message__content',
+  PlayerMessageInit = 'player-message--init',
 }

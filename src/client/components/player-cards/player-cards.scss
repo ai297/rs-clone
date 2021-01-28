@@ -81,8 +81,9 @@
         opacity: 0;
       }
 
-      &.card-container--disable {
+      &--disable {
         z-index: 0;
+        pointer-events: none;
         & > .card::after {
           content: '';
           position: absolute;

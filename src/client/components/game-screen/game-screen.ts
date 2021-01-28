@@ -9,7 +9,6 @@ import {
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
-import { IComponent } from '../component';
 import { BaseComponent } from '../base-component';
 import { PlayerCards } from '../player-cards/player-cards';
 import { GameService } from '../../services/game-service';
@@ -18,7 +17,7 @@ import { HeroesRepository } from '../../services';
 import { OpponentsCards } from '../opponents-cards/opponents-cards';
 import { BaseButton } from '../base-button/base-button';
 import { Timer } from '../timer/timer';
-import { ActionLayer } from './action-layer';
+import { SpellCasting } from './spell-casting';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -33,7 +32,7 @@ export class GameScreen extends BaseComponent {
 
   private controlsContainer!: HTMLElement;
 
-  private playerCards: PlayerCards;
+  private playerCards!: PlayerCards;
 
   private currentPlayerDisplay?: GamePlayerDisplay;
 
@@ -44,6 +43,8 @@ export class GameScreen extends BaseComponent {
   private readyButton!: BaseButton;
 
   private timer!: Timer;
+
+  private spellCasting!: SpellCasting;
 
   constructor(
     private readonly gameService: GameService,
@@ -65,39 +66,33 @@ export class GameScreen extends BaseComponent {
     this.gameService.onPlayerMakeDiceRoll = (playerInfo, rolls, bonus) => this.showDiceRoll(playerInfo, rolls, bonus);
     this.gameService.onSelectTarget = (targets, numberOfTargets) => this.showTargetSelection(targets, numberOfTargets);
 
-    this.playerCards = new PlayerCards();
     this.addCards(this.gameService.currentPlayerCards, 0);
-    this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
-    this.playSection.append(this.playerCards.element);
     this.disableControls = true;
-
-    const castSpell = new ActionLayer();
-    this.playSection.append(castSpell.element);
+    this.readyButton.disabled = true;
   }
 
   get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }
 
   set disableControls(value: boolean) {
     this.controlsContainer.classList.toggle(CSSClasses.GameControlsDisabled, value);
-    this.readyButton.disabled = value;
   }
 
-  get isSpellCast(): boolean { return this.element.classList.contains(CSSClasses.GameScreenCasting); }
-
-  set isSpellCast(value: boolean) {
+  async setSpellCast(value: boolean): Promise<void> {
     this.element.classList.toggle(CSSClasses.GameScreenCasting, value);
+    await this.spellCasting.clearSpell();
+    console.log('очистить поле заклинаний');
+    await this.playerCards.setDisable(value);
   }
 
   nextMove(): void {
     const player = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
     if (player?.health) this.playerCards.setDisable(false);
-    this.isSpellCast = false;
     this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
     console.log('Следующий ход');
+    this.setSpellCast(false);
   }
 
   async addCards(cards: Array<ICard>, timer = SELECT_SPELL_TIME): Promise<void> {
-    // console.log('Раздача карт');
     await this.playerCards.addCards(...cards);
     this.disableControls = false;
     this.timer.start(timer / 1000);
@@ -111,13 +106,12 @@ export class GameScreen extends BaseComponent {
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
     this.timer.stop();
     this.disableControls = true;
-    this.isSpellCast = true;
-
-    const spellName = cards.sort((cardA, cardB) => cardA.type - cardB.type).map((card) => card.title);
-    console.log(`${playerInfo?.userName} кастует заклинание "${spellName.join(' ')}"!`);
+    await this.setSpellCast(true);
 
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
+    const hero = await this.heroesRepository.getHero(playerInfo.heroId);
+    await this.spellCasting.showSpell(cards, playerInfo, hero?.name || '');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -131,7 +125,7 @@ export class GameScreen extends BaseComponent {
     console.log(`Вы должны выбрать ${numberOfTargets} целей из: ${targetNames.join(', ')}`);
     await delay(SELECT_TARGET_TIME);
     console.log('Время на выбор цели истекло');
-    return [targetNames[0]];
+    return [];
   }
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
@@ -182,6 +176,10 @@ export class GameScreen extends BaseComponent {
     }
   }
 
+  private spellChange(cardsNumber: number): void {
+    this.readyButton.disabled = (cardsNumber === 0);
+  }
+
   // #region markup
 
   private createPlayersInfo(players: Array<IPlayerInfo>, currentPlayerId: string): void {
@@ -212,45 +210,46 @@ export class GameScreen extends BaseComponent {
     const heroInfo = <IHero> await this.heroesRepository.getHero(opponent.heroId);
     const opponentInfo = new GamePlayerDisplay(opponent.userName, heroInfo.name, heroInfo.image, opponent.health);
     const opponentCards = new OpponentsCards();
-    opponentCards.showCards(opponent.spellLength);
+    if (opponent.spellLength) opponentCards.showCards(opponent.spellLength);
 
     this.opponentCards.set(opponent.id, opponentCards);
     this.opponents.set(opponent.id, opponentInfo);
 
-    this.addOpponent(opponentInfo, opponentCards);
+    opponentInfo.element.classList.add(CSSClasses.GameOpponentSection);
+    opponentCards.element.classList.add(CSSClasses.GameOpponentSection);
+    this.opponentsInfoContainer.append(opponentInfo.element);
+    this.opponentsCardsContainer.append(opponentCards.element);
   };
 
   private createMarkup(): void {
     const UILayer = createElement(Tags.Div, [CSSClasses.GameUILayer]);
-
     this.playSection = createElement(Tags.Div, [CSSClasses.GamePlaySection]);
     this.opponentsCardsContainer = createElement(Tags.Div, [CSSClasses.GameOpponentsCards]);
+    if (!this.gameService.isCasting) this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
     this.opponentsInfoContainer = createElement(Tags.Div, [CSSClasses.GameOpponentsInfo]);
     this.playerInfoContainer = createElement(Tags.Div, [CSSClasses.GamePlayerInfo]);
     this.controlsContainer = createElement(Tags.Div, [CSSClasses.GameControls]);
+    const buttonContainer = createElement(Tags.Div, [CSSClasses.GameButtonsContainer]);
+    const vignette = createElement(Tags.Div, [CSSClasses.GameScreenVignette]);
 
     this.readyButton = new BaseButton(
       this.loc.ReadyButton,
       () => this.selectSpell(),
       [CSSClasses.GameScreenButton],
     );
-    const buttonContainer = createElement(Tags.Div, [CSSClasses.GameButtonsContainer]);
-    buttonContainer.append(this.readyButton.element);
 
     this.timer = new Timer();
 
+    this.playerCards = new PlayerCards((cardsNum) => this.spellChange(cardsNum));
+    this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
+
+    this.spellCasting = new SpellCasting();
+
+    buttonContainer.append(this.readyButton.element);
+    this.playSection.append(this.playerCards.element, this.spellCasting.element);
     this.controlsContainer.append(this.timer.element, buttonContainer);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);
-    const vignette = createElement(Tags.Div, [CSSClasses.GameScreenVignette]);
     this.element.append(this.opponentsCardsContainer, this.playSection, vignette, UILayer);
-  }
-
-  private addOpponent(opponentInfo: IComponent, opponentCards: IComponent): void {
-    opponentInfo.element.classList.add(CSSClasses.GameOpponentSection);
-    opponentCards.element.classList.add(CSSClasses.GameOpponentSection);
-
-    this.opponentsInfoContainer.append(opponentInfo.element);
-    this.opponentsCardsContainer.append(opponentCards.element);
   }
   // #endregion
 }

@@ -18,11 +18,9 @@ export class OpponentsCards
     }
   }
 
-  showCards(num: number): HTMLElement {
+  showCards(num: number): void {
     this.element.classList.remove(CSSClasses.OpponentsCardsEmpty);
     this.element.append(...this.maxCards.slice(0, num));
-
-    return this.element;
   }
 
   removeCards(): void {

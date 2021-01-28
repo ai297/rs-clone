@@ -224,7 +224,6 @@ export class GameService {
 
   private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
     this.playerCards.push(...cards);
-    this.isCastingStep = false;
     if (this.onGetCards) await this.onGetCards(cards);
     return HubResponse.Ok();
   }
@@ -245,6 +244,8 @@ export class GameService {
   }
 
   private async castSpell(message: ICastSpell): Promise<IHubResponse<null>> {
+    this.isCastingStep = true;
+
     if (message.playerId === this.currentPlayerId) {
       const castCardsId = message.cards.map((card) => card.id);
       this.playerCards = this.playerCards.filter((card) => !castCardsId.includes(card.id));

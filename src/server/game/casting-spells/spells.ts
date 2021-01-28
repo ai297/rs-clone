@@ -29,11 +29,12 @@ async function makePowerDiceRoll(player: Player, magicSign: MagicSigns): Promise
 type RollResult = { player: Player, rolls: Array<number> };
 
 async function makeDiceRolls(players: Array<Player>, diceNumber = 1): Promise<RollResult[]> {
-  async function rollDecorator(player:Player): Promise<RollResult> {
+  const rollResults: Array<RollResult> = [];
+  // игроки бросают кубики по-очереди
+  await forEachAsync(players, async (player) => {
     const rolls = await player.makeDiceRoll(diceNumber);
-    return { player, rolls };
-  }
-  const rollResults = await Promise.all(players.map(rollDecorator));
+    rollResults.push({ player, rolls });
+  });
   return rollResults;
 }
 
@@ -132,7 +133,6 @@ export class Spells {
     if (playerPosition > this.players.length - 1 || playerPosition < 0) return [];
 
     const currentPlayer = this.players[playerPosition];
-    console.log(currentPlayer?.name, 'select target...');
     const allOpponents = this.players.filter((player) => player !== currentPlayer && player.isAlive);
 
     if (targetIds.length <= maxResults) {
@@ -461,7 +461,6 @@ export class Spells {
    */
   private useDuelHell = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
-    console.log(player.name, 'кастует дуэльадский');
     const targetIds = this.players
       .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);

@@ -1,0 +1,37 @@
+.player-message {
+  width: 100%;
+  max-width: 45rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: $primary-border-radius * 2;
+  background-color: $shadow-color-darkest;
+  transition: all .5s ease-in;
+
+  &--init { transform: scaleX(0); }
+
+  & > .avatar {
+    height: 6rem;
+    flex: 0 0 6rem;
+    border: solid 2px $primary-dark-color;
+    border-radius: $primary-border-radius;
+  }
+
+  &__content {
+    margin-left: 1rem;
+    @include primary-font;
+    font-size: 1.25rem;
+
+    & > p { margin-bottom: .5rem; }
+
+    & .source { color: $card-type-source; }
+    & .quality { color: $card-type-quality; }
+    & .action { color: $card-type-action; }
+    & .source, & .action, & .quality {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+    }
+  }
+}

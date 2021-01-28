@@ -23,9 +23,9 @@ main {
 }
 
 .component {
-  & *::-webkit-scrollbar { width: .7rem; }
-  & *::-webkit-scrollbar-track { background: none; }
-  & *::-webkit-scrollbar-thumb {
+  &::-webkit-scrollbar, & *::-webkit-scrollbar { width: .7rem; }
+  &::-webkit-scrollbar-track, & *::-webkit-scrollbar-track { background: none; }
+  &::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb {
     background: $primary-dark-color;
     border-radius: .35rem;
   }
@@ -35,6 +35,7 @@ main {
 @import '../components/popup/popup.scss';
 @import '../components/base-button/base-button.scss';
 @import '../components/avatar/avatar.scss';
+@import '../components/player-message/player-message.scss';
 @import '../components/start-screen/start-screen.scss';
 @import '../components/player-list/player-list.scss';
 @import '../components/card-spell/card-spell.scss';

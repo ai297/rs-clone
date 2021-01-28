@@ -12,20 +12,24 @@ export class Avatar extends BaseComponent {
   private readonly images: Map<AvatarTypes, HTMLImageElement> = new Map();
 
   constructor(
-    private readonly heroId: string,
-    private type = AvatarTypes.Avatar,
+    heroId: string,
+    type = AvatarTypes.Avatar,
     classes: Array<CSSClasses> = [],
   ) {
     super([CSSClasses.Avatar, ...classes]);
 
-    this.images.set(AvatarTypes.Avatar, createImage(`${ImagesPaths.HeroesAvatars}${heroId}.png`))
-      .set(AvatarTypes.FullSize, createImage(`${ImagesPaths.HeroesFullSize}${heroId}.jpg`))
-      .set(AvatarTypes.DeathWizzard, createImage(`${ImagesPaths.HeroesDeaths}${heroId}.png`));
+    const avatar = `${ImagesPaths.HeroesAvatars}${heroId}.png`;
+    const death = `${ImagesPaths.HeroesDeaths}${heroId}.png`;
+    const fullSize = `${ImagesPaths.HeroesFullSize}${heroId}.jpg`;
+
+    this.images.set(AvatarTypes.Avatar, createImage(avatar))
+      .set(AvatarTypes.FullSize, createImage(fullSize))
+      .set(AvatarTypes.DeathWizzard, createImage(death));
 
     this.changeType(type);
   }
 
   changeType(type: AvatarTypes): void {
-    this.element.style.backgroundImage = (<HTMLImageElement> this.images.get(type)).src;
+    this.element.style.backgroundImage = this.images.has(type) ? `url("${this.images.get(type)?.src}")` : '';
   }
 }

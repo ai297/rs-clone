@@ -8,16 +8,16 @@ import {
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
-import { PlayingCard } from './playing-card';
+import { CardSpell } from '../card-spell/card-spell';
 
 const MAX_CARDS_IN_HAND_ROTATION = 30;
 const ANIMATION_HAND_TIME = 500;
 const ANIMATION_SELECTED_TIME = 300;
 
 export class PlayerCards extends BaseComponent {
-  private readonly handCards: PlayingCard[] = [];
+  private readonly handCards: CardSpell[] = [];
 
-  private readonly spellCards: PlayingCard[] = [];
+  private readonly spellCards: CardSpell[] = [];
 
   private isCardSelecting = false;
 
@@ -25,7 +25,7 @@ export class PlayerCards extends BaseComponent {
 
   private readonly selectedCardsElement: HTMLElement;
 
-  constructor() {
+  constructor(private readonly onSpellChange?: (cards: number) => void) {
     super([CSSClasses.PlayerCards]);
 
     this.handElement = createElement(Tags.Div, [CSSClasses.PlayerCardsHand]);
@@ -41,6 +41,7 @@ export class PlayerCards extends BaseComponent {
     const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(ANIMATION_SELECTED_TIME));
     this.spellCards.splice(0, this.spellCards.length);
     this.updateHandState();
+    if (this.onSpellChange) this.onSpellChange(0);
     await Promise.all(beforeRemoveCallbacks);
     this.selectedCardsElement.innerHTML = '';
   };
@@ -53,7 +54,7 @@ export class PlayerCards extends BaseComponent {
   };
 
   addCards = async (...cardsInfo: ICard[]): Promise<void> => {
-    const cards = cardsInfo.map((cardInfo) => new PlayingCard(cardInfo));
+    const cards = cardsInfo.map((cardInfo) => new CardSpell(cardInfo));
     cards.forEach((card) => card.flip());
     await this.addToHand(...cards);
   };
@@ -76,7 +77,7 @@ export class PlayerCards extends BaseComponent {
     const selectCardIndex = this.handCards.findIndex((card) => card.id === cardId);
     if (selectCardIndex < 0) return;
 
-    const card = <PlayingCard> this.handCards[selectCardIndex];
+    const card = <CardSpell> this.handCards[selectCardIndex];
     if (this.spellCards.findIndex((spellCard) => spellCard.cardType === card.cardType) >= 0) return;
     this.handCards.splice(selectCardIndex, 1);
 
@@ -96,6 +97,7 @@ export class PlayerCards extends BaseComponent {
       .find((spellCard) => spellCard.cardType > card.cardType)?.element;
 
     this.spellCards.push(card);
+    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
     this.selectedCardsElement.insertBefore(card.element, afterElement || null);
     await card.onAppended();
@@ -110,7 +112,8 @@ export class PlayerCards extends BaseComponent {
     const selectCardIndex = this.spellCards.findIndex((card) => card.id === cardId);
     if (selectCardIndex < 0) return;
 
-    const card = <PlayingCard> this.spellCards.splice(selectCardIndex, 1)[0];
+    const card = <CardSpell> this.spellCards.splice(selectCardIndex, 1)[0];
+    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
     await card.beforeRemove(ANIMATION_SELECTED_TIME);
     card.element.remove();
@@ -121,9 +124,9 @@ export class PlayerCards extends BaseComponent {
     this.isCardSelecting = false;
   };
 
-  private async addToHand(...cards: PlayingCard[]): Promise<void> {
+  private async addToHand(...cards: CardSpell[]): Promise<void> {
     if (cards.length === 0) return;
-    const card = <PlayingCard> cards.pop();
+    const card = <CardSpell> cards.pop();
     this.handCards.push(card);
     card.onClick = this.selectCard;
     await card.beforeAppend();
