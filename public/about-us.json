@@ -10,31 +10,19 @@
     },
     {
       "memberName": "Максим Max Евграшин",
-<<<<<<< HEAD
       "gitAdress": "justgit",
-=======
-      "git": "justgit",
->>>>>>> 2ec4178... add: styles for about-screen
       "photo": "somePhoto",
       "description": "coolest web-developer"
     },
     {
       "memberName": "Тома Dotoshka Ярославцева",
-<<<<<<< HEAD
       "gitAdress": "justgit",
-=======
-      "git": "justgit",
->>>>>>> 2ec4178... add: styles for about-screen
       "photo": "toma.png",
       "description": "Coolest web-developer coolest web-developer coolest web-developer coolest web-developer coolest web-developer coolest web-developer "
     },
     {
       "memberName": "Анна ZAS Журавлева",
-<<<<<<< HEAD
       "gitAdress": "ansivgit",
-=======
-      "git": "ansivgit",
->>>>>>> 2ec4178... add: styles for about-screen
       "photo": "anna.jpg",
       "description": "Cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer "
     }
