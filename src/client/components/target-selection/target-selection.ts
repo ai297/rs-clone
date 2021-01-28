@@ -10,7 +10,7 @@ export class TargetSelection extends BaseComponent {
   constructor(
     private targets: Array<TargetForSelection>,
     private callback: (id: string) => void,
-    private selectAll: boolean = true,
+    private selectAll: boolean = false,
     private timer: number = SELECT_TARGET_TIME,
     private loc: IGameScreenLocalization = GAME_SCREEN_DEFAULT_LOCALIZATION,
   ) {
