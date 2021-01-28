@@ -31,7 +31,7 @@ export class AboutScreen extends BaseComponent {
 
     content.innerHTML = data.content;
     data.team.forEach((member): void => {
-      const markup = this.createTeamMarkup(member.memberName, member.description, member.photo, member.gitAdress);
+      const markup = this.createTeamMarkup(member.memberName, member.gitAdress, member.photo, member.description);
 
       membersData.push(markup);
     });
@@ -44,17 +44,18 @@ export class AboutScreen extends BaseComponent {
   // eslint-disable-next-line class-methods-use-this
   createTeamMarkup(
     memberName: string,
-    description: string,
-    photo: string,
     gitAdress: string,
+    photo: string,
+    description: string,
   ): HTMLElement {
     const member = createElement(Tags.Div, [CSSClasses.TeamMateContainer]);
     const markup = `
       <img class="team-mate__avatar" src="${ImagesPaths.PhotoTeam}${photo}" alt="${memberName}">
-      <div class="team-mate__name">${memberName}
-        <a src="https://github.com/${gitAdress}"></a>
+      <a href="https://github.com/${gitAdress}" target='_blank'">
+        <span class="team-mate__name">${memberName}
+      </a>
       </div>
-      <div class="team-mate__hero">${description}</div>
+      <div class="team-mate__description">${description}</div>
     `;
 
     member.innerHTML = markup;

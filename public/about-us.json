@@ -1,28 +1,28 @@
 {
   "title": "О проекте",
-  "content": "<p><a href=\"https://github.com/rolling-scopes-school/tasks/blob/master/tasks/rsclone/rsclone.md\">RS Clone</a> - финальный проект курса <a href=\"https://rs.school/js/\">Rolling Scopes School</a> по изучению фронтенд-разработки Q32020. Это командное задание, в ходе выполнения которого нам необходимо было разработать клон игры или приложения. Команда сама выбирала тематику проекта, это могла быть как точная, так и упрощённая копия существующего проекта, или собственное приложение.</p><p>Наша команда из 4-х человек решила реализовать сетевую версию настольной карточной игры <span class=\"decorative\">Epic Spell Wars of the Battle Wizards</span> (описание оригинала можно увидеть <a href=\"https://www.boardgamegeek.com/boardgame/112686/epic-spell-wars-battle-wizards-duel-mt-skullzfyre\" target=\"_blank\">здесь</a>).</p><p>Данная игра привлекла нас понятной логикой реализации и красочными иллюстрациями. В нашей реализации мы использовали забавный русский перевод, сделанный Мокеевым Amokeev Алексеем. Мы создали упрощенную версию 1-го издания игры - «Битва на горе Черепламени», рекомендуемой для игроков старше 16-ти лет. Сетевой режим игры позволяет играть вчетвером или с 1-3 автоматическими ботами.</p><h2>Участники нашей команды:</h2>",
+  "content": "<p><a href=\"https://github.com/rolling-scopes-school/tasks/blob/master/tasks/rsclone/rsclone.md\" target=\"_blank\">RS Clone</a> - финальный проект курса <a href=\"https://rs.school/js/\" target=\"_blank\">Rolling Scopes School</a> по изучению фронтенд-разработки Q32020. Это командное задание, в ходе выполнения которого нам необходимо было разработать клон игры или приложения. Команда сама выбирала тематику проекта, это могла быть как точная, так и упрощённая копия существующего проекта, или собственное приложение.</p><p>Наша команда из 4-х человек решила реализовать сетевую версию настольной карточной игры <span class=\"decorative\">Epic Spell Wars of the Battle Wizards</span> (описание оригинала можно увидеть <a href=\"https://www.boardgamegeek.com/boardgame/112686/epic-spell-wars-battle-wizards-duel-mt-skullzfyre\" target=\"_blank\">здесь</a>).</p><p>Данная игра привлекла нас понятной логикой реализации и красочными иллюстрациями. В нашей реализации мы использовали забавный русский перевод, сделанный Мокеевым Amokeev Алексеем. Мы создали упрощенную версию 1-го издания игры - «Битва на горе Черепламени», рекомендуемой для игроков старше 16-ти лет. Сетевой режим игры позволяет играть вчетвером или с 1-3 автоматическими ботами.</p><h2>Участники нашей команды:</h2>",
   "team": [
     {
       "memberName": "Kris Casper",
-      "git": "somegit",
+      "gitAdress": "somegit",
       "photo": "photo",
       "description": "Team lead"
     },
     {
       "memberName": "Максим Max Евграшин",
-      "git": "justgit",
+      "gitAdress": "justgit",
       "photo": "somePhoto",
       "description": "coolest web-developer"
     },
     {
       "memberName": "Тома Dotoshka Ярославцева",
-      "git": "justgit",
+      "gitAdress": "justgit",
       "photo": "toma.png",
       "description": "Coolest web-developer coolest web-developer coolest web-developer coolest web-developer coolest web-developer coolest web-developer "
     },
     {
       "memberName": "Анна ZAS Журавлева",
-      "git": "ansivgit",
+      "gitAdress": "ansivgit",
       "photo": "anna.jpg",
       "description": "Cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer "
     }

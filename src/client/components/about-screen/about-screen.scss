@@ -69,8 +69,9 @@
   &__team {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr repeat(4);
+    //grid-template-rows: 1fr repeat(4);
     gap: 0.7rem;
+    min-width: 34rem;
   }
 }
 
@@ -84,6 +85,14 @@
     margin: 0.7rem 1rem 0.7rem 2rem;
     padding-left: 5.9rem;
     justify-content: center;
+
+    & a,
+    & a:visited,
+    & a:focus {
+      display: block;
+      width: fit-content;
+      text-decoration: none;
+    }
   }
 
   &__avatar {
@@ -97,20 +106,31 @@
   }
 
   &__name,
-  &__hero {
+  &__description {
     margin-left: 0.7rem;
     font-size: 1.25rem;
   }
 
-  &__hero {
-    @include primary-font;
-    margin-top: 0.25rem;
-  }
-
   &__name {
+    position: relative;
+    width: fit-content;
     font-family: $headers-font;
     font-weight: bold;
     color: $secondary-font-color;
     line-height: 120%;
+
+    &::after {
+      content: url('../assets/github-icon.svg');
+      position: absolute;
+      top: 4px;
+      right: -36px;
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
+
+  &__description {
+    @include primary-font;
+    margin-top: 0.25rem;
   }
 }
