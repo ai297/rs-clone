@@ -80,10 +80,13 @@ export enum CSSClasses {
   StartGameButtonDisabled = 'lobby__start-game--disabled',
   // game screen
   GameScreen = 'game-screen',
+  GameScreenCasting = 'game-screen--casting',
   GameOpponentsCards = 'game-screen__opponent-cards',
+  GameOpponentCardsHide = 'game-screen__opponent-cards--hidden',
   GamePlaySection = 'game-screen__play-section',
   GameCardsSection = 'game-screen__card-section',
   GameUILayer = 'game-screen__ui-layer',
+  GameScreenVignette = 'game-screen__vignette',
   GameOpponentsInfo = 'game-screen__opponents-info-container',
   GameOpponentSection = 'game-screen__opponent-section',
   GameOpponentSectionDead = 'game-screen__opponent-section--dead',
@@ -92,6 +95,7 @@ export enum CSSClasses {
   GameControlsDisabled = 'game-screen__controls--disabled',
   GameButtonsContainer = 'game-screen__buttons-container',
   GameScreenButton = 'game-button__ready',
+  GameActionLayer = 'game-screen__action-layer',
   // target selection
   TargetSelection = 'target-selection',
   TargetSelectionTitle = 'target-selection__title',

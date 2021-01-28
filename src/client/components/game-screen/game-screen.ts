@@ -18,6 +18,7 @@ import { HeroesRepository } from '../../services';
 import { OpponentsCards } from '../opponents-cards/opponents-cards';
 import { BaseButton } from '../base-button/base-button';
 import { Timer } from '../timer/timer';
+import { ActionLayer } from './action-layer';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -69,6 +70,9 @@ export class GameScreen extends BaseComponent {
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
     this.playSection.append(this.playerCards.element);
     this.disableControls = true;
+
+    const castSpell = new ActionLayer();
+    this.playSection.append(castSpell.element);
   }
 
   get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }
@@ -78,9 +82,17 @@ export class GameScreen extends BaseComponent {
     this.readyButton.disabled = value;
   }
 
+  get isSpellCast(): boolean { return this.element.classList.contains(CSSClasses.GameScreenCasting); }
+
+  set isSpellCast(value: boolean) {
+    this.element.classList.toggle(CSSClasses.GameScreenCasting, value);
+  }
+
   nextMove(): void {
     const player = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
     if (player?.health) this.playerCards.setDisable(false);
+    this.isSpellCast = false;
+    this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
     console.log('Следующий ход');
   }
 
@@ -99,6 +111,7 @@ export class GameScreen extends BaseComponent {
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
     this.timer.stop();
     this.disableControls = true;
+    this.isSpellCast = true;
 
     const spellName = cards.sort((cardA, cardB) => cardA.type - cardB.type).map((card) => card.title);
     console.log(`${playerInfo?.userName} кастует заклинание "${spellName.join(' ')}"!`);
@@ -137,12 +150,16 @@ export class GameScreen extends BaseComponent {
     console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
-      if (playerInfo.health <= 0) this.readyButton.element.remove(); // current player loose.
+      if (playerInfo.health <= 0) {
+        this.readyButton.element.remove(); // current player loose.
+        this.playerCards.clearHand();
+      }
       await this.currentPlayerDisplay?.bringDamage(playerInfo.health, damage);
     }
     if (this.opponents.has(playerInfo.id)) {
       const opponent = <GamePlayerDisplay> this.opponents.get(playerInfo.id);
       await opponent.bringDamage(playerInfo.health, damage);
+      if (playerInfo.health <= 0) this.opponentCards.get(playerInfo.id)?.removeCards();
     }
   }
 
@@ -157,6 +174,7 @@ export class GameScreen extends BaseComponent {
     await this.playerCards.setDisable();
     try {
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
+      this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {
       alert('Не удалось выбрать заклинание');
       this.readyButton.disabled = false;
@@ -223,7 +241,8 @@ export class GameScreen extends BaseComponent {
 
     this.controlsContainer.append(this.timer.element, buttonContainer);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);
-    this.element.append(this.opponentsCardsContainer, this.playSection, UILayer);
+    const vignette = createElement(Tags.Div, [CSSClasses.GameScreenVignette]);
+    this.element.append(this.opponentsCardsContainer, this.playSection, vignette, UILayer);
   }
 
   private addOpponent(opponentInfo: IComponent, opponentCards: IComponent): void {

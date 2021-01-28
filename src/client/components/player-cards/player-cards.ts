@@ -4,7 +4,6 @@ import {
   createElement,
   delay,
   ICard,
-  ICallbackHandler,
   forEachAsync,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';

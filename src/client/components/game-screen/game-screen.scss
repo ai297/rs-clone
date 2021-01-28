@@ -18,6 +18,12 @@
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-around;
+    transition: all .5s ease-out;
+
+    &--hidden {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
   }
 
   &__play-section {
@@ -30,6 +36,21 @@
     align-items: stretch;
     justify-content: center;
   }
+
+  &__vignette {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: radial-gradient(transparent, $primary-dark-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s ease-out;
+  }
+
+  &--casting &__vignette { opacity: .5; }
 
   &__opponent-section {
     flex: 0 0 30%;
@@ -44,7 +65,7 @@
 
   &__ui-layer {
     position: fixed;
-    z-index: 4;
+    z-index: 5;
     top: 0;
     left: 0;
     right: 0;
@@ -103,6 +124,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &__action-layer {
+    position: absolute;
+    width: 80%;
+    height: 90%;
+    left: 10%;
+    top: -15%;
+    min-height: 25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
   }
 }
 
