@@ -14,7 +14,11 @@ export class StartScreen extends BaseComponent {
 
   private bgImg: HTMLImageElement = new Image();
 
-  constructor(private gameService: GameService, localization?: IStartScreenLocalization) {
+  constructor(
+    private gameService: GameService,
+    private showAboutScreen: () => void,
+    localization?: IStartScreenLocalization,
+  ) {
     super([CSSClasses.StartScreen]);
     this.loc = localization || START_SCREEN_DEFAULT_LOCALIZATION;
     this.createMarkup();
@@ -39,12 +43,19 @@ export class StartScreen extends BaseComponent {
       () => console.log('Rules'),
       [CSSClasses.StartScreenButton],
     );
-    const settingsButton = new BaseButton(
-      this.loc.Settings,
-      () => console.log('Settings'),
+    const aboutButton = new BaseButton(
+      this.loc.About,
+      () => this.showAboutScreen(),
       [CSSClasses.StartScreenButton],
     );
-    buttonsContainer.append(newGameButton.element, joinButton.element, rulesButton.element, settingsButton.element);
+
+    buttonsContainer.append(
+      newGameButton.element,
+      joinButton.element,
+      rulesButton.element,
+      aboutButton.element,
+    );
+
     this.element.append(logo, buttonsContainer);
   }
 
