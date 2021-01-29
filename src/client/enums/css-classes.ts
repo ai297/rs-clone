@@ -128,11 +128,11 @@ export enum CSSClasses {
   // about project
   AboutScreen = 'about-screen',
   AboutContainer = 'about-screen__container',
- //  AboutInnerContainer = 'about-screen__container--inner',
   AboutHeaderImage = 'about-screen__header-image',
   AboutTitle = 'about-screen__title',
   AboutText = 'about-screen__text',
   AboutTeam = 'about-screen__team',
+  AboutScreenButton = 'about-screen__button',
   TeamMateContainer = 'team-mate__container',
   // popup
   Popup = 'popup',

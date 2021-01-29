@@ -7,6 +7,8 @@
 
   &__container {
     @include primary-font;
+    display: flex;
+    flex-direction: column;
     max-width: 1400px;
     width: 83%;
     margin: 0 auto;
@@ -73,6 +75,11 @@
     gap: 0.7rem;
     min-width: 34rem;
   }
+
+  &__button {
+    align-self: center;
+    margin-top: 3rem;
+  }
 }
 
 .team-mate {
@@ -98,7 +105,7 @@
   &__avatar {
     position: absolute;
     top: -6%;
-    left: -7%;
+    left: -5%;
     width: 7.5rem;
     height: 7.5rem;
     border: 0.2rem solid $secondary-font-color;
@@ -132,5 +139,6 @@
   &__description {
     @include primary-font;
     margin-top: 0.25rem;
+    max-width: 85%;
   }
 }
