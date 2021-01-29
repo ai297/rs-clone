@@ -58,5 +58,13 @@ $substrate-color-light: mix($substrate-color, transparent, 50%);
   letter-spacing: 0.06em;
 }
 
+@mixin headers-font {
+  font-family: $headers-font;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 120%;
+  color: $secondary-font-color;
+}
+
 $primary-border-radius: .5rem;
 

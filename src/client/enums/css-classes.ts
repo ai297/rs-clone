@@ -125,6 +125,15 @@ export enum CSSClasses {
   DiceRoller = 'dice-roller',
   DiceRollerShow = 'dice-roller--show',
   DiceRollingAnimation = 'dice--rolling',
+  // about project
+  AboutScreen = 'about-screen',
+  AboutContainer = 'about-screen__container',
+ //  AboutInnerContainer = 'about-screen__container--inner',
+  AboutHeaderImage = 'about-screen__header-image',
+  AboutTitle = 'about-screen__title',
+  AboutText = 'about-screen__text',
+  AboutTeam = 'about-screen__team',
+  TeamMateContainer = 'team-mate__container',
   // popup
   Popup = 'popup',
   PopupText = 'popup__text',
