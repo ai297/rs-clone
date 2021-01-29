@@ -36,7 +36,7 @@
   padding: 0.5rem;
 
   border: 2px solid $selection-target-font-color;
-  border-radius: 8px;
+  border-radius: $primary-border-radius;
 
   background-color: $primary-dark-color;
 
@@ -55,7 +55,7 @@
   width: 100%;
   height: auto;
 
-  border-radius: 8px;
+  border-radius: $primary-border-radius;
 
   margin: 0 0 0 0;
 }
