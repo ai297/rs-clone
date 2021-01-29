@@ -14,6 +14,13 @@ export class CardRepository {
   }
 
   getData = (): Array<ICard> => {
+    if (this.cardsArray.length === 0) {
+      this.loadData();
+    }
+    return this.cardsArray;
+  };
+
+  loadData = (): void => {
     const cardsJSON = fs.readFileSync(`${this.pathPublic}${this.fileCards}`, 'utf-8');
 
     const cards: Array<{id: string;
@@ -41,7 +48,5 @@ export class CardRepository {
 
       this.cardsArray.push(objTyped);
     });
-
-    return this.cardsArray;
   };
 }
