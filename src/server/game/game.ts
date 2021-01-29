@@ -66,7 +66,7 @@ export class Game implements IGameForCasting {
     if (this.onNextMove) this.onNextMove();
     this.isCastingStep = false;
 
-    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    const activePlayers = this.players.filter((current: Player) => current.isAlive);
     activePlayers.forEach((player) => {
       console.log(`give cards to player ${player.name}`);
       // считаем сколько карт надо досдать игроку.
@@ -87,7 +87,7 @@ export class Game implements IGameForCasting {
   }
 
   private cardSelectionHandler(): void {
-    const isMagicReady = this.players.every((player) => player.isSpellReady);
+    const isMagicReady = this.players.filter((player) => player.isAlive).every((player) => player.isSpellReady);
 
     if (isMagicReady) {
       this.castSpells();
@@ -97,7 +97,7 @@ export class Game implements IGameForCasting {
   private async castSpells(): Promise<void> {
     this.isCastingStep = true;
 
-    const activePlayers = this.players.filter((current: Player) => current.hitPoints > 0);
+    const activePlayers = this.players.filter((current: Player) => current.isAlive);
     const casting = new CastingSpells(activePlayers, this);
 
     await casting.castSpells();
@@ -119,10 +119,9 @@ export class Game implements IGameForCasting {
   };
 
   endGame = (): void => {
-    console.log('game end');
     this.isEndGame = true;
     this.isCastingStep = false;
-    const winners = this.players.filter((player) => player.hitPoints > 0);
+    const winners = this.players.filter((player) => player.isAlive);
     if (this.onGameEnd) this.onGameEnd(winners);
   };
 }
