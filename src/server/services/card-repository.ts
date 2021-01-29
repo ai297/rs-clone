@@ -1,10 +1,28 @@
-import cards from '../../../public/cards.json';
+import * as fs from 'fs';
 import { ICard } from '../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../common/enums';
 
 export class CardRepository {
+  private pathPublic: string;
+
+  private fileCards = '\\cards.json';
+
+  private cardsArray: Array<ICard> = [];
+
+  constructor(path: string) {
+    this.pathPublic = path;
+  }
+
   getData = (): Array<ICard> => {
-    const cardsArray: Array<ICard> = [];
+    const cardsJSON = fs.readFileSync(`${this.pathPublic}${this.fileCards}`, 'utf-8');
+
+    const cards: Array<{id: string;
+      title: string;
+      type: string;
+      magicSign: string;
+      src: string;
+      text: string;
+      initiative: number;}> = JSON.parse(cardsJSON);
 
     cards.forEach((obj) => {
       const {
@@ -21,9 +39,9 @@ export class CardRepository {
         initiative,
       };
 
-      cardsArray.push(objTyped);
+      this.cardsArray.push(objTyped);
     });
 
-    return cardsArray;
+    return this.cardsArray;
   };
 }

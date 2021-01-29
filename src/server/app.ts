@@ -7,8 +7,8 @@ export default class App {
 
   private readonly gameService: GameService;
 
-  constructor(private server: Server) {
-    const cardsRepository = new CardRepository();
+  constructor(private server: Server, path: string) {
+    const cardsRepository = new CardRepository(path);
     this.connectionService = new ConnectionService();
     this.gameService = new GameService(cardsRepository, this.connectionService);
 

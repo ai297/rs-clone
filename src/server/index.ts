@@ -1,10 +1,9 @@
 import express from 'express';
-import path from 'path';
 import { createServer } from 'http';
 import App from './app';
+import { PUBLIC_PATH } from '../../public/path';
 
 const PORT = process.env.PORT || 3000;
-const PUBLIC_PATH = path.resolve(__dirname, './public');
 
 const exp = express();
 const server = createServer(exp);
@@ -15,4 +14,4 @@ exp.use(express.static(PUBLIC_PATH));
 console.log(`Public path: ${PUBLIC_PATH}`);
 
 // application entry point and start server
-new App(server).start(Number(PORT));
+new App(server, PUBLIC_PATH).start(Number(PORT));
