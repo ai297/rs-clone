@@ -4,12 +4,14 @@ import
   StartScreen,
   LobbyScreen,
   GameScreen,
+  GameEndScreen,
   Overlay,
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
+import { IPlayerInfo } from '../common';
 import { Popup } from './components/popup/popup';
 
 class App implements IRootComponent {
@@ -63,6 +65,11 @@ class App implements IRootComponent {
     await this.show(new GameScreen(this.gameService, this.heroesRepository));
   };
 
+  showGameEnd = async (alivePlayers: Array<IPlayerInfo>): Promise<void> => {
+    await this.show(new GameEndScreen(this.gameService, alivePlayers, this.heroesRepository,
+      () => this.showStatic(StaticScreens.Start)));
+  };
+
   start(gameId?: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       // TODO: show preloader before connect to server here
@@ -77,7 +84,7 @@ class App implements IRootComponent {
           else this.showStatic(StaticScreens.Start);
         },
         () => {
-          // TODO: show connection error screen here
+          // show connection error screen here
           // this.mainContainer.innerHTML = 'Connection error.';
           const overlay = new Overlay(new Popup(() => {}, 'Ошибка соединения с сервером'));
           overlay.show();
@@ -99,7 +106,7 @@ class App implements IRootComponent {
       connection,
       (isCreator) => this.showLobby(isCreator),
       () => this.showGame(),
-      () => { console.log('game over'); },
+      (alivePlayers: Array<IPlayerInfo>) => this.showGameEnd(alivePlayers),
       () => this.showStatic(StaticScreens.Start),
     );
   }
