@@ -36,7 +36,7 @@ export class AboutScreen extends BaseComponent {
     const backButton = new BaseButton(
       this.loc.BackButton,
       () => this.showStartScreen(),
-      [CSSClasses.StartScreenButton],
+      [CSSClasses.AboutScreenButton],
     );
 
     const membersData: Array<HTMLElement> = [];

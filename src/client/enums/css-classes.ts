@@ -132,6 +132,7 @@ export enum CSSClasses {
   AboutTitle = 'about-screen__title',
   AboutText = 'about-screen__text',
   AboutTeam = 'about-screen__team',
+  AboutScreenButton = 'about-screen__button',
   TeamMateContainer = 'team-mate__container',
   // popup
   Popup = 'popup',
