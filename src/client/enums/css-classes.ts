@@ -89,6 +89,15 @@ export enum CSSClasses {
   GameOpponentSectionDead = 'game-screen__opponent-section--dead',
   GamePlayerInfo = 'game-screen__player-info-container',
   GameControls = 'game-screen__game-buttons-container',
+  // target selection
+  TargetSelection = 'target-selection',
+  TargetSelectionTitle = 'target-selection__title',
+  TargetsWrapper = 'target-selection__targets-wrapper',
+  Target = 'target-selection__target',
+  TargetImg = 'target-selection__img',
+  TargetTitle = 'target-selection__target-title',
+  TargetTimeContainer = 'target-selection__time-container',
+  TargetTime = 'target-selection__time',
   // player cards
   PlayerCards = 'player-cards',
   PlayerCardsHand = 'player-cards__hand-container',
@@ -125,4 +134,8 @@ export enum CSSClasses {
   AboutText = 'about-screen__text',
   AboutTeam = 'about-screen__team',
   TeamMateContainer = 'team-mate__container',
+  // popup
+  Popup = 'popup',
+  PopupText = 'popup__text',
+  PopupButton = 'popup__button',
 }

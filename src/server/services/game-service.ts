@@ -111,6 +111,7 @@ export class GameService {
 
   endGame(gameId: string, winners: Player[]): void {
     if (!this.games.has(gameId)) return;
+    console.log('game end', gameId);
     this.games.delete(gameId);
     this.connectionService.dispatch(gameId, HubEventsClient.EndGame, winners.map((player) => player.id));
   }
