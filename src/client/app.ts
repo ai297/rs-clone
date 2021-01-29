@@ -5,12 +5,14 @@ import
   LobbyScreen,
   GameScreen,
   GameEndScreen,
+  Overlay,
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
 import { IPlayerInfo } from '../common';
+import { Popup } from './components/popup/popup';
 
 class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
@@ -82,8 +84,10 @@ class App implements IRootComponent {
           else this.showStatic(StaticScreens.Start);
         },
         () => {
-          // TODO: show connection error screen here
-          this.mainContainer.innerHTML = 'Connection error.';
+          // show connection error screen here
+          // this.mainContainer.innerHTML = 'Connection error.';
+          const overlay = new Overlay(new Popup(() => {}, 'Ошибка соединения с сервером'));
+          overlay.show();
           reject(Error('Cannot connect to server...'));
         },
       );

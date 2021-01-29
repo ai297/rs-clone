@@ -29,4 +29,6 @@ export const GAME_END_DEFAULT_LOCALIZATION: IGameEndLocalization = {
 
 export const GAME_SCREEN_DEFAULT_LOCALIZATION: IGameScreenLocalization = {
   ReadyButton: 'Заклинание готово',
+  TargetSelection: 'ВЫБЕРИ ЦЕЛЬ:',
+  ALlEnemies: 'ВСЕ ВРАГИ',
 };
