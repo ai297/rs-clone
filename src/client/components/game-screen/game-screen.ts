@@ -66,7 +66,8 @@ export class GameScreen extends BaseComponent {
     this.gameService.onPlayerMakeDiceRoll = (playerInfo, rolls, bonus) => this.showDiceRoll(playerInfo, rolls, bonus);
     this.gameService.onSelectTarget = (targets, numberOfTargets) => this.showTargetSelection(targets, numberOfTargets);
 
-    this.addCards(this.gameService.currentPlayerCards, 0);
+    const spellLength = this.gameService.getPlayerInfo(this.gameService.currentPlayerId)?.spellLength || 0;
+    this.addCards(this.gameService.currentPlayerCards, 0, spellLength);
     this.disableControls = true;
     this.readyButton.disabled = true;
   }
@@ -80,7 +81,6 @@ export class GameScreen extends BaseComponent {
   async setSpellCast(value: boolean): Promise<void> {
     this.element.classList.toggle(CSSClasses.GameScreenCasting, value);
     await this.spellCasting.clearSpell();
-    console.log('очистить поле заклинаний');
     await this.playerCards.setDisable(value);
   }
 
@@ -92,9 +92,14 @@ export class GameScreen extends BaseComponent {
     this.setSpellCast(false);
   }
 
-  async addCards(cards: Array<ICard>, timer = SELECT_SPELL_TIME): Promise<void> {
-    await this.playerCards.addCards(...cards);
+  async addCards(cards: Array<ICard>, timer = SELECT_SPELL_TIME, spellLength = 0): Promise<void> {
+    await this.playerCards.addCards(cards, timer === 0);
     this.disableControls = false;
+    if (spellLength > 0) {
+      await this.playerCards.setDisable(true);
+      this.playerCards.addFakeSpell(spellLength);
+      this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
+    }
     this.timer.start(timer / 1000);
   }
 

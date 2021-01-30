@@ -22,6 +22,7 @@ export enum CSSClasses {
   AddBotButton = 'bot-button',
   // cards spell
   Сard = 'card',
+  CardFake = 'card--fake',
   СardBackside = 'card__backside',
   СardСontainer = 'card-container',
   CardFlipped = 'card-container--flipped',

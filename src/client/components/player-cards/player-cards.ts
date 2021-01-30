@@ -8,7 +8,7 @@ import {
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
-import { CardSpell } from '../card-spell/card-spell';
+import { CardBase, CardSpell, CardFake } from '../card-spell';
 
 const MAX_CARDS_IN_HAND_ROTATION = 30;
 const ANIMATION_HAND_TIME = 500;
@@ -17,7 +17,7 @@ const ANIMATION_SELECTED_TIME = 300;
 export class PlayerCards extends BaseComponent {
   private readonly handCards: CardSpell[] = [];
 
-  private readonly spellCards: CardSpell[] = [];
+  private readonly spellCards: CardBase[] = [];
 
   private isCardSelecting = false;
 
@@ -34,7 +34,7 @@ export class PlayerCards extends BaseComponent {
   }
 
   getSelectedCardsId(): Array<string> {
-    return this.spellCards.map((card) => card.id);
+    return this.spellCards.filter((card) => card as CardSpell).map((card) => (<CardSpell> card).id);
   }
 
   clearSpell = async (): Promise<void> => {
@@ -53,11 +53,26 @@ export class PlayerCards extends BaseComponent {
     this.handElement.innerHTML = '';
   };
 
-  addCards = async (...cardsInfo: ICard[]): Promise<void> => {
+  addCards = async (cardsInfo: ICard[], noTimeout = false): Promise<void> => {
     const cards = cardsInfo.map((cardInfo) => new CardSpell(cardInfo));
     cards.forEach((card) => card.flip());
-    await this.addToHand(...cards);
+    if (noTimeout) await this.addToHand(cards, 0);
+    else await this.addToHand(cards);
   };
+
+  async addFakeSpell(cards: number): Promise<void> {
+    if (cards <= 0) return;
+    await this.clearSpell();
+    const tasks: Array<Promise<void>> = [];
+    for (let i = 0; i < cards; i++) {
+      const fakeCard = new CardFake();
+      this.spellCards.push(fakeCard);
+      tasks.push(fakeCard.beforeAppend());
+    }
+    await Promise.race(tasks);
+    this.selectedCardsElement.append(...this.spellCards.map((card) => card.element));
+    await forEachAsync(this.spellCards, (card) => card.onAppended());
+  }
 
   setDisable = async (disable = true): Promise<void> => {
     this.updateHandState(undefined, disable);
@@ -78,7 +93,7 @@ export class PlayerCards extends BaseComponent {
     if (selectCardIndex < 0) return;
 
     const card = <CardSpell> this.handCards[selectCardIndex];
-    if (this.spellCards.findIndex((spellCard) => spellCard.cardType === card.cardType) >= 0) return;
+    if (this.spellCards.findIndex((spellCard) => (<CardSpell> spellCard)?.cardType === card.cardType) >= 0) return;
     this.handCards.splice(selectCardIndex, 1);
 
     card.clearTransform();
@@ -93,6 +108,8 @@ export class PlayerCards extends BaseComponent {
 
     await card.beforeAppend();
     const afterElement = this.spellCards
+      .filter((spellCard) => spellCard as CardSpell)
+      .map((spellCard) => <CardSpell> spellCard)
       .sort((cardA, cardB) => cardA.cardType - cardB.cardType)
       .find((spellCard) => spellCard.cardType > card.cardType)?.element;
 
@@ -109,7 +126,7 @@ export class PlayerCards extends BaseComponent {
     if (this.isCardSelecting) return;
 
     this.isCardSelecting = true;
-    const selectCardIndex = this.spellCards.findIndex((card) => card.id === cardId);
+    const selectCardIndex = this.spellCards.findIndex((card) => (<CardSpell> card)?.id === cardId);
     if (selectCardIndex < 0) return;
 
     const card = <CardSpell> this.spellCards.splice(selectCardIndex, 1)[0];
@@ -120,11 +137,11 @@ export class PlayerCards extends BaseComponent {
     await card.onRemoved();
 
     this.updateHandState(card.cardType);
-    await this.addToHand(card);
+    await this.addToHand([card]);
     this.isCardSelecting = false;
   };
 
-  private async addToHand(...cards: CardSpell[]): Promise<void> {
+  private async addToHand(cards: CardSpell[], timeout = ANIMATION_HAND_TIME): Promise<void> {
     if (cards.length === 0) return;
     const card = <CardSpell> cards.pop();
     this.handCards.push(card);
@@ -133,10 +150,10 @@ export class PlayerCards extends BaseComponent {
     this.handElement.append(card.element);
     await card.onAppended();
     this.rotateHandCards();
-    await delay(ANIMATION_HAND_TIME / 2);
+    await delay(timeout / 2);
     card.flip(false);
-    await delay(ANIMATION_HAND_TIME / 2);
-    await this.addToHand(...cards);
+    await delay(timeout / 2);
+    await this.addToHand(cards, timeout);
   }
 
   private rotateHandCards(): void {

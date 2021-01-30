@@ -3,18 +3,17 @@ import {
   CardTypes,
   MagicSigns,
   ICallbackHandler,
-  delay,
 } from '../../../common';
-import { BaseComponent } from '../base-component';
 import { CSSClasses, ImagesPaths } from '../../enums';
+import { CardBase } from './card-base';
 
 const LOCALE_TYPES = ['источник', 'качество', 'действие'];
 const LOCALE_ELEMENTS = ['тайна', 'тьма', 'природа', 'стихия', 'иллюзия'];
 const IMG_PATH = ImagesPaths.CardsSpells;
 
-export class CardSpell extends BaseComponent {
+export class CardSpell extends CardBase {
   constructor(private card: ICard, public onClick?: ICallbackHandler) {
-    super([CSSClasses.СardСontainer]);
+    super();
 
     this.element.addEventListener('click', (event) => {
       event.preventDefault();
@@ -32,53 +31,10 @@ export class CardSpell extends BaseComponent {
     return this.card.type;
   }
 
-  get isFlipped(): boolean { return this.element.classList.contains(CSSClasses.CardFlipped); }
-
-  flip(force?: boolean): void { this.element.classList.toggle(CSSClasses.CardFlipped, force); }
-
   get disabled(): boolean { return this.element.classList.contains(CSSClasses.CardDisabled); }
 
   set disabled(val: boolean) {
     this.element.classList.toggle(CSSClasses.CardDisabled, val);
-  }
-
-  rotate(degree: number): CardSpell {
-    const style = ` rotate(${degree}deg)`;
-    this.element.style.transform += style;
-    return this;
-  }
-
-  moveY(value: string): CardSpell {
-    const style = ` translateY(${value})`;
-    this.element.style.transform += style;
-    return this;
-  }
-
-  clearTransform(): CardSpell {
-    this.element.style.transform = '';
-    return this;
-  }
-
-  beforeAppend(): Promise<void> {
-    this.element.classList.add(CSSClasses.CardBeforeAppend);
-    return Promise.resolve();
-  }
-
-  async onAppended(duration = 0): Promise<void> {
-    await delay(50);
-    this.element.classList.remove(CSSClasses.CardBeforeAppend);
-    this.element.classList.add(CSSClasses.CardUsed);
-    await delay(duration);
-  }
-
-  async beforeRemove(duration = 0): Promise<void> {
-    this.element.classList.add(CSSClasses.CardBeforeRemove);
-    await delay(duration);
-  }
-
-  onRemoved(): Promise<void> {
-    this.element.classList.remove(CSSClasses.CardBeforeRemove);
-    return Promise.resolve();
   }
 
   private createMarkup(card: ICard): void {
