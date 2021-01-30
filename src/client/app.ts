@@ -87,17 +87,17 @@ class App implements IRootComponent {
       );
       this.createGameService(connection);
 
-      const start = new StartScreen(
+      const toAbout = new StartScreen(
         this.gameService,
         () => this.showStatic(StaticScreens.About),
       );
 
-      const back = new AboutScreen(
+      const toStart = new AboutScreen(
         () => this.showStatic(StaticScreens.Start),
       );
 
-      this.staticScreens.set(StaticScreens.Start, start);
-      this.staticScreens.set(StaticScreens.About, back);
+      this.staticScreens.set(StaticScreens.Start, toAbout);
+      this.staticScreens.set(StaticScreens.About, toStart);
     });
   }
 
