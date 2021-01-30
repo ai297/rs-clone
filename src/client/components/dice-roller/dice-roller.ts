@@ -3,11 +3,12 @@ import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
 import { Dice } from './dice';
 
-const ANIMATION_DELAY = 300;
+const ANIMATION_DELAY = 500;
 
 function createContainer(dice: Dice, index: number, dicesNum: number): HTMLElement {
   const container = createElement(Tags.Div, [CSSClasses.DiceContainer]);
-  container.append(dice.element);
+  const shadow = createElement(Tags.Div, [CSSClasses.DiceShadow]);
+  container.append(shadow, dice.element);
   const rotateStep = Math.round(360 / dicesNum);
   const rotate = rotateStep * index + Math.round(Math.random() * (rotateStep / 2) - rotateStep / 4);
   container.style.transform = `rotateZ(${rotate}deg)`;
@@ -25,9 +26,6 @@ export class DiceRoller extends BaseComponent {
 
     this.diceContainers = this.dices.map((dice, index) => createContainer(dice, index, this.dices.length));
     this.element.append(...this.diceContainers);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (<any> window).diceRoller = this;
   }
 
   show(): Promise<void> {

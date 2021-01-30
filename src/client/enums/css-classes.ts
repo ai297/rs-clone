@@ -56,6 +56,7 @@ export enum CSSClasses {
   GamePlayerDisplayContainer = 'game-player__container',
   GamePlayerDisplayContainerOpponent = 'game-player__container--opponent',
   GamePlayerDisplayContainerCurrent = 'game-player__container--current',
+  GamePlayerSelected = 'game-player--selected',
   GamePlayerName = 'game-player__name',
   GamePlayerHero = 'game-player__hero',
   GamePlayerAvatar = 'game-player__avatar',
@@ -103,6 +104,8 @@ export enum CSSClasses {
   GameActionLayer = 'game-screen__action-layer',
   SpellCasting = 'spell-casting',
   GameMessages = 'game-messages',
+  DiceRolling = 'dice-rolling',
+  DiceRollingWrapper = 'dice-rolling__wrapper',
   // target selection
   TargetSelection = 'target-selection',
   TargetSelectionTitle = 'target-selection__title',
@@ -130,6 +133,7 @@ export enum CSSClasses {
   // dice roller
   Dice = 'dice',
   DiceContainer = 'dice-container',
+  DiceShadow = 'dice-shadow',
   DiceRoller = 'dice-roller',
   DiceRollerShow = 'dice-roller--show',
   DiceRollingAnimation = 'dice--rolling',

@@ -1,4 +1,8 @@
 .game-player {
+  &--selected &__avatar {
+    box-shadow: 0 0 1.5rem 0 $accent-color, inset 0 0 .5rem 0 $accent-color;
+  }
+
   &__container {
     position: relative;
     display: flex;
@@ -8,6 +12,7 @@
     min-height: 6.7rem;
     margin: 1rem 1rem 1rem 2rem;
     padding-left: 5.9rem;
+    border-radius: 1.5rem;
 
     &--dead {
       &.game-player__container--opponent {
@@ -20,7 +25,6 @@
     }
 
     &--opponent {
-      border-radius: 1.5rem;
       background-color: $shadow-color-darkest;
 
       .game-player__health {
@@ -61,6 +65,7 @@
     height: 7.5rem;
     border: 0.2rem solid $primary-dark-color;
     border-radius: 50%;
+    transition: all .3s ease-out;
   }
 
   &__name,

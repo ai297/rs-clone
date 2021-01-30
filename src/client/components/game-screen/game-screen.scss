@@ -169,6 +169,22 @@
   }
 }
 
+.dice-rolling {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 1rem;
+
+  &__wrapper {
+    margin: 0 1rem;
+    flex: 0 1 calc(50% - 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .game-messages {
   padding: 0 5%;
   display: flex;

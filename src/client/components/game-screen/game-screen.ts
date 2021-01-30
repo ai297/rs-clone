@@ -21,6 +21,7 @@ import { Timer } from '../timer/timer';
 import { SpellCasting } from './spell-casting';
 import { GameMessages } from './game-messages';
 import { PlayerMessage } from '../player-message/player-message';
+import { DiceRolling } from './dice-rolling';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -48,6 +49,8 @@ export class GameScreen extends BaseComponent {
   private timer!: Timer;
 
   private spellCasting!: SpellCasting;
+
+  private diceRolling!: DiceRolling;
 
   private messages!: GameMessages;
 
@@ -77,6 +80,8 @@ export class GameScreen extends BaseComponent {
     this.addCards(this.gameService.currentPlayerCards, 0, spellLength);
     this.disableControls = true;
     this.readyButton.disabled = true;
+
+    // const player = <IPlayerInfo> this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
   }
 
   get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }
@@ -183,10 +188,18 @@ export class GameScreen extends BaseComponent {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  showDiceRoll(playerInfo: IPlayerInfo, rolls: Array<number>, bonus = 0): Promise<void> {
-    console.log(`${playerInfo?.userName} кидает кубики и выбрасывает ${rolls.join(', ')}. Бонус к броску - ${bonus}`);
-    return Promise.resolve();
+  async showDiceRoll(playerInfo: IPlayerInfo, rolls: Array<number>, bonusValue = 0): Promise<void> {
+    const hero = await this.heroesRepository.getHero(playerInfo.heroId);
+    const bonus = bonusValue > 0 ? `<p>Бонус к броску: <b class="success">+${bonusValue}</b></p>` : '';
+    let playerDisplay: GamePlayerDisplay | undefined;
+    if (playerInfo.id === this.gameService.currentPlayerId) {
+      playerDisplay = this.currentPlayerDisplay;
+    } else playerDisplay = this.opponents.get(playerInfo.id);
+    playerDisplay?.setSelected();
+    const message = await this.messages.newMessage(playerInfo, hero?.name || '', 'бросает кубики...', bonus);
+    await this.diceRolling.showRolls(rolls);
+    playerDisplay?.setSelected(false);
+    await this.messages.removeMessage(message);
   }
 
   private async selectSpell(): Promise<void> {
@@ -270,10 +283,16 @@ export class GameScreen extends BaseComponent {
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
 
     this.spellCasting = new SpellCasting();
+    this.diceRolling = new DiceRolling();
     this.messages = new GameMessages();
 
     buttonContainer.append(this.readyButton.element);
-    this.playSection.append(this.playerCards.element, this.spellCasting.element, this.messages.element);
+    this.playSection.append(
+      this.playerCards.element,
+      this.spellCasting.element,
+      this.diceRolling.element,
+      this.messages.element,
+    );
     this.controlsContainer.append(this.timer.element, buttonContainer);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);
     this.element.append(this.opponentsCardsContainer, this.playSection, vignette, UILayer);

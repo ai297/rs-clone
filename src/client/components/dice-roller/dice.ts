@@ -2,7 +2,7 @@ import { delay } from '../../../common';
 import { CSSClasses } from '../../enums';
 import { BaseComponent } from '../base-component';
 
-const ANIMATION_DELAY = 1000;
+const ANIMATION_DELAY = 1250;
 
 export class Dice extends BaseComponent {
   constructor(value?: number) {

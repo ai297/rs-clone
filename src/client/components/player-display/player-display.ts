@@ -59,7 +59,11 @@ export class GamePlayerDisplay extends BaseComponent {
     }
   }
 
-  updateHealth(): void {
+  setSelected(val = true): void {
+    this.element.classList.toggle(CSSClasses.GamePlayerSelected, val);
+  }
+
+  private updateHealth(): void {
     this.playerHealth.textContent = `${this.health}/${MAX_HEALTH}`;
     this.updateScaleColor(this.health / MAX_HEALTH);
 
@@ -72,7 +76,7 @@ export class GamePlayerDisplay extends BaseComponent {
     }
   }
 
-  updateScaleColor(persentHealth: number): void {
+  private updateScaleColor(persentHealth: number): void {
     let healthLevel = 'high';
     let color = PRIMARY_SUCCESS_COLOR;
     let colorOpacity = PRIMARY_SUCCESS_COLOR_OPACITY;
