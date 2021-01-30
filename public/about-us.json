@@ -9,10 +9,10 @@
       "description": "Team lead"
     },
     {
-      "memberName": "Максим Max Евграшин",
-      "gitAdress": "justgit",
-      "photo": "somePhoto",
-      "description": "coolest web-developer"
+      "memberName": "Максим SonKn1ght Евграшин",
+      "gitAdress": "SonKn1ght",
+      "photo": "max.png",
+      "description": "написание игровой логики, частично - фронтенд, нарезка картинок для карт"
     },
     {
       "memberName": "Тома Dotoshka Ярославцева",
@@ -24,7 +24,7 @@
       "memberName": "Анна ZAS Журавлева",
       "gitAdress": "ansivgit",
       "photo": "anna.png",
-      "description": "Cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer "
+      "description": "частично фронтенд, частично бекенд, верстка, написание текстов статических экранов"
     }
   ]
 }
