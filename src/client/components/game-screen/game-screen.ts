@@ -6,6 +6,7 @@ import {
   ICard,
   IHero,
   IPlayerInfo,
+  CardTypes,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
@@ -18,6 +19,8 @@ import { OpponentsCards } from '../opponents-cards/opponents-cards';
 import { BaseButton } from '../base-button/base-button';
 import { Timer } from '../timer/timer';
 import { SpellCasting } from './spell-casting';
+import { GameMessages } from './game-messages';
+import { PlayerMessage } from '../player-message/player-message';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -45,6 +48,10 @@ export class GameScreen extends BaseComponent {
   private timer!: Timer;
 
   private spellCasting!: SpellCasting;
+
+  private messages!: GameMessages;
+
+  private castingMessage?: PlayerMessage;
 
   constructor(
     private readonly gameService: GameService,
@@ -93,6 +100,7 @@ export class GameScreen extends BaseComponent {
   }
 
   async addCards(cards: Array<ICard>, timer = SELECT_SPELL_TIME, spellLength = 0): Promise<void> {
+    if (this.castingMessage) await this.messages.removeMessage(<PlayerMessage> this.castingMessage);
     await this.playerCards.addCards(cards, timer === 0);
     this.disableControls = false;
     if (spellLength > 0) {
@@ -113,10 +121,23 @@ export class GameScreen extends BaseComponent {
     this.disableControls = true;
     await this.setSpellCast(true);
 
+    if (this.castingMessage) await this.messages.removeMessage(<PlayerMessage> this.castingMessage);
+
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
+
+    // show message about spell casting
     const hero = await this.heroesRepository.getHero(playerInfo.heroId);
-    await this.spellCasting.showSpell(cards, playerInfo, hero?.name || '');
+    const sourceCard = cards.find((card) => card.type === CardTypes.source)?.title || '';
+    const qualityCard = cards.find((card) => card.type === CardTypes.quality)?.title || '';
+    const actionCard = cards.find((card) => card.type === CardTypes.action)?.title || '';
+
+    this.castingMessage = await this.messages.newMessage(playerInfo, hero?.name || '', 'применяет заклинание:', `
+      <span class="source">${sourceCard}</span>
+      <span class="quality">${qualityCard}</span>
+      <span class="action">${actionCard}</span>
+    `);
+    await this.spellCasting.showSpell(cards);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -249,9 +270,10 @@ export class GameScreen extends BaseComponent {
     this.playerCards.element.classList.add(CSSClasses.GameCardsSection);
 
     this.spellCasting = new SpellCasting();
+    this.messages = new GameMessages();
 
     buttonContainer.append(this.readyButton.element);
-    this.playSection.append(this.playerCards.element, this.spellCasting.element);
+    this.playSection.append(this.playerCards.element, this.spellCasting.element, this.messages.element);
     this.controlsContainer.append(this.timer.element, buttonContainer);
     UILayer.append(this.opponentsInfoContainer, this.playerInfoContainer, this.controlsContainer);
     this.element.append(this.opponentsCardsContainer, this.playSection, vignette, UILayer);

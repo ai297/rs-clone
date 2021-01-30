@@ -101,6 +101,8 @@ export enum CSSClasses {
   GameButtonsContainer = 'game-screen__buttons-container',
   GameScreenButton = 'game-button__ready',
   GameActionLayer = 'game-screen__action-layer',
+  SpellCasting = 'spell-casting',
+  GameMessages = 'game-messages',
   // target selection
   TargetSelection = 'target-selection',
   TargetSelectionTitle = 'target-selection__title',
@@ -115,10 +117,6 @@ export enum CSSClasses {
   PlayerCardsDisabled = 'player-cards--disabled',
   PlayerCardsHand = 'player-cards__hand-container',
   PlayerCardsSelected = 'player-cards__selected-cards-container',
-  // spell casting
-  SpellCasting = 'spell-casting',
-  SpellCastingCards = 'spell-casting__cards',
-  SpellCastingMessage = 'spell-casting__message',
   // overlay
   Overlay = 'overlay',
   BeforeAppend = 'overlay--before-append',

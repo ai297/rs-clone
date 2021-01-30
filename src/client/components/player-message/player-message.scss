@@ -1,6 +1,6 @@
 .player-message {
-  width: 100%;
   max-width: 45rem;
+  max-height: 8rem;
   padding: 1rem;
   display: flex;
   flex-direction: row;
@@ -8,9 +8,10 @@
   justify-content: flex-start;
   border-radius: $primary-border-radius * 2;
   background-color: $shadow-color-darkest;
+  overflow: hidden;
   transition: all .5s ease-in;
 
-  &--init { transform: scaleX(0); }
+  &--init { max-width: 0; }
 
   & > .avatar {
     height: 6rem;
@@ -25,6 +26,12 @@
     font-size: 1.25rem;
 
     & > p { margin-bottom: .5rem; }
+
+    & > h3 {
+      margin-bottom: .75rem;
+      color: $cold-font-color;
+      font-weight: normal;
+    }
 
     & .source { color: $card-type-source; }
     & .quality { color: $card-type-quality; }

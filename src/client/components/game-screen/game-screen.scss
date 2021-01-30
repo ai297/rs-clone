@@ -138,53 +138,47 @@
 }
 
 .spell-casting {
-  &__cards {
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+
+  & > .card-container {
+    flex: 0 0 auto;
+    max-width: 25%;
+    margin: 0 .5rem;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-
-    & > .card-container {
-      flex: 0 0 auto;
-      max-width: 25%;
-      margin: 0 .5rem;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      transition: all .5s ease-out;
-
-      & > .card { flex-shrink: 0; }
-
-      &--before-append {
-        max-width: 0%;
-        opacity: 0;
-        & > .card { transform: translateX(50vw); }
-      }
-      &--before-remove {
-        max-width: 0%;
-        opacity: 0;
-        transform: translateX(50vw);
-      }
-    }
-  }
-
-  &__message {
-    position: absolute;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.25rem;
+    transition: all .5s ease-out;
+
+    & > .card { flex-shrink: 0; }
+
+    &--before-append {
+      max-width: 0%;
+      opacity: 0;
+      & > .card { transform: translateX(50vw); }
+    }
+    &--before-remove {
+      max-width: 0%;
+      opacity: 0;
+      transform: translateX(50vw);
+    }
+  }
+}
+
+.game-messages {
+  padding: 0 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+
+  & > .component {
+    margin: 0 1rem;
+    flex: 1 1 auto;
   }
 }
 
