@@ -1,6 +1,8 @@
 import { BaseComponent } from '../base-component';
+import { BaseButton } from '../base-button/base-button';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { createElement } from '../../../common/utils';
+import { IAboutLocalization, ABOUT_DEFAULT_LOCALIZATION } from '../../localization';
 
 const URL = './about-us.json';
 
@@ -15,9 +17,12 @@ export class AboutScreen extends BaseComponent {
     }
   }
 
-  constructor(localization = 'ru') {
+  private loc: IAboutLocalization;
+
+  constructor(private showStartScreen: () => Promise<void>, localization?: IAboutLocalization) {
     super([CSSClasses.AboutScreen]);
 
+    this.loc = localization || ABOUT_DEFAULT_LOCALIZATION;
     this.load();
   }
 
@@ -27,6 +32,13 @@ export class AboutScreen extends BaseComponent {
     const title = createElement(Tags.H1, [CSSClasses.AboutTitle], data.title);
     const content = createElement(Tags.Div, [CSSClasses.AboutText]);
     const team = createElement(Tags.Div, [CSSClasses.AboutTeam]);
+
+    const backButton = new BaseButton(
+      this.loc.BackButton,
+      () => this.showStartScreen(),
+      [CSSClasses.AboutScreenButton],
+    );
+
     const membersData: Array<HTMLElement> = [];
 
     content.innerHTML = data.content;
@@ -37,7 +49,7 @@ export class AboutScreen extends BaseComponent {
     });
 
     team.append(...membersData);
-    container.append(headerImage, title, content, team);
+    container.append(headerImage, title, content, team, backButton.element);
     this.element.append(container);
   }
 

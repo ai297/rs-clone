@@ -6,6 +6,7 @@ import
   GameScreen,
   GameEndScreen,
   Overlay,
+  AboutScreen,
 } from './components';
 import { StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
@@ -92,7 +93,18 @@ class App implements IRootComponent {
         },
       );
       this.createGameService(connection);
-      this.staticScreens.set(StaticScreens.Start, new StartScreen(this.gameService));
+
+      const toAbout = new StartScreen(
+        this.gameService,
+        () => this.showStatic(StaticScreens.About),
+      );
+
+      const toStart = new AboutScreen(
+        () => this.showStatic(StaticScreens.Start),
+      );
+
+      this.staticScreens.set(StaticScreens.Start, toAbout);
+      this.staticScreens.set(StaticScreens.About, toStart);
     });
   }
 

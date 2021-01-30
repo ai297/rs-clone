@@ -5,14 +5,14 @@
     {
       "memberName": "Kris Casper",
       "gitAdress": "somegit",
-      "photo": "photo",
+      "photo": "alex.png",
       "description": "Team lead"
     },
     {
-      "memberName": "Максим Max Евграшин",
-      "gitAdress": "justgit",
-      "photo": "somePhoto",
-      "description": "coolest web-developer"
+      "memberName": "Максим SonKn1ght Евграшин",
+      "gitAdress": "SonKn1ght",
+      "photo": "max.png",
+      "description": "написание игровой логики, частично - фронтенд, нарезка картинок для карт"
     },
     {
       "memberName": "Тома Dotoshka Ярославцева",
@@ -23,8 +23,8 @@
     {
       "memberName": "Анна ZAS Журавлева",
       "gitAdress": "ansivgit",
-      "photo": "anna.jpg",
-      "description": "Cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer cool web-developer "
+      "photo": "anna.png",
+      "description": "частично фронтенд, частично бекенд, верстка, написание текстов статических экранов"
     }
   ]
 }
