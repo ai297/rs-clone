@@ -25,7 +25,7 @@ export const GAME_END_DEFAULT_LOCALIZATION: IGameEndLocalization = {
   WinnerTitle: 'Ты укокошил всех врагов',
   LoserTitle: 'Ты двинул копыта',
   NoWinnersTitle: 'Упс, в этой битве никто не выжил',
-  HomeButton: 'На главную'
+  HomeButton: 'На главную',
 };
 
 export const GAME_SCREEN_DEFAULT_LOCALIZATION: IGameScreenLocalization = {

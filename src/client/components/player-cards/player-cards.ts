@@ -4,7 +4,7 @@ import {
   createElement,
   delay,
   ICard,
-  ICallbackHandler,
+  ICallbackHandler, playSound, Sounds,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
@@ -100,6 +100,7 @@ export class PlayerCards extends BaseComponent {
     await card.onAppended();
 
     this.isCardSelecting = false;
+    await playSound(Sounds.playingCardSpell);
   };
 
   private returnToHand = async (cardId: string): Promise<void> => {
@@ -130,6 +131,8 @@ export class PlayerCards extends BaseComponent {
     this.handElement.append(card.element);
     await card.onAppended();
     this.rotateHandCards();
+    // тут может без ожидания озвучки? тогда раздается динамичней особенно первый раз.
+    await playSound(Sounds.playingCardsDeck);
     await delay(ADD_HAND_DELAY);
     await this.addToHand(...cards);
   }

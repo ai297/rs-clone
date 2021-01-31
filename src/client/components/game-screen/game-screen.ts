@@ -4,7 +4,7 @@ import {
   createElement,
   ICard,
   IHero,
-  IPlayerInfo,
+  IPlayerInfo, playSound, Sounds, CardTypes,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
@@ -85,6 +85,15 @@ export class GameScreen extends BaseComponent {
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
     const spellName = cards.sort((cardA, cardB) => cardA.type - cardB.type).map((card) => card.title);
     console.log(`${playerInfo?.userName} кастует заклинание "${spellName.join(' ')}"!`);
+
+    const quality = cards.filter((qual) => qual.type === CardTypes.quality);
+    const action = cards.filter((qual) => qual.type === CardTypes.action);
+    const source = cards.filter((qual) => qual.type === CardTypes.source);
+
+    if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
+    if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
+    if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
+
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
   }
@@ -104,6 +113,7 @@ export class GameScreen extends BaseComponent {
   }
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
+    await playSound(Sounds.heal);
     console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
@@ -116,6 +126,7 @@ export class GameScreen extends BaseComponent {
   }
 
   async showPlayerDamage(playerInfo: IPlayerInfo, damage: number): Promise<void> {
+    await playSound(Sounds.damage);
     console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
@@ -131,6 +142,8 @@ export class GameScreen extends BaseComponent {
   // eslint-disable-next-line class-methods-use-this
   showDiceRoll(playerInfo: IPlayerInfo, rolls: Array<number>, bonus = 0): Promise<void> {
     console.log(`${playerInfo?.userName} кидает кубики и выбрасывает ${rolls.join(', ')}. Бонус к броску - ${bonus}`);
+    // TODO в await не забыть
+    playSound(Sounds.diceRoll);
     return Promise.resolve();
   }
 
@@ -138,6 +151,7 @@ export class GameScreen extends BaseComponent {
     this.readyButton.disabled = true;
     await this.playerCards.setDisable();
     try {
+      await playSound(Sounds.btnStandard);
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
     } catch {
       alert('Не удалось выбрать заклинание');

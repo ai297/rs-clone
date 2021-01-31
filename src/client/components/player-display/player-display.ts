@@ -105,6 +105,7 @@ export class GamePlayerDisplay extends BaseComponent {
   }
 
   addHealth = async (currentHealth: number, points: number): Promise<void> => {
+    console.log('add heal');
     this.pointsAnimation.classList.remove(CSSClasses.GamePlayerPointsHidden);
     this.pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
     this.pointsAnimation.textContent = `+${points}`;
