@@ -3,7 +3,9 @@ import { CSSClasses, ImagesPaths, Tags } from '../../enums';
 import { BaseButton } from '../base-button/base-button';
 import { IStartScreenLocalization, START_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
 import { GameService } from '../../services';
-import { createElement, delay, getRandomInteger } from '../../../common';
+import {
+  createElement, delay, getRandomInteger, playSound, Sounds,
+} from '../../../common';
 
 const BACKGROUNDS = ['bg1.jpg', 'bg2.jpg'];
 const LOGO = 'logo.png';
@@ -31,12 +33,18 @@ export class StartScreen extends BaseComponent {
     const buttonsContainer = createElement(Tags.Div, [CSSClasses.StartScreenButtons]);
     const newGameButton = new BaseButton(
       this.loc.NewGame,
-      () => this.startNewGame(),
+      async () => {
+        await playSound(Sounds.btnStandard);
+        this.startNewGame();
+      },
       [CSSClasses.StartScreenButton],
     );
     const joinButton = new BaseButton(
       this.loc.Join,
-      () => console.log('Join'),
+      async () => {
+        await playSound(Sounds.btnStandard);
+        console.log('Join');
+      },
       [CSSClasses.StartScreenButton],
     );
     const rulesButton = new BaseButton(
@@ -46,7 +54,10 @@ export class StartScreen extends BaseComponent {
     );
     const aboutButton = new BaseButton(
       this.loc.About,
-      () => this.showAboutScreen(),
+      async () => {
+        await playSound(Sounds.btnStandard);
+        this.showAboutScreen();
+      },
       [CSSClasses.StartScreenButton],
     );
 

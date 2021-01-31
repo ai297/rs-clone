@@ -8,7 +8,6 @@ export const playSound = (sound: Sounds): Promise<void> => new Promise((resolve)
   });
 
   audio.addEventListener('ended', () => {
-    console.log('rock-and-roll');
     resolve();
   });
 });

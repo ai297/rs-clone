@@ -7,6 +7,8 @@ import {
   CardTypes,
   forEachAsync,
   TARGET_ALL,
+  playSound,
+  Sounds,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
@@ -142,6 +144,14 @@ export class GameScreen extends BaseComponent {
 
     if (this.castingMessage) await this.messages.removeMessage(<PlayerMessage> this.castingMessage);
 
+    const quality = cards.filter((qual) => qual.type === CardTypes.quality);
+    const action = cards.filter((qual) => qual.type === CardTypes.action);
+    const source = cards.filter((qual) => qual.type === CardTypes.source);
+
+    if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
+    if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
+    if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
+
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
 
@@ -188,6 +198,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
+    await playSound(Sounds.heal);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.addHealth(playerInfo.health, heal);
@@ -200,6 +211,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerDamage(playerInfo: IPlayerInfo, damage: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
+    await playSound(Sounds.damage);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       if (playerInfo.health <= 0) {
@@ -225,6 +237,7 @@ export class GameScreen extends BaseComponent {
     playerDisplay?.setSelected();
     const message = await this.messages.newMessage(playerInfo, hero?.name || '', `${this.loc.MakeDiceRoll}...`, bonus);
     await this.diceRolling.showRolls(rolls);
+    await playSound(Sounds.diceRoll);
     playerDisplay?.setSelected(false);
     await this.messages.removeMessage(message);
   }
@@ -233,6 +246,7 @@ export class GameScreen extends BaseComponent {
     this.readyButton.disabled = true;
     await this.playerCards.setDisable();
     try {
+      await playSound(Sounds.btnStandard);
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
       this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {
