@@ -36,10 +36,7 @@ export class AboutScreen extends BaseComponent {
 
     const backButton = new BaseButton(
       this.loc.BackButton,
-      async () => {
-        await playSound(Sounds.btnStandard);
-        this.showStartScreen();
-      },
+      () => this.showStartScreen(),
       [CSSClasses.AboutScreenButton],
     );
 

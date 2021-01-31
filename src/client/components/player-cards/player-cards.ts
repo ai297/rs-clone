@@ -131,8 +131,7 @@ export class PlayerCards extends BaseComponent {
     this.handElement.append(card.element);
     await card.onAppended();
     this.rotateHandCards();
-    // тут может без ожидания озвучки? тогда раздается динамичней особенно первый раз.
-    await playSound(Sounds.playingCardsDeck);
+    playSound(Sounds.playingCardsDeck);
     await delay(ADD_HAND_DELAY);
     await this.addToHand(...cards);
   }
