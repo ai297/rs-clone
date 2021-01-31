@@ -70,7 +70,7 @@ export class GameScreen extends BaseComponent {
     this.gameService.onGetCards = (cards) => this.addCards(cards);
     this.gameService.onPlayerSelectSpell = (playerInfo, cards) => this.showOpponentCards(playerInfo, cards);
     this.gameService.onSpellCast = (player, cards) => this.showSpellCast(player, cards);
-    this.gameService.onCardCast = (player, card) => this.showCardCast(player, card);
+    this.gameService.onCardCast = (player, card, addon) => this.spellCasting.showCard(card, addon);
     this.gameService.onPlayerTakeHeal = (playerInfo, heal) => this.showPlayerHeal(playerInfo, heal);
     this.gameService.onPlayerTakeDamage = (playerInfo, damage) => this.showPlayerDamage(playerInfo, damage);
     this.gameService.onPlayerMakeDiceRoll = (playerInfo, rolls, bonus) => this.showDiceRoll(playerInfo, rolls, bonus);
@@ -83,9 +83,11 @@ export class GameScreen extends BaseComponent {
 
     // for test and make markup of spell casting and dice rolling:
     // const player = <IPlayerInfo> this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
-    // this.showSpellCast(player, this.gameService.currentPlayerCards.slice(0, 3));
+    // const cards = this.gameService.currentPlayerCards.slice(0, 3);
+    // this.showSpellCast(player, cards);
     // setTimeout(() => {
     //   this.showDiceRoll(player, [1, 2, 3]);
+    //   this.spellCasting.showCard(cards[1]);
     // }, 2000);
   }
 
@@ -148,12 +150,6 @@ export class GameScreen extends BaseComponent {
       <span class="action">${actionCard}</span>
     `);
     await this.spellCasting.showSpell(cards);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  showCardCast(playerInfo: IPlayerInfo, card: ICard): Promise<void> {
-    console.log(`Начинаем применять эффекты карты '${card?.title}'`);
-    return Promise.resolve();
   }
 
   async showTargetSelection(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {

@@ -154,6 +154,18 @@
 
     & > .card { flex-shrink: 0; }
 
+    &--active {
+      z-index: 2;
+      & > .card {
+        transform: translateZ(5rem);
+        &.card-type {
+          &--source { box-shadow: 0 0 3rem .5rem $card-type-source, inset 0 0 .5rem $card-type-source; }
+          &--quality { box-shadow: 0 0 3rem .5rem $card-type-quality, inset 0 0 .5rem $card-type-quality; }
+          &--action { box-shadow: 0 0 3rem .5rem $card-type-action, inset 0 0 .5rem $card-type-action; }
+        }
+      }
+    }
+
     &--before-append {
       max-width: 0%;
       opacity: 0;

@@ -58,6 +58,7 @@ export class PlayerCards extends BaseComponent {
     cards.forEach((card) => card.flip());
     if (noTimeout) await this.addToHand(cards, 0);
     else await this.addToHand(cards);
+    cards.forEach((card) => card.element.classList.add(CSSClasses.CardUsed));
   };
 
   async addFakeSpell(cards: number): Promise<void> {

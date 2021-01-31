@@ -420,8 +420,10 @@ export class Spells {
 
     await forEachAsync(qualityCards, async (curCard) => {
       const handler = await this.getHandler(curCard.id);
-      await player.castCard(curCard);
-      if (handler) await handler(positionPlayer, curCard);
+      if (handler) {
+        await player.castCard(curCard, true);
+        await handler(positionPlayer, curCard);
+      }
     });
 
     this.game.usedCardHandler(fourCards);

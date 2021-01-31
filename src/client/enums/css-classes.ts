@@ -36,6 +36,7 @@ export enum CSSClasses {
   CardBeforeAppend = 'card-container--before-append',
   CardBeforeRemove = 'card-container--before-remove',
   CardUsed = 'card-container--used',
+  CardActive = 'card-container--active',
   // hero selection
   HeroSelection = 'hero-selection',
   HeroSelectionFullHero = 'hero-selection__full-hero',

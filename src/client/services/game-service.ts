@@ -100,7 +100,7 @@ export class GameService {
 
   onSpellCast?: (playerInfo: IPlayerInfo, spellCards: Array<ICard>) => Promise<void>;
 
-  onCardCast?: (playerInfo: IPlayerInfo, card: ICard) => Promise<void>;
+  onCardCast?: (playerInfo: IPlayerInfo, card: ICard, addon: boolean) => Promise<void>;
 
   async newGame(): Promise<void> {
     this.clearState();
@@ -259,7 +259,7 @@ export class GameService {
 
   private async castCard(message: ICastCard): Promise<IHubResponse<null>> {
     if (this.onCardCast) {
-      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card);
+      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card, message.addon);
     }
     return HubResponse.Ok();
   }

@@ -26,10 +26,14 @@ export class Game implements IGameForCasting {
   private isCastingStep = false;
 
   constructor(
-    private cardDeck: Array<ICard>,
+    cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
     private readonly onNextMove?: () => void,
-  ) {}
+  ) {
+    const spell = new Spells(this.players, this);
+    const madeCards = cardDeck.filter((card) => spell.checkCardInDeck(card.id));
+    this.activeDeck = [...madeCards, ...madeCards];
+  }
 
   public addPlayer(player: Player): void {
     if (this.playersValue.length >= MAX_PLAYERS) throw new Error('There are no places in the game');
@@ -53,10 +57,7 @@ export class Game implements IGameForCasting {
       this.isGameStarted = true;
       resolve();
 
-      const spell = new Spells(this.players, this);
-      const madeCards = this.cardDeck.filter((card) => spell.checkCardInDeck(card.id));
-      madeCards.push(...madeCards);
-      this.activeDeck = shuffleArray(madeCards);
+      this.activeDeck = shuffleArray(this.activeDeck);
 
       delay(START_GAME_DELAY).then(() => this.giveCards());
     });

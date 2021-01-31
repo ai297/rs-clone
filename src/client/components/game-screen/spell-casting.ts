@@ -21,11 +21,25 @@ export class SpellCasting extends ActionLayer {
   async showSpell(cards: Array<ICard>): Promise<void> {
     if (cards.length === 0) return;
 
-    const timeOut = CARD_ANIMATION_TIME / cards.length;
     await forEachAsync(cards, async (cardInfo) => {
-      this.addCard(cardInfo);
-      await delay(timeOut);
+      const card = await this.addCard(cardInfo);
+      this.cards.push(card);
     });
+  }
+
+  async showCard(cardInfo: ICard, isNew = false): Promise<void> {
+    const previousCard = this.completeCards[this.completeCards.length - 1];
+    previousCard?.element.classList.remove(CSSClasses.CardActive);
+    let spellCard: CardSpell;
+    if (isNew) {
+      spellCard = await this.addCard(cardInfo, previousCard?.element);
+    } else {
+      const cardIndex = this.cards.findIndex((card) => card.id === cardInfo.id);
+      [spellCard] = this.cards.splice(cardIndex, 1);
+    }
+    if (spellCard) this.completeCards.push(spellCard);
+    spellCard?.element.classList.add(CSSClasses.CardActive);
+    await delay(CARD_ANIMATION_TIME / 2);
   }
 
   async clearSpell(): Promise<void> {
@@ -46,14 +60,13 @@ export class SpellCasting extends ActionLayer {
     this.element.innerHTML = '';
   }
 
-  private async addCard(card: ICard, before?: string): Promise<void> {
+  private async addCard(card: ICard, after?: HTMLElement): Promise<CardSpell> {
     const spellCard = new CardSpell(card);
     spellCard.flip();
-    this.cards.push(spellCard);
     await spellCard.beforeAppend();
-    const beforeCard = this.cards.find((playingCard) => playingCard.id === before);
-    this.element.insertBefore(spellCard.element, beforeCard?.element || null);
+    this.element.insertBefore(spellCard.element, after?.nextSibling || null);
     await spellCard.onAppended(CARD_ANIMATION_TIME);
     spellCard.flip();
+    return spellCard;
   }
 }
