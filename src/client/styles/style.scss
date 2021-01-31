@@ -36,6 +36,7 @@ main {
 @import '../components/base-button/base-button.scss';
 @import '../components/avatar/avatar.scss';
 @import '../components/player-message/player-message.scss';
+@import '../components/target-selection/target-selection.scss';
 @import '../components/start-screen/start-screen.scss';
 @import '../components/player-list/player-list.scss';
 @import '../components/card-spell/card-spell.scss';
@@ -50,4 +51,14 @@ main {
 @import '../components/lobby-screen/lobby-screen.scss';
 @import '../components/game-end-screen/game-end-screen.scss';
 @import '../components/about-screen/about-screen.scss';
-@import '../components/target-selection/target-selection.scss';
+
+@media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+  html {
+    font-size: 12px;
+  }
+}
+@media (min-width: $large-screen-width), (min-height: $large-screen-height) {
+  html {
+    font-size: 26px;
+  }
+}

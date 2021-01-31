@@ -1,5 +1,5 @@
-import { IPlayerInfo } from '../../../common';
-import { CSSClasses } from '../../enums';
+import { createElement, IPlayerInfo } from '../../../common';
+import { CSSClasses, Tags } from '../../enums';
 import { ActionLayer } from './action-layer';
 import { PlayerMessage } from '../player-message/player-message';
 
@@ -16,6 +16,8 @@ export class GameMessages extends ActionLayer {
     header: string,
     content?: string,
   ): Promise<PlayerMessage> {
+    const container = createElement(Tags.Div, [CSSClasses.GameMessagesItem]);
+    this.element.append(container);
     const message = new PlayerMessage(playerInfo);
     message.setMessage(`
       <h3>${heroName} (${playerInfo.userName}) ${header}</h3>
@@ -23,7 +25,7 @@ export class GameMessages extends ActionLayer {
     `);
     this.messages.push(message);
     await message.beforeAppend();
-    this.element.append(message.element);
+    container.append(message.element);
     await message.onAppended();
     return message;
   }
@@ -33,7 +35,7 @@ export class GameMessages extends ActionLayer {
     const index = this.messages.indexOf(message);
     this.messages.splice(index, 1);
     await message.beforeRemove();
-    message.element.remove();
+    message.element.parentElement?.remove();
     await message.onRemoved();
   }
 }

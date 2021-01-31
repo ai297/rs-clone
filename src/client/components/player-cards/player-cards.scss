@@ -3,12 +3,13 @@
   flex-direction: column;
 
   &__selected-cards-container {
-    flex: 1 0 55%;
-    min-height: 14rem;
+    flex: 1 0 auto;
+    min-height: 20rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    font-size: 1rem;
     transition: all .5s ease-in-out;
 
     & > .card-container {
@@ -19,7 +20,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: inherit;
       cursor: pointer;
       transition: all .3s;
 
@@ -45,12 +46,13 @@
 
   &__hand-container {
     position: relative;
-    flex: 0 0 45%;
+    flex: 0 1 auto;
     max-height: 18rem;
     max-width: 100%;
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
+    font-size: 1rem;
     transition: all .3s ease-out;
 
     & > .card-container {
@@ -61,11 +63,10 @@
       flex-direction: row;
       align-items: flex-start;
       justify-content: center;
-      font-size: 1rem;
+      font-size: inherit;
       transition: all .5s;
       z-index: 1;
-
-      &:hover { z-index: 2; }
+      cursor: pointer;
 
       &--before-append:not(.card-container--used) {
         max-width: 0%;
@@ -97,18 +98,22 @@
         }
       }
 
-      & > .card {
-        flex-shrink: 0;
-        cursor: pointer;
-      }
-      &:not(.card-container--disable) > .card:hover {
-        transform: translateY(-100%) scale(1.75);
-        box-shadow: $shadow-color 0 0 2em;
+      & > .card { flex-shrink: 0; }
+
+      &:hover {
+        z-index: 2;
+        background-image: radial-gradient(closest-side, $shadow-color, transparent);
+        transform: none !important;
+
+        &:not(.card-container--disable) > .card {
+          box-shadow: 0 0 2em 0 $shadow-color;
+          transform: translateY(-110%) scale(1.75);
+        }
       }
     }
   }
 
-  &--disabled > &__hand-container { transform: translateY(70%); }
+  &--disabled > &__hand-container { transform: translateY(50%); }
 
   &--disabled > &__selected-cards-container {
     justify-content: flex-end;
@@ -123,5 +128,12 @@
         transform: translateX(25vw);
       }
     }
+  }
+}
+
+@media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+  .player-cards {
+    // &__selected-cards-container { font-size: .9rem; }
+    &__hand-container { font-size: .85rem; }
   }
 }

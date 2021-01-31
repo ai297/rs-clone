@@ -81,7 +81,12 @@ export class GameScreen extends BaseComponent {
     this.disableControls = true;
     this.readyButton.disabled = true;
 
+    // for test and make markup of spell casting and dice rolling:
     // const player = <IPlayerInfo> this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
+    // this.showSpellCast(player, this.gameService.currentPlayerCards.slice(0, 3));
+    // setTimeout(() => {
+    //   this.showDiceRoll(player, [1, 2, 3]);
+    // }, 2000);
   }
 
   get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }

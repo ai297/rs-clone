@@ -69,3 +69,10 @@ $substrate-color-light: mix($substrate-color, transparent, 50%);
 
 $primary-border-radius: .5rem;
 
+// media
+$medium-screen-width: 1400px;
+$medium-screen-height: 760px;
+// example: @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) { }
+$large-screen-width: 2160px;
+$large-screen-height: 1200px;
+// example: @media (min-width: $large-screen-width), (min-height: $large-screen-height) { }

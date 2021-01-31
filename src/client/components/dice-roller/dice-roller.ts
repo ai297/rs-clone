@@ -11,7 +11,7 @@ function createContainer(dice: Dice, index: number, dicesNum: number): HTMLEleme
   container.append(shadow, dice.element);
   const rotateStep = Math.round(360 / dicesNum);
   const rotate = rotateStep * index + Math.round(Math.random() * (rotateStep / 2) - rotateStep / 4);
-  container.style.transform = `rotateZ(${rotate}deg)`;
+  container.style.transform = `rotateZ(${rotate + 30}deg)`;
   return container;
 }
 

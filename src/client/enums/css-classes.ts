@@ -104,6 +104,7 @@ export enum CSSClasses {
   GameActionLayer = 'game-screen__action-layer',
   SpellCasting = 'spell-casting',
   GameMessages = 'game-messages',
+  GameMessagesItem = 'game-messages__item',
   DiceRolling = 'dice-rolling',
   DiceRollingWrapper = 'dice-rolling__wrapper',
   // target selection
