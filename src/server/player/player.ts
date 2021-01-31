@@ -119,6 +119,7 @@ export class Player {
   }
 
   async takeHeal(heal: number): Promise<void> {
+    if (this.hitPoints <= 0) return;
     this.hitPointsValue += heal;
     if (this.hitPointsValue > MAX_HEALTH) {
       this.hitPointsValue = MAX_HEALTH;

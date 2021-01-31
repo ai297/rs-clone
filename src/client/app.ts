@@ -87,8 +87,8 @@ class App implements IRootComponent {
         () => {
           // show connection error screen here
           // this.mainContainer.innerHTML = 'Connection error.';
-          const overlay = new Overlay(new Popup(() => {}, 'Ошибка соединения с сервером'));
-          overlay.show();
+          const overlay = new Overlay();
+          overlay.show(new Popup(() => {}, 'Ошибка соединения с сервером'));
           reject(Error('Cannot connect to server...'));
         },
       );

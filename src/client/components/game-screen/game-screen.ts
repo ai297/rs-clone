@@ -7,6 +7,8 @@ import {
   IHero,
   IPlayerInfo,
   CardTypes,
+  forEachAsync,
+  TARGET_ALL,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
@@ -22,6 +24,36 @@ import { SpellCasting } from './spell-casting';
 import { GameMessages } from './game-messages';
 import { PlayerMessage } from '../player-message/player-message';
 import { DiceRolling } from './dice-rolling';
+import { Overlay } from '../overlay';
+import { showAlert } from '../show-alert';
+import { TargetSelection, TargetForSelection } from '../target-selection';
+
+function getTarget(
+  overlay: Overlay,
+  targets: TargetForSelection[],
+  isSelectAll = false,
+  timeout = SELECT_TARGET_TIME,
+): Promise<string[]> {
+  const selectTargetPromise = (): Promise<string[]> => new Promise((resolve) => {
+    const targetSelection = new TargetSelection(
+      targets,
+      (result) => {
+        overlay.hide();
+        resolve([result]);
+      },
+      isSelectAll,
+      timeout,
+    );
+    overlay.show(targetSelection);
+  });
+  const timerPromise = (): Promise<string[]> => new Promise((resolve) => {
+    delay(timeout).then(() => {
+      overlay.hide();
+      resolve([]);
+    });
+  });
+  return Promise.race([timerPromise(), selectTargetPromise()]);
+}
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -56,6 +88,8 @@ export class GameScreen extends BaseComponent {
 
   private castingMessage?: PlayerMessage;
 
+  private overlay!: Overlay;
+
   constructor(
     private readonly gameService: GameService,
     private readonly heroesRepository: HeroesRepository,
@@ -70,11 +104,11 @@ export class GameScreen extends BaseComponent {
     this.gameService.onGetCards = (cards) => this.addCards(cards);
     this.gameService.onPlayerSelectSpell = (playerInfo, cards) => this.showOpponentCards(playerInfo, cards);
     this.gameService.onSpellCast = (player, cards) => this.showSpellCast(player, cards);
-    this.gameService.onCardCast = (player, card, addon) => this.spellCasting.showCard(card, addon);
+    this.gameService.onCardCast = (player, card, addon) => this.showCardCast(player, card, addon);
     this.gameService.onPlayerTakeHeal = (playerInfo, heal) => this.showPlayerHeal(playerInfo, heal);
     this.gameService.onPlayerTakeDamage = (playerInfo, damage) => this.showPlayerDamage(playerInfo, damage);
     this.gameService.onPlayerMakeDiceRoll = (playerInfo, rolls, bonus) => this.showDiceRoll(playerInfo, rolls, bonus);
-    this.gameService.onSelectTarget = (targets, numberOfTargets) => this.showTargetSelection(targets, numberOfTargets);
+    this.gameService.onSelectTarget = (targets) => this.showTargetSelection(targets);
 
     const spellLength = this.gameService.getPlayerInfo(this.gameService.currentPlayerId)?.spellLength || 0;
     this.addCards(this.gameService.currentPlayerCards, 0, spellLength);
@@ -104,10 +138,11 @@ export class GameScreen extends BaseComponent {
   }
 
   nextMove(): void {
+    this.overlay.hide();
     const player = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
     if (player?.health) this.playerCards.setDisable(false);
     this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
-    console.log('Следующий ход');
+    // console.log('Следующий ход');
     this.setSpellCast(false);
   }
 
@@ -125,10 +160,11 @@ export class GameScreen extends BaseComponent {
 
   async showOpponentCards(playerInfo: IPlayerInfo, cardsInSpell: number): Promise<void> {
     this.opponentCards.get(playerInfo?.id)?.showCards(cardsInSpell);
-    console.log(`${playerInfo?.userName} приготовил заклинание из ${cardsInSpell} карт.`);
+    // console.log(`${playerInfo?.userName} приготовил заклинание из ${cardsInSpell} карт.`);
   }
 
   async showSpellCast(playerInfo: IPlayerInfo, cards: Array<ICard>): Promise<void> {
+    this.overlay.hide();
     this.timer.stop();
     this.disableControls = true;
     await this.setSpellCast(true);
@@ -152,16 +188,35 @@ export class GameScreen extends BaseComponent {
     await this.spellCasting.showSpell(cards);
   }
 
-  async showTargetSelection(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
-    const targetNames = targets.map((playerId) => this.gameService.getPlayerInfo(playerId)?.userName || playerId);
-    console.log(`Вы должны выбрать ${numberOfTargets} целей из: ${targetNames.join(', ')}`);
-    await delay(SELECT_TARGET_TIME);
-    console.log('Время на выбор цели истекло');
-    return [];
+  async showCardCast(playerInfo: IPlayerInfo, cardInfo: ICard, addon = false): Promise<void> {
+    this.overlay.hide();
+    await this.spellCasting.showCard(cardInfo, addon);
+  }
+
+  async showTargetSelection(targetIDs: Array<string>): Promise<Array<string>> {
+    const targets: TargetForSelection[] = [];
+    let isContainseAll = false;
+    await forEachAsync(targetIDs, async (targetId) => {
+      if (targetId === TARGET_ALL) {
+        isContainseAll = true;
+        return;
+      }
+      const playerInfo = this.gameService.getPlayerInfo(targetId);
+      const hero = await this.heroesRepository.getHero(String(playerInfo?.heroId));
+      if (hero) {
+        targets.push({
+          id: targetId,
+          name: hero.name,
+          image: hero.image,
+        });
+      }
+    });
+    const result = await getTarget(this.overlay, targets, isContainseAll);
+    return result;
   }
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
-    console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
+    // console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.addHealth(playerInfo.health, heal);
@@ -173,7 +228,7 @@ export class GameScreen extends BaseComponent {
   }
 
   async showPlayerDamage(playerInfo: IPlayerInfo, damage: number): Promise<void> {
-    console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
+    // console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       if (playerInfo.health <= 0) {
@@ -210,7 +265,7 @@ export class GameScreen extends BaseComponent {
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
       this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {
-      alert('Не удалось выбрать заклинание');
+      await showAlert('Не удалось выбрать заклинание');
       this.readyButton.disabled = false;
       this.playerCards.setDisable(false);
     }
@@ -286,6 +341,7 @@ export class GameScreen extends BaseComponent {
     this.spellCasting = new SpellCasting();
     this.diceRolling = new DiceRolling();
     this.messages = new GameMessages();
+    this.overlay = new Overlay();
 
     buttonContainer.append(this.readyButton.element);
     this.playSection.append(
