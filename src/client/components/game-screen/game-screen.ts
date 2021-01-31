@@ -246,7 +246,6 @@ export class GameScreen extends BaseComponent {
     this.readyButton.disabled = true;
     await this.playerCards.setDisable();
     try {
-      await playSound(Sounds.btnStandard);
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
       this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {

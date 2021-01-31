@@ -33,18 +33,12 @@ export class StartScreen extends BaseComponent {
     const buttonsContainer = createElement(Tags.Div, [CSSClasses.StartScreenButtons]);
     const newGameButton = new BaseButton(
       this.loc.NewGame,
-      async () => {
-        await playSound(Sounds.btnStandard);
-        this.startNewGame();
-      },
+      () => this.startNewGame(),
       [CSSClasses.StartScreenButton],
     );
     const joinButton = new BaseButton(
       this.loc.Join,
-      async () => {
-        await playSound(Sounds.btnStandard);
-        console.log('Join');
-      },
+      () => console.log('Join'),
       [CSSClasses.StartScreenButton],
     );
     const rulesButton = new BaseButton(
@@ -54,10 +48,7 @@ export class StartScreen extends BaseComponent {
     );
     const aboutButton = new BaseButton(
       this.loc.About,
-      async () => {
-        await playSound(Sounds.btnStandard);
-        this.showAboutScreen();
-      },
+      () => this.showAboutScreen(),
       [CSSClasses.StartScreenButton],
     );
 

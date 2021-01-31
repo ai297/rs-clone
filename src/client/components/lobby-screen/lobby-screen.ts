@@ -110,7 +110,6 @@ export class LobbyScreen extends BaseComponent {
   private async addBot() {
     const heroes = await this.heroesRepository.getAllHeroes();
     this.createBot(heroes);
-    await playSound(Sounds.btnStandard);
   }
 
   private async createBot(heroes: Array<IHero>) {
@@ -198,7 +197,6 @@ export class LobbyScreen extends BaseComponent {
 
   private async startGameHandler(): Promise<void> {
     try {
-      await playSound(Sounds.btnStandard);
       await this.gameService.startGame();
     } catch (error) {
       alert(error);
@@ -241,7 +239,6 @@ export class LobbyScreen extends BaseComponent {
         userName: this.playerName,
         heroId: String(this.currentHero?.id),
       };
-      await playSound(Sounds.btnStandard);
       try {
         await this.gameService.createHero(request);
       } catch (err: unknown) {
