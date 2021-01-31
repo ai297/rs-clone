@@ -3,6 +3,7 @@ import { IStartScreenLocalization } from './start-screen-localization';
 import { IGameEndLocalization } from './game-end-localization';
 import { IGameScreenLocalization } from './game-screen-localization';
 import { IAboutLocalization } from './about-localization';
+import { IRulesLocalization } from './rules-localization';
 
 export const LOBBY_DEFAULT_LOCALIZATION: ILobbyLocalization = {
   EnterYourName: 'Представься:',
@@ -25,7 +26,7 @@ export const GAME_END_DEFAULT_LOCALIZATION: IGameEndLocalization = {
   WinnerTitle: 'Ты укокошил всех врагов',
   LoserTitle: 'Ты двинул копыта',
   NoWinnersTitle: 'Упс, в этой битве никто не выжил',
-  HomeButton: 'На главную'
+  HomeButton: 'На главную',
 };
 
 export const GAME_SCREEN_DEFAULT_LOCALIZATION: IGameScreenLocalization = {
@@ -35,5 +36,9 @@ export const GAME_SCREEN_DEFAULT_LOCALIZATION: IGameScreenLocalization = {
 };
 
 export const ABOUT_DEFAULT_LOCALIZATION: IAboutLocalization = {
+  BackButton: 'На главную',
+};
+
+export const RULES_DEFAULT_LOCALIZATION: IRulesLocalization = {
   BackButton: 'На главную',
 };
