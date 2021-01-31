@@ -45,9 +45,9 @@ export class CardSpell extends CardBase {
     if (card.type === CardTypes.action) {
       initiativeElem = `<div class="${CSSClasses.СardType}-icon">${card.initiative}</div>`;
     }
-
+    this.element.classList.add(`${CSSClasses.СardType}--${typeCard}`, `${CSSClasses.СardElement}--${magicSignCard}`);
     this.element.innerHTML = `
-      <div class="${CSSClasses.Сard} ${CSSClasses.СardType}--${typeCard} ${CSSClasses.СardElement}--${magicSignCard}">
+      <div class="${CSSClasses.Сard}">
         <div class="${CSSClasses.СardContent}">
           <div class="${CSSClasses.СardImage}" style="background-image: url(${IMG_PATH}${typeCard}/${card.src}.jpg)">
           </div>

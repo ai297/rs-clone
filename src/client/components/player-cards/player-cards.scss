@@ -102,12 +102,31 @@
 
       &:hover {
         z-index: 2;
-        background-image: radial-gradient(closest-side, $shadow-color, transparent);
         transform: none !important;
-
         &:not(.card-container--disable) > .card {
-          box-shadow: 0 0 2em 0 $shadow-color;
           transform: translateY(-110%) scale(1.75);
+        }
+      }
+      &.card-element {
+        &--mystery:hover {
+          background-image: radial-gradient(closest-side, $card-element-mystery, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-mystery; }
+        }
+        &--dark:hover {
+          background-image: radial-gradient(closest-side, $card-element-dark, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-dark; }
+        }
+        &--nature:hover {
+          background-image: radial-gradient(closest-side, $card-element-nature, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-nature; }
+        }
+        &--element:hover {
+          background-image: radial-gradient(closest-side, $card-element-element, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-element; }
+        }
+        &--illusion:hover {
+          background-image: radial-gradient(closest-side, $card-element-illusion, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-illusion; }
         }
       }
     }

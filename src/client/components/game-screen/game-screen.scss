@@ -156,13 +156,11 @@
 
     &--active {
       z-index: 2;
-      & > .card {
-        transform: translateZ(5rem);
-        &.card-type {
-          &--source { box-shadow: 0 0 3rem .5rem $card-type-source, inset 0 0 .5rem $card-type-source; }
-          &--quality { box-shadow: 0 0 3rem .5rem $card-type-quality, inset 0 0 .5rem $card-type-quality; }
-          &--action { box-shadow: 0 0 3rem .5rem $card-type-action, inset 0 0 .5rem $card-type-action; }
-        }
+      & > .card { transform: translateZ(5rem); }
+      &.card-type {
+        &--source > .card { box-shadow: 0 0 3rem .5rem $card-type-source, inset 0 0 .5rem $card-type-source; }
+        &--quality > .card { box-shadow: 0 0 3rem .5rem $card-type-quality, inset 0 0 .5rem $card-type-quality; }
+        &--action > .card { box-shadow: 0 0 3rem .5rem $card-type-action, inset 0 0 .5rem $card-type-action; }
       }
     }
 
@@ -188,11 +186,11 @@
 
   &__wrapper {
     margin: 0 1rem;
-    margin-top: -4rem;
     flex: 0 1 calc(50% - 2rem);
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: translateY(-100%);
   }
 }
 

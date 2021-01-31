@@ -123,8 +123,9 @@
 
 .card-type {
   &--source {
-    padding-right: 0;
     .card {
+      padding-right: 0;
+
       &__content {
         border-color: $card-type-source;
         border-radius: .5em 0 0 .5em;
@@ -143,14 +144,14 @@
   }
 
   &--quality {
-    padding-right: 0;
-    padding-left: 0;
-
     .card {
+      padding-right: 0;
+      padding-left: 0;
+
       &__content {
         border-color: $card-type-quality;
         border-right: none;
-        border-left: 0;
+        border-left: none;
       }
       &__title {
         background-position: center top;
@@ -160,9 +161,9 @@
   }
 
   &--action {
-    padding-left: 0;
-
     .card {
+      padding-left: 0;
+
       &__content {
         border-color: $card-type-action;
         border-radius: 0 .5em .5em 0;
