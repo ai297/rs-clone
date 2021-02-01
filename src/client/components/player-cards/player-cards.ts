@@ -157,8 +157,8 @@ export class PlayerCards extends BaseComponent {
     await delay(timeout / 2);
     card.flip(false);
     await delay(timeout / 2);
-    await this.addToHand(cards, timeout);
     playSound(Sounds.playingCardsDeck);
+    await this.addToHand(cards, timeout);
   }
 
   private rotateHandCards(): void {

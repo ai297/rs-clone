@@ -28,6 +28,16 @@ import { Overlay } from '../overlay';
 import { showAlert } from '../show-alert';
 import { getTarget, TargetForSelection } from '../target-selection';
 
+async function playSpellSound(cards: Array<ICard>): Promise<void> {
+  const quality = cards.filter((qual) => qual.type === CardTypes.quality);
+  const action = cards.filter((qual) => qual.type === CardTypes.action);
+  const source = cards.filter((qual) => qual.type === CardTypes.source);
+
+  if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
+  if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
+  if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
+}
+
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
 
@@ -144,14 +154,6 @@ export class GameScreen extends BaseComponent {
 
     if (this.castingMessage) await this.messages.removeMessage(<PlayerMessage> this.castingMessage);
 
-    const quality = cards.filter((qual) => qual.type === CardTypes.quality);
-    const action = cards.filter((qual) => qual.type === CardTypes.action);
-    const source = cards.filter((qual) => qual.type === CardTypes.source);
-
-    if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
-    if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
-    if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
-
     if (this.gameService.currentPlayerId === playerInfo.id) await this.playerCards.clearSpell();
     else this.opponentCards.get(playerInfo.id)?.removeCards();
 
@@ -167,6 +169,7 @@ export class GameScreen extends BaseComponent {
       <span class="action">${actionCard}</span>
     `);
     await this.spellCasting.showSpell(cards);
+    await playSpellSound(cards);
   }
 
   async showCardCast(playerInfo: IPlayerInfo, cardInfo: ICard, addon = false): Promise<void> {
@@ -236,8 +239,8 @@ export class GameScreen extends BaseComponent {
     } else playerDisplay = this.opponents.get(playerInfo.id);
     playerDisplay?.setSelected();
     const message = await this.messages.newMessage(playerInfo, hero?.name || '', `${this.loc.MakeDiceRoll}...`, bonus);
+    playSound(Sounds.diceRoll);
     await this.diceRolling.showRolls(rolls);
-    await playSound(Sounds.diceRoll);
     playerDisplay?.setSelected(false);
     await this.messages.removeMessage(message);
   }
