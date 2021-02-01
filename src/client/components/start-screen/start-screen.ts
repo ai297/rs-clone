@@ -3,7 +3,9 @@ import { CSSClasses, ImagesPaths, Tags } from '../../enums';
 import { BaseButton } from '../base-button/base-button';
 import { IStartScreenLocalization, START_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
 import { GameService } from '../../services';
-import { createElement, delay, getRandomInteger } from '../../../common';
+import {
+  createElement, delay, getRandomInteger, playSound, Sounds,
+} from '../../../common';
 
 const BACKGROUNDS = ['bg1.jpg', 'bg2.jpg'];
 const LOGO = 'logo.png';

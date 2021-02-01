@@ -7,6 +7,8 @@ import {
   CardTypes,
   forEachAsync,
   TARGET_ALL,
+  playSound,
+  Sounds,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { IGameScreenLocalization, GAME_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
@@ -25,6 +27,16 @@ import { DiceRolling } from './dice-rolling';
 import { Overlay } from '../overlay';
 import { showAlert } from '../show-alert';
 import { getTarget, TargetForSelection } from '../target-selection';
+
+async function playSpellSound(cards: Array<ICard>): Promise<void> {
+  const quality = cards.filter((qual) => qual.type === CardTypes.quality);
+  const action = cards.filter((qual) => qual.type === CardTypes.action);
+  const source = cards.filter((qual) => qual.type === CardTypes.source);
+
+  if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
+  if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
+  if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
+}
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -157,6 +169,7 @@ export class GameScreen extends BaseComponent {
       <span class="action">${actionCard}</span>
     `);
     await this.spellCasting.showSpell(cards);
+    await playSpellSound(cards);
   }
 
   async showCardCast(playerInfo: IPlayerInfo, cardInfo: ICard, addon = false): Promise<void> {
@@ -188,6 +201,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
+    await playSound(Sounds.heal);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.addHealth(playerInfo.health, heal);
@@ -200,6 +214,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerDamage(playerInfo: IPlayerInfo, damage: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
+    await playSound(Sounds.damage);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       if (playerInfo.health <= 0) {
@@ -224,6 +239,7 @@ export class GameScreen extends BaseComponent {
     } else playerDisplay = this.opponents.get(playerInfo.id);
     playerDisplay?.setSelected();
     const message = await this.messages.newMessage(playerInfo, hero?.name || '', `${this.loc.MakeDiceRoll}...`, bonus);
+    playSound(Sounds.diceRoll);
     await this.diceRolling.showRolls(rolls);
     playerDisplay?.setSelected(false);
     await this.messages.removeMessage(message);

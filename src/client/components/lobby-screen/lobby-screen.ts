@@ -5,7 +5,7 @@ import {
   ICreatePlayerRequest,
   IHero,
   IPlayerInfo,
-  getRandomInteger,
+  getRandomInteger, playSound, Sounds,
 } from '../../../common';
 import { HeroSelection } from '../hero-selection/hero-selection';
 import { PlayerList } from '../player-list/player-list';
@@ -156,10 +156,10 @@ export class LobbyScreen extends BaseComponent {
       const gameLinkElement = createElement(Tags.Div, [CSSClasses.GameLink], `${gameLink}`);
       const copyIcon = createElement(Tags.Div, [CSSClasses.CopyIcon]);
       copyIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg">
-                              <path stroke="null" fill="#f8cfa9" fill-opacity="0.5" id="svg_2" 
-                              d="m16.385353,1.652503l-11.694276,0c-1.076848,0 -1.949045,0.923274 
+                              <path stroke="null" fill="#f8cfa9" fill-opacity="0.5" id="svg_2"
+                              d="m16.385353,1.652503l-11.694276,0c-1.076848,0 -1.949045,0.923274
                               -1.949045,2.063182l0,14.442268l1.949045,0l0,-14.442268l11.694276,0l0,
-                              -2.063182zm2.923569,4.126363l-10.719753,0c-1.076848,0 -1.949045,0.923274 
+                              -2.063182zm2.923569,4.126363l-10.719753,0c-1.076848,0 -1.949045,0.923274
                               -1.949045,2.063182l0,14.442268c0,1.139908 0.872198,2.063182 1.949045,
                               2.063182l10.719753,0c1.076848,0 1.949047,-0.923274 1.949047,-2.063182l0,
                               -14.442268c0,-1.139908 -0.872199,-2.063182 -1.949047,-2.063182zm0,16.50545l
@@ -206,6 +206,7 @@ export class LobbyScreen extends BaseComponent {
   private onSelect(hero: IHero): void {
     this.currentHero = hero;
     this.readyToSelect();
+    playSound(Sounds.onSelectCharacter);
   }
 
   private readyToSelect(): void {

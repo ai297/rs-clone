@@ -6,6 +6,9 @@ import {
   delay,
   ICard,
   forEachAsync,
+  ICallbackHandler,
+  playSound,
+  Sounds,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
@@ -120,6 +123,7 @@ export class PlayerCards extends BaseComponent {
     await card.onAppended();
 
     this.isCardSelecting = false;
+    await playSound(Sounds.playingCardSpell);
   };
 
   private returnToHand = async (card: CardSpell): Promise<void> => {
@@ -153,6 +157,7 @@ export class PlayerCards extends BaseComponent {
     await delay(timeout / 2);
     card.flip(false);
     await delay(timeout / 2);
+    playSound(Sounds.playingCardsDeck);
     await this.addToHand(cards, timeout);
   }
 

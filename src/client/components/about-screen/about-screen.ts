@@ -1,8 +1,9 @@
 import { BaseComponent } from '../base-component';
 import { BaseButton } from '../base-button/base-button';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
-import { createElement } from '../../../common/utils';
+import { createElement, playSound } from '../../../common/utils';
 import { IAboutLocalization, ABOUT_DEFAULT_LOCALIZATION } from '../../localization';
+import { Sounds } from '../../../common';
 
 const URL = './about-us.json';
 
