@@ -156,4 +156,11 @@ export enum CSSClasses {
   PlayerMessage = 'player-message',
   PlayerMessageContent = 'player-message__content',
   PlayerMessageInit = 'player-message--init',
+  // rules screen
+  RulesScreen = 'rules-screen',
+  RulesContainer = 'rules-screen__container',
+  RulesHeaderImage = 'rules-screen__header-image',
+  RulesTitle = 'rules-screen__title',
+  RulesText = 'rules-screen__text',
+  RulesScreenButton = 'rules-screen__button',
 }

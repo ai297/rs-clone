@@ -16,6 +16,7 @@ export class StartScreen extends BaseComponent {
 
   constructor(
     private gameService: GameService,
+    private showRulesScreen: () => void,
     private showAboutScreen: () => void,
     localization?: IStartScreenLocalization,
   ) {
@@ -40,7 +41,7 @@ export class StartScreen extends BaseComponent {
     );
     const rulesButton = new BaseButton(
       this.loc.Rules,
-      () => console.log('Rules'),
+      () => this.showRulesScreen(),
       [CSSClasses.StartScreenButton],
     );
     const aboutButton = new BaseButton(

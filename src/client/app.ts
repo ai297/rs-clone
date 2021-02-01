@@ -6,6 +6,7 @@ import
   GameScreen,
   GameEndScreen,
   Overlay,
+  RulesScreen,
   AboutScreen,
 } from './components';
 import { CSSClasses, StaticScreens } from './enums';
@@ -106,17 +107,23 @@ class App implements IRootComponent {
       );
       this.createGameService(connection);
 
-      const toAbout = new StartScreen(
+      const toStart = new StartScreen(
         this.gameService,
+        () => this.showStatic(StaticScreens.Rules),
         () => this.showStatic(StaticScreens.About),
       );
 
-      const toStart = new AboutScreen(
+      const toAbout = new AboutScreen(
         () => this.showStatic(StaticScreens.Start),
       );
 
-      this.staticScreens.set(StaticScreens.Start, toAbout);
-      this.staticScreens.set(StaticScreens.About, toStart);
+      const toRules = new RulesScreen(
+        () => this.showStatic(StaticScreens.Start),
+      );
+
+      this.staticScreens.set(StaticScreens.Start, toStart);
+      this.staticScreens.set(StaticScreens.Rules, toRules);
+      this.staticScreens.set(StaticScreens.About, toAbout);
     });
   }
 
