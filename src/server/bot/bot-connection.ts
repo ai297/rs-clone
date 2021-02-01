@@ -72,10 +72,11 @@ export class SimpleBotConnection extends ClientConnection {
 
   private selectTarget = async (message: ISelectTarget): Promise<string[]> => {
     const randomResult: Array<string> = [];
+    if (message.numberOfTargets >= message.targets.length) return message.targets;
     while (randomResult.length < message.numberOfTargets && message.targets.length > 0) {
       randomResult.push(...message.targets.splice(getRandomInteger(0, message.targets.length - 1), 1));
     }
-    await delay(SELECT_TARGET_TIME / 2);
+    await delay(SELECT_TARGET_TIME / 4);
     return randomResult;
   };
 

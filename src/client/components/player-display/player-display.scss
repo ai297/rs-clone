@@ -120,7 +120,7 @@
     font-size: 3rem;
     -webkit-text-stroke: 0.1rem $shadow-color-extra-light;
     opacity: 0;
-    transition: opacity .5s linear, all 2s ease-in;
+    transition: opacity .5s linear, all 1.5s ease-in;
   }
 
   &--recovery {

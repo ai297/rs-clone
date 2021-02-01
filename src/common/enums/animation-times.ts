@@ -1,6 +1,6 @@
 export enum AnimationTimes {
-  Heal = 2000,
-  Damage = 2000,
+  Heal = 1500,
+  Damage = 1500,
   AddCard = 500,
   SpellCard = 500,
   Dice = 1250,
