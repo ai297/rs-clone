@@ -42,11 +42,15 @@
         text-shadow: none;
         margin: 0 auto;
 
-        &:hover {
+        &:hover:not(:disabled) {
           background: $secondary-warning-color;
           color: $shadow-color-extra-light;
           text-shadow: none;
           box-shadow: none;
+        }
+
+        &:disabled {
+          display: none;
         }
       }
     }

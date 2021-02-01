@@ -7,14 +7,24 @@ import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localizati
 export class EmptyItem extends BaseComponent {
   private loc: ILobbyLocalization;
 
+  private addBotButton!: BaseButton;
+
   constructor(private gameCreator: boolean, private addBot: () => void, localization?: ILobbyLocalization) {
     super([CSSClasses.PlayerListItem, CSSClasses.EmptyItem]);
     this.loc = localization || LOBBY_DEFAULT_LOCALIZATION;
     const playerAvatarWrapper = createElement(Tags.Div, [CSSClasses.PlayerAvatar]);
     this.element.append(playerAvatarWrapper);
     if (this.gameCreator) {
-      const addBotButton = new BaseButton(this.loc.AddBot, () => this.addBot(), [CSSClasses.AddBotButton]);
-      this.element.append(addBotButton.element);
+      this.addBotButton = new BaseButton(this.loc.AddBot, () => this.addBot(), [CSSClasses.AddBotButton]);
+      this.element.append(this.addBotButton.element);
+    }
+  }
+
+  public set addBotButtonIsDisabled(value: boolean) {
+    if (value) {
+      this.addBotButton.disabled = true;
+    } else {
+      this.addBotButton.disabled = false;
     }
   }
 }
