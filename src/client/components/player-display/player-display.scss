@@ -111,33 +111,28 @@
   &--container {
     position: absolute;
     z-index: 100;
+    top: 50%;
+    left: 50%;
+    height: 1px;
+    width: 1px;
     font-weight: bold;
     font-family: $headers-font;
+    font-size: 3rem;
     -webkit-text-stroke: 0.1rem $shadow-color-extra-light;
+    opacity: 0;
+    transition: opacity .5s linear, all 2s ease-in;
   }
 
   &--recovery {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 1px;
-    width: 1px;
-    font-size: 3rem;
     color: $accent-color;
+    opacity: 1;
     transform: scale(2);
-    transition: all 2s ease-in;
   }
 
   &--damage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 1px;
-    width: 1px;
-    font-size: 3rem;
     color: $secondary-attention-color;
+    opacity: 1;
     transform: scale(2);
-    transition: all 2s ease-in;
   }
 }
 
@@ -145,7 +140,6 @@
   .game-player__animation--damage,
   .game-player__animation--recovery {
     transform: scale(3) translate(-50px, -50px);
-    transition: all 2s ease-in;
   }
 }
 

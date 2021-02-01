@@ -26,8 +26,6 @@ export class GamePlayerDisplay extends BaseComponent {
 
   private playerAvatar: HTMLElement;
 
-  private pointsAnimation: HTMLElement;
-
   constructor(
     private name: string,
     private heroName: string,
@@ -43,8 +41,6 @@ export class GamePlayerDisplay extends BaseComponent {
     this.playerAvatar = createElement(Tags.Img, [CSSClasses.GamePlayerAvatar]);
     this.playerHealth = createElement(Tags.Div, [CSSClasses.GamePlayerHealth]);
 
-    this.pointsAnimation = createElement(Tags.Div, [CSSClasses.GamePlayerPointsAnimation]);
-
     this.playerAvatar.setAttribute('src', `${ImagesPaths.HeroesAvatars}${this.avatar}.png`);
     this.playerAvatar.setAttribute('alt', this.heroName);
 
@@ -52,10 +48,10 @@ export class GamePlayerDisplay extends BaseComponent {
 
     if (this.isCurrentPlayer === true) {
       this.element.classList.add(CSSClasses.GamePlayerDisplayContainerCurrent);
-      this.element.append(this.playerAvatar, playerHero, this.playerHealth, this.pointsAnimation);
+      this.element.append(this.playerAvatar, playerHero, this.playerHealth);
     } else {
       this.element.classList.add(CSSClasses.GamePlayerDisplayContainerOpponent);
-      this.element.append(this.playerAvatar, playerName, playerHero, this.playerHealth, this.pointsAnimation);
+      this.element.append(this.playerAvatar, playerName, playerHero, this.playerHealth);
     }
   }
 
@@ -109,9 +105,14 @@ export class GamePlayerDisplay extends BaseComponent {
   }
 
   addHealth = async (currentHealth: number, points: number): Promise<void> => {
-    this.pointsAnimation.classList.remove(CSSClasses.GamePlayerPointsHidden);
-    this.pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
-    this.pointsAnimation.textContent = `+${points}`;
+    const pointsAnimation = createElement(
+      Tags.Div,
+      [CSSClasses.GamePlayerPointsAnimation],
+      `+${points}`,
+    );
+    this.element.append(pointsAnimation);
+    await delay(50);
+    pointsAnimation.classList.add(CSSClasses.InGameAddHealthAnimation);
 
     this.health = currentHealth;
 
@@ -119,15 +120,21 @@ export class GamePlayerDisplay extends BaseComponent {
       this.health = MAX_HEALTH;
     }
 
-    await delay(RECOVERY_ANIMATION_DELAY);
-    this.pointsAnimation.classList.remove(CSSClasses.InGameAddHealthAnimation);
-    this.pointsAnimation.classList.add(CSSClasses.GamePlayerPointsHidden);
+    await delay(DAMAGE_ANIMATION_DELAY / 2);
     this.updateHealth();
+    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    pointsAnimation.remove();
   };
 
   bringDamage = async (currentHealth: number, points: number): Promise<void> => {
-    this.pointsAnimation.classList.add(CSSClasses.InGameBringDamageAnimation);
-    this.pointsAnimation.textContent = `-${points}`;
+    const pointsAnimation = createElement(
+      Tags.Div,
+      [CSSClasses.GamePlayerPointsAnimation],
+      `-${points}`,
+    );
+    this.element.append(pointsAnimation);
+    await delay(50);
+    pointsAnimation.classList.add(CSSClasses.InGameBringDamageAnimation);
 
     this.health = currentHealth;
 
@@ -135,9 +142,9 @@ export class GamePlayerDisplay extends BaseComponent {
       this.health = 0;
     }
 
-    await delay(DAMAGE_ANIMATION_DELAY);
-    this.pointsAnimation.textContent = '';
-    this.pointsAnimation.classList.remove(CSSClasses.InGameBringDamageAnimation);
+    await delay(DAMAGE_ANIMATION_DELAY / 2);
     this.updateHealth();
+    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    pointsAnimation.remove();
   };
 }

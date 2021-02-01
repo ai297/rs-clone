@@ -67,7 +67,6 @@ export enum CSSClasses {
   InGameAddHealthAnimation = 'game-player__animation--recovery',
   InGameBringDamageAnimation = 'game-player__animation--damage',
   GamePlayerPointsAnimation = 'game-player__animation--container',
-  GamePlayerPointsHidden = 'game-player__animation--hidden',
   // lobby
   Lobby = 'lobby',
   LobbyHeader = 'lobby-header',
