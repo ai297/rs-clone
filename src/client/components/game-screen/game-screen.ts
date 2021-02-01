@@ -26,34 +26,7 @@ import { PlayerMessage } from '../player-message/player-message';
 import { DiceRolling } from './dice-rolling';
 import { Overlay } from '../overlay';
 import { showAlert } from '../show-alert';
-import { TargetSelection, TargetForSelection } from '../target-selection';
-
-function getTarget(
-  overlay: Overlay,
-  targets: TargetForSelection[],
-  isSelectAll = false,
-  timeout = SELECT_TARGET_TIME,
-): Promise<string[]> {
-  const selectTargetPromise = (): Promise<string[]> => new Promise((resolve) => {
-    const targetSelection = new TargetSelection(
-      targets,
-      (result) => {
-        overlay.hide();
-        resolve([result]);
-      },
-      isSelectAll,
-      timeout,
-    );
-    overlay.show(targetSelection);
-  });
-  const timerPromise = (): Promise<string[]> => new Promise((resolve) => {
-    delay(timeout).then(() => {
-      overlay.hide();
-      resolve([]);
-    });
-  });
-  return Promise.race([timerPromise(), selectTargetPromise()]);
-}
+import { getTarget, TargetForSelection } from '../target-selection';
 
 export class GameScreen extends BaseComponent {
   private loc: IGameScreenLocalization;
@@ -180,7 +153,7 @@ export class GameScreen extends BaseComponent {
     const qualityCard = cards.find((card) => card.type === CardTypes.quality)?.title || '';
     const actionCard = cards.find((card) => card.type === CardTypes.action)?.title || '';
 
-    this.castingMessage = await this.messages.newMessage(playerInfo, hero?.name || '', 'применяет заклинание:', `
+    this.castingMessage = await this.messages.newMessage(playerInfo, hero?.name || '', `${this.loc.SpellCast}:`, `
       <span class="source">${sourceCard}</span>
       <span class="quality">${qualityCard}</span>
       <span class="action">${actionCard}</span>
@@ -246,13 +219,13 @@ export class GameScreen extends BaseComponent {
 
   async showDiceRoll(playerInfo: IPlayerInfo, rolls: Array<number>, bonusValue = 0): Promise<void> {
     const hero = await this.heroesRepository.getHero(playerInfo.heroId);
-    const bonus = bonusValue > 0 ? `<p>Бонус к броску: <b class="success">+${bonusValue}</b></p>` : '';
+    const bonus = bonusValue > 0 ? `<p>${this.loc.RollBonus}: <b class="success">+${bonusValue}</b></p>` : '';
     let playerDisplay: GamePlayerDisplay | undefined;
     if (playerInfo.id === this.gameService.currentPlayerId) {
       playerDisplay = this.currentPlayerDisplay;
     } else playerDisplay = this.opponents.get(playerInfo.id);
     playerDisplay?.setSelected();
-    const message = await this.messages.newMessage(playerInfo, hero?.name || '', 'бросает кубики...', bonus);
+    const message = await this.messages.newMessage(playerInfo, hero?.name || '', `${this.loc.MakeDiceRoll}...`, bonus);
     await this.diceRolling.showRolls(rolls);
     playerDisplay?.setSelected(false);
     await this.messages.removeMessage(message);
@@ -265,7 +238,7 @@ export class GameScreen extends BaseComponent {
       await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
       this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {
-      await showAlert('Не удалось выбрать заклинание');
+      await showAlert(this.loc.SelectSpellError);
       this.readyButton.disabled = false;
       this.playerCards.setDisable(false);
     }

@@ -32,6 +32,10 @@ export const GAME_SCREEN_DEFAULT_LOCALIZATION: IGameScreenLocalization = {
   ReadyButton: 'Готов!',
   TargetSelection: 'ВЫБЕРИ ЦЕЛЬ:',
   ALlEnemies: 'ВСЕ ВРАГИ',
+  SpellCast: 'применяет заклинание',
+  RollBonus: 'Бонус к броску',
+  MakeDiceRoll: 'бросает кубики',
+  SelectSpellError: 'Не удалось выбрать заклинание',
 };
 
 export const ABOUT_DEFAULT_LOCALIZATION: IAboutLocalization = {
