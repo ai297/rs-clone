@@ -150,6 +150,7 @@ export class Player {
 
   async selectTarget(targets: Array<string>, numberOfTargets = 1): Promise<Array<string>> {
     const message: ISelectTarget = { targets: [...targets], numberOfTargets };
+    if (numberOfTargets >= targets.length) return targets;
     const randomResult: Array<string> = [];
     while (randomResult.length < numberOfTargets && targets.length > 0) {
       randomResult.push(...targets.splice(getRandomInteger(0, targets.length - 1), 1));

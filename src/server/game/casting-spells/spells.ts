@@ -8,35 +8,14 @@ import {
 } from '../../../common';
 import { CardHandler } from './type';
 import { Player } from '../../player';
-import { PowerMagic } from './enum';
 import {
   sumArray,
-  checkStrength,
   getNumberUniqueMagicSign,
   throwCheck,
+  makePowerDiceRoll,
+  makeDiceRolls,
 } from './utils';
 import { IGameForCasting } from '../interface';
-
-async function makePowerDiceRoll(player: Player, magicSign: MagicSigns): Promise<PowerMagic> {
-  const amountDice = [...player.spell]
-    .reduce((acc:number, card: ICard):number => (acc + (card.magicSign === magicSign ? 1 : 0)), 0);
-  if (!amountDice) return PowerMagic.nothing;
-  const throwResult = await player.makeDiceRoll(amountDice);
-  const strongPower: PowerMagic = checkStrength(sumArray(throwResult));
-  return strongPower;
-}
-
-type RollResult = { player: Player, rolls: Array<number> };
-
-async function makeDiceRolls(players: Array<Player>, diceNumber = 1): Promise<RollResult[]> {
-  const rollResults: Array<RollResult> = [];
-  // игроки бросают кубики по-очереди
-  await forEachAsync(players, async (player) => {
-    const rolls = await player.makeDiceRoll(diceNumber);
-    rollResults.push({ player, rolls });
-  });
-  return rollResults;
-}
 
 export class Spells {
   private readonly spells = new Map<string, CardHandler>();
@@ -102,7 +81,7 @@ export class Spells {
     const currentPlayer = <Player> this.players[position];
     // на всякий случай исключаем "убитых" героев что бы заклинание могло попасть в следующую цель
     const alivePlayers = this.players.filter((player) => player.isAlive);
-    // если сам игрок уже не живой - он неможет применять заклинание. Так же, если кроме него никого больше нет в живых
+    // если сам игрок уже не живой - он не может применять заклинание. Так же, если кроме него никого больше нет в живых
     if (currentPlayer.hitPoints <= 0 || alivePlayers.length < 2) return null;
 
     const currentPlayerPosition = alivePlayers.findIndex((player) => player === currentPlayer);
@@ -118,13 +97,13 @@ export class Spells {
 
     const currentPlayer = <Player> this.players[position];
     // соперники
-    const opponents = this.players.filter((player) => player !== currentPlayer);
+    const opponents = this.players.filter((player) => player !== currentPlayer && player.isAlive);
     opponents.sort((a, b) => (isStrongest ? b.hitPoints - a.hitPoints : a.hitPoints - b.hitPoints));
 
     if (opponents.length < 1) return null;
     if (opponents.length === 1 || opponents[0].hitPoints !== opponents[1].hitPoints) return opponents[0];
     const throwCheckOpponents = opponents.filter((opponent) => opponent.hitPoints === opponents[0].hitPoints);
-    const [target] = await throwCheck(throwCheckOpponents, false);
+    const target = await throwCheck(throwCheckOpponents, false);
     return target;
   }
 
@@ -405,7 +384,7 @@ export class Spells {
     rollResults.sort((a, b) => a.rollResult - b.rollResult);
     let target: Player;
     if (rollResults[0].rollResult !== rollResults[1].rollResult) target = rollResults[0].player;
-    else [target] = await throwCheck([rollResults[0].player, rollResults[1].player], false);
+    else target = await throwCheck([rollResults[0].player, rollResults[1].player], false);
 
     await target?.takeDamage(CARD_DAMAGE);
   };
@@ -550,28 +529,26 @@ export class Spells {
    * кот-а-строфный
    */
   private useCatTrouble = async (positionPlayer: number): Promise<void> => {
-    const player = this.players[positionPlayer];
+    const PLAYER_BONUS = 2;
 
-    const possibleTargets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
-    const damageTasks: Array<Promise<void>> = [];
+    const currentPlayer = this.players[positionPlayer];
+    const possibleTargets = this.players.filter((playerCur) => playerCur !== currentPlayer && playerCur.isAlive);
 
-    if (possibleTargets.length > 1) {
-      const [luckyPlayer, resultDiceRoll] = await throwCheck(possibleTargets);
+    const diceResults: Array<{player: Player, roll: number }> = [];
+    const currentPlayerRoll = await currentPlayer.makeDiceRoll(1, PLAYER_BONUS);
+    diceResults.push({ player: currentPlayer, roll: sumArray(currentPlayerRoll) });
 
-      const targets = resultDiceRoll
-        .filter((curRes: {value: number, player: Player}) => curRes.player !== luckyPlayer);
+    const rolls = await makeDiceRolls(possibleTargets, 1);
+    rolls.forEach((rollResult) => {
+      diceResults.push({ player: rollResult.player, roll: sumArray(rollResult.rolls) });
+    });
 
-      targets.forEach((curPlayer): void => {
-        const target = curPlayer.player;
-        const damage = curPlayer.value;
-        damageTasks.push(target.takeDamage(damage));
+    const damageTasks = diceResults.sort((a, b) => b.roll - a.roll)
+      .filter((diceResult) => diceResult.roll !== diceResults[0].roll)
+      .map(({ player, roll }) => {
+        if (player !== currentPlayer) return player.takeDamage(roll);
+        return player.takeDamage(roll - PLAYER_BONUS);
       });
-    } else {
-      const [target] = possibleTargets;
-      const roll = await target.makeDiceRoll(1);
-      const resultDice = sumArray(roll);
-      if (resultDice < 4) damageTasks.push(target.takeDamage(resultDice));
-    }
 
     if (damageTasks.length > 0) await Promise.race(damageTasks);
   };
@@ -697,7 +674,7 @@ export class Spells {
   private useCubic = async (positionPlayer: number): Promise<void> => {
     const currentPlayer = this.players[positionPlayer];
 
-    const opponents = this.players.filter((playerCur) => playerCur !== currentPlayer && playerCur.hitPoints);
+    const opponents = this.players.filter((playerCur) => playerCur !== currentPlayer && playerCur.isAlive);
     const resultDiceRollPlayer = await currentPlayer.makeDiceRoll(2);
     const opponentsResults = await makeDiceRolls(opponents);
 

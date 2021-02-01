@@ -1,7 +1,5 @@
 import {
   SELECT_SPELL_TIME,
-  SELECT_TARGET_TIME,
-  delay,
   createElement,
   ICard,
   IHero,

@@ -9,12 +9,16 @@ import {
   ICallbackHandler,
   START_HEALTH,
   IHealthUpdate,
-  // ISelectTarget,
+  AnimationTimes,
+  ISelectTarget,
+  SELECT_TARGET_TIME,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ClientConnection, ConnectionService } from '../connection';
 
 const MIN_BOT_DELAY = 1000;
-const MAX_BOT_DELAY = 3000;
+const MAX_BOT_DELAY = 5000;
 
 type EventHandler = (...args: any[]) => any;
 
@@ -37,22 +41,56 @@ export class SimpleBotConnection extends ClientConnection {
     this.setGameId(gameId);
 
     this.handlers
-      .set(HubEventsClient.DiceRoll, () => { })
-      .set(HubEventsClient.GetCards, (cards: Array<ICard>): void => {
-        this.handCards.push(...cards);
-        if (this.health > 0) this.selectSpell();
-      })
-      .set(HubEventsClient.UpdateHealath, (message: IHealthUpdate): void => {
-        this.health = message.currentHealth;
-      });
-    // .set(HubEventsClient.SelectTarget, (message: ISelectTarget): string[] => {
-    //   const randomResult: Array<string> = [];
-    //   while (randomResult.length < message.numberOfTargets && message.targets.length > 0) {
-    //     randomResult.push(...message.targets.splice(getRandomInteger(0, message.targets.length - 1), 1));
-    //   }
-    //   return randomResult;
-    // });
+      .set(HubEventsClient.DiceRoll, this.diceRoll)
+      .set(HubEventsClient.GetCards, this.getCards)
+      .set(HubEventsClient.UpdateHealath, this.updateHealths)
+      .set(HubEventsClient.SelectTarget, this.selectTarget)
+      .set(HubEventsClient.CastSpell, this.castSpell)
+      .set(HubEventsClient.CastCard, this.castCard);
   }
+
+  private diceRoll = async (): Promise<void> => {
+    const timeout = AnimationTimes.ShowMessage * 2
+      + AnimationTimes.Dice
+      + AnimationTimes.DiceRoller
+      + AnimationTimes.DiceRollShowTime;
+    await delay(timeout);
+  };
+
+  private getCards = async (cards: Array<ICard>): Promise<void> => {
+    this.handCards.push(...cards);
+    await delay(cards.length * AnimationTimes.AddCard);
+    await delay(getRandomInteger(MIN_BOT_DELAY, MAX_BOT_DELAY));
+    if (this.health > 0) this.selectSpell();
+  };
+
+  private updateHealths = async (message: IHealthUpdate): Promise<void> => {
+    this.health = message.currentHealth;
+    if (message.isDamage) await delay(AnimationTimes.Damage);
+    else await delay(AnimationTimes.Heal);
+  };
+
+  private selectTarget = async (message: ISelectTarget): Promise<string[]> => {
+    const randomResult: Array<string> = [];
+    if (message.numberOfTargets >= message.targets.length) return message.targets;
+    while (randomResult.length < message.numberOfTargets && message.targets.length > 0) {
+      randomResult.push(...message.targets.splice(getRandomInteger(0, message.targets.length - 1), 1));
+    }
+    await delay(SELECT_TARGET_TIME / 4);
+    return randomResult;
+  };
+
+  private castSpell = async (message: ICastSpell): Promise<void> => {
+    const timeout = AnimationTimes.SpellCard
+      + AnimationTimes.ShowMessage * 2
+      + message.cards.length * AnimationTimes.SpellCard;
+    await delay(timeout);
+  };
+
+  private castCard = async (message: ICastCard): Promise<void> => {
+    if (message.addon) await delay(AnimationTimes.SpellCard);
+    await delay(AnimationTimes.SpellCard);
+  };
 
   setGameId(gameId: string): void { this.gameId = gameId; }
 
@@ -60,7 +98,7 @@ export class SimpleBotConnection extends ClientConnection {
     const handler = this.handlers.get(command);
     if (handler && typeof handler === 'function') {
       const result = handler(...args);
-      return Promise.resolve(result as T);
+      return result;
     }
     return Promise.reject(Error('Unknown method'));
   }
@@ -86,10 +124,13 @@ export class SimpleBotConnection extends ClientConnection {
     this.listeners.delete(event);
   }
 
-  private async selectSpell(): Promise<void> {
-    // this delay simulate user thinking time
-    await delay(getRandomInteger(MIN_BOT_DELAY, MAX_BOT_DELAY));
+  private dispatchCallbacks<T>(event: HubEventsServer, ...args: T[]) {
+    const callback = this.listeners.get(event);
+    callback?.forEach((handler) => handler(...args));
+  }
 
+  // BOT LOGIC
+  private selectSpell(): void {
     // TODO: write spell selection logic here
     // for example - select all cards with different magic signs
     const selectedCards: Array<ICard> = [];
@@ -103,10 +144,5 @@ export class SimpleBotConnection extends ClientConnection {
     // when cards selected, remove its from hand and dispatch callback whit selected cards id
     this.handCards = this.handCards.filter((card) => !selectedCards.includes(card));
     this.dispatchCallbacks(HubEventsServer.SelectSpell, selectedCards.map((card) => card.id));
-  }
-
-  private dispatchCallbacks<T>(event: HubEventsServer, ...args: T[]) {
-    const callback = this.listeners.get(event);
-    callback?.forEach((handler) => handler(...args));
   }
 }

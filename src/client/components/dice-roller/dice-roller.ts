@@ -1,9 +1,7 @@
-import { createElement, delay } from '../../../common';
+import { createElement, delay, AnimationTimes } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
 import { Dice } from './dice';
-
-const ANIMATION_DELAY = 500;
 
 function createContainer(dice: Dice, index: number, dicesNum: number): HTMLElement {
   const container = createElement(Tags.Div, [CSSClasses.DiceContainer]);
@@ -39,6 +37,6 @@ export class DiceRoller extends BaseComponent {
 
   async beforeRemove(): Promise<void> {
     this.element.classList.remove(CSSClasses.DiceRollerShow);
-    await delay(ANIMATION_DELAY);
+    await delay(AnimationTimes.DiceRoller);
   }
 }
