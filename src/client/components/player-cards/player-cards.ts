@@ -4,22 +4,20 @@ import {
   createElement,
   delay,
   ICard,
-  ICallbackHandler,
+  forEachAsync,
 } from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
-import { PlayingCard } from './playing-card';
+import { CardBase, CardSpell, CardFake } from '../card-spell';
 
 const MAX_CARDS_IN_HAND_ROTATION = 30;
-const ADD_HAND_DELAY = 500;
-const SELECT_CARD_DELAY = 300;
-const REMOVE_SPELL_DELAY = 0;
-const REMOVE_HAND_DELAY = 0;
+const ANIMATION_HAND_TIME = 500;
+const ANIMATION_SELECTED_TIME = 300;
 
 export class PlayerCards extends BaseComponent {
-  private readonly handCards: PlayingCard[] = [];
+  private readonly handCards: CardSpell[] = [];
 
-  private readonly spellCards: PlayingCard[] = [];
+  private readonly spellCards: CardBase[] = [];
 
   private isCardSelecting = false;
 
@@ -27,7 +25,7 @@ export class PlayerCards extends BaseComponent {
 
   private readonly selectedCardsElement: HTMLElement;
 
-  constructor(private readonly onSpellChange?: ICallbackHandler) {
+  constructor(private readonly onSpellChange?: (cards: number) => void) {
     super([CSSClasses.PlayerCards]);
 
     this.handElement = createElement(Tags.Div, [CSSClasses.PlayerCardsHand]);
@@ -36,50 +34,70 @@ export class PlayerCards extends BaseComponent {
   }
 
   getSelectedCardsId(): Array<string> {
-    return this.spellCards.map((card) => card.id);
+    return this.spellCards.filter((card) => card as CardSpell).map((card) => (<CardSpell> card).id);
   }
 
   clearSpell = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(REMOVE_SPELL_DELAY));
+    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(ANIMATION_SELECTED_TIME));
     this.spellCards.splice(0, this.spellCards.length);
     this.updateHandState();
-    if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
+    if (this.onSpellChange) this.onSpellChange(0);
     await Promise.all(beforeRemoveCallbacks);
     this.selectedCardsElement.innerHTML = '';
   };
 
   clearHand = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(REMOVE_HAND_DELAY));
+    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(ANIMATION_HAND_TIME));
     this.handCards.splice(0, this.handCards.length);
     await Promise.all(beforeRemoveCallbacks);
     this.handElement.innerHTML = '';
   };
 
-  addCards = async (...cardsInfo: ICard[]): Promise<void> => {
-    const cards = cardsInfo.map((cardInfo) => new PlayingCard(cardInfo));
-    await this.addToHand(...cards);
+  addCards = async (cardsInfo: ICard[], noTimeout = false): Promise<void> => {
+    const cards = cardsInfo.map((cardInfo) => new CardSpell(cardInfo));
+    cards.forEach((card) => card.flip());
+    if (noTimeout) await this.addToHand(cards, 0);
+    else await this.addToHand(cards);
+    cards.forEach((card) => card.element.classList.add(CSSClasses.CardUsed));
   };
 
-  setDisable = (disable = true): Promise<void> => {
+  async addFakeSpell(cards: number): Promise<void> {
+    if (cards <= 0) return;
+    await this.clearSpell();
+    const tasks: Array<Promise<void>> = [];
+    for (let i = 0; i < cards; i++) {
+      const fakeCard = new CardFake();
+      this.spellCards.push(fakeCard);
+      tasks.push(fakeCard.beforeAppend());
+    }
+    await Promise.race(tasks);
+    this.selectedCardsElement.append(...this.spellCards.map((card) => card.element));
+    await forEachAsync(this.spellCards, (card) => card.onAppended());
+  }
+
+  setDisable = async (disable = true): Promise<void> => {
     this.updateHandState(undefined, disable);
-    // rotate hand cards here
-    return Promise.resolve();
+    this.element.classList.toggle(CSSClasses.PlayerCardsDisabled, disable);
+    let delayTime = ANIMATION_SELECTED_TIME;
+    await forEachAsync(this.spellCards, async (card) => {
+      card.flip(disable);
+      await delay(ANIMATION_SELECTED_TIME / 3);
+      delayTime -= (ANIMATION_SELECTED_TIME / 3);
+    });
+    if (delayTime > 0) await delay(delayTime);
   };
 
-  selectCard = async (cardId: string): Promise<void> => {
+  selectCard = async (card: CardSpell): Promise<void> => {
     if (this.isCardSelecting) return;
-
     this.isCardSelecting = true;
-    const selectCardIndex = this.handCards.findIndex((card) => card.id === cardId);
+    const selectCardIndex = this.handCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
-    const card = <PlayingCard> this.handCards[selectCardIndex];
-    if (this.spellCards.findIndex((spellCard) => spellCard.cardType === card.cardType) >= 0) return;
-
+    if (this.spellCards.findIndex((spellCard) => (<CardSpell> spellCard)?.cardType === card.cardType) >= 0) return;
     this.handCards.splice(selectCardIndex, 1);
 
     card.clearTransform();
-    await card.beforeRemove(SELECT_CARD_DELAY);
+    await card.beforeRemove(ANIMATION_HAND_TIME);
     card.element.remove();
     await card.onRemoved();
 
@@ -90,6 +108,8 @@ export class PlayerCards extends BaseComponent {
 
     await card.beforeAppend();
     const afterElement = this.spellCards
+      .filter((spellCard) => spellCard as CardSpell)
+      .map((spellCard) => <CardSpell> spellCard)
       .sort((cardA, cardB) => cardA.cardType - cardB.cardType)
       .find((spellCard) => spellCard.cardType > card.cardType)?.element;
 
@@ -102,36 +122,38 @@ export class PlayerCards extends BaseComponent {
     this.isCardSelecting = false;
   };
 
-  private returnToHand = async (cardId: string): Promise<void> => {
+  private returnToHand = async (card: CardSpell): Promise<void> => {
     if (this.isCardSelecting) return;
 
     this.isCardSelecting = true;
-    const selectCardIndex = this.spellCards.findIndex((card) => card.id === cardId);
+    const selectCardIndex = this.spellCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
-    const card = <PlayingCard> this.spellCards.splice(selectCardIndex, 1)[0];
+    this.spellCards.splice(selectCardIndex, 1);
     if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
-    await card.beforeRemove(REMOVE_SPELL_DELAY);
+    await card.beforeRemove(ANIMATION_SELECTED_TIME);
     card.element.remove();
     await card.onRemoved();
 
     this.updateHandState(card.cardType);
-    await this.addToHand(card);
+    await this.addToHand([card]);
     this.isCardSelecting = false;
   };
 
-  private async addToHand(...cards: PlayingCard[]): Promise<void> {
+  private async addToHand(cards: CardSpell[], timeout = ANIMATION_HAND_TIME): Promise<void> {
     if (cards.length === 0) return;
-    const card = <PlayingCard> cards.pop();
+    const card = <CardSpell> cards.pop();
     this.handCards.push(card);
     card.onClick = this.selectCard;
     await card.beforeAppend();
     this.handElement.append(card.element);
     await card.onAppended();
     this.rotateHandCards();
-    await delay(ADD_HAND_DELAY);
-    await this.addToHand(...cards);
+    await delay(timeout / 2);
+    card.flip(false);
+    await delay(timeout / 2);
+    await this.addToHand(cards, timeout);
   }
 
   private rotateHandCards(): void {

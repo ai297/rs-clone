@@ -26,10 +26,14 @@ export class Game implements IGameForCasting {
   private isCastingStep = false;
 
   constructor(
-    private cardDeck: Array<ICard>,
+    cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
     private readonly onNextMove?: () => void,
-  ) {}
+  ) {
+    const spell = new Spells(this.players, this);
+    const madeCards = cardDeck.filter((card) => spell.checkCardInDeck(card.id));
+    this.activeDeck = [...madeCards, ...madeCards];
+  }
 
   public addPlayer(player: Player): void {
     if (this.playersValue.length >= MAX_PLAYERS) throw new Error('There are no places in the game');
@@ -53,22 +57,20 @@ export class Game implements IGameForCasting {
       this.isGameStarted = true;
       resolve();
 
-      const spell = new Spells(this.players, this);
-      const madeCards = this.cardDeck.filter((card) => spell.checkCardInDeck(card.id));
-      madeCards.push(...madeCards);
-      this.activeDeck = shuffleArray(madeCards);
+      this.activeDeck = shuffleArray(this.activeDeck);
 
       delay(START_GAME_DELAY).then(() => this.giveCards());
     });
   }
 
-  private giveCards(): void {
+  private async giveCards(): Promise<void> {
     if (this.onNextMove) this.onNextMove();
     this.isCastingStep = false;
 
     const activePlayers = this.players.filter((current: Player) => current.isAlive);
+    const giveCardTasks: Array<Promise<void>> = [];
     activePlayers.forEach((player) => {
-      console.log(`give cards to player ${player.name}`);
+      // console.log(`give cards to player ${player.name}`);
       // считаем сколько карт надо досдать игроку.
       const needAddIndex = MAX_CARDS_IN_HAND - player.handCards.length;
       // если в колоде осталось меньше чем нужно сдать запускаем обработку
@@ -82,8 +84,11 @@ export class Game implements IGameForCasting {
       const startIndex = this.activeDeck.length - needAddIndex;
 
       const tempCards = this.activeDeck.splice(startIndex);
-      player.addCardsHand(tempCards);
+      giveCardTasks.push(player.addCardsHand(tempCards));
     });
+
+    await Promise.race(giveCardTasks);
+    // TODO: Run timer here
   }
 
   private cardSelectionHandler(): void {

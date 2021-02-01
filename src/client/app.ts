@@ -9,12 +9,13 @@ import
   RulesScreen,
   AboutScreen,
 } from './components';
-import { StaticScreens } from './enums';
+import { CSSClasses, StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
-import { IPlayerInfo } from '../common';
+import { delay, IPlayerInfo, START_GAME_DELAY } from '../common';
 import { Popup } from './components/popup/popup';
+import { Timer } from './components/timer/timer';
 
 class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
@@ -63,8 +64,19 @@ class App implements IRootComponent {
     await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
   };
 
-  showGame = async (/* params */): Promise<void> => {
-    await this.show(new GameScreen(this.gameService, this.heroesRepository));
+  showGame = async (showTimer = true): Promise<void> => {
+    if (showTimer) {
+      const overlay = new Overlay();
+      const timer = new Timer([CSSClasses.BigTimer], false);
+      overlay.show(timer);
+      timer.start(Math.floor(START_GAME_DELAY / 1000));
+      await Promise.all([
+        this.show(new GameScreen(this.gameService, this.heroesRepository)),
+        delay(START_GAME_DELAY - 500),
+      ]);
+      timer.stop();
+      overlay.hide();
+    } else await this.show(new GameScreen(this.gameService, this.heroesRepository));
   };
 
   showGameEnd = async (alivePlayers: Array<IPlayerInfo>): Promise<void> => {
@@ -88,8 +100,8 @@ class App implements IRootComponent {
         () => {
           // show connection error screen here
           // this.mainContainer.innerHTML = 'Connection error.';
-          const overlay = new Overlay(new Popup(() => {}, 'Ошибка соединения с сервером'));
-          overlay.show();
+          const overlay = new Overlay();
+          overlay.show(new Popup(() => {}, 'Ошибка соединения с сервером'));
           reject(Error('Cannot connect to server...'));
         },
       );
@@ -124,7 +136,7 @@ class App implements IRootComponent {
     this.gameService = new GameService(
       connection,
       (isCreator) => this.showLobby(isCreator),
-      () => this.showGame(),
+      (showTimer) => this.showGame(showTimer),
       (alivePlayers: Array<IPlayerInfo>) => this.showGameEnd(alivePlayers),
       () => this.showStatic(StaticScreens.Start),
     );

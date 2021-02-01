@@ -1,5 +1,4 @@
 .dice-roller {
-  align-self: center;
   position: relative;
   width: 4rem;
   height: 4rem;
@@ -10,6 +9,8 @@
   transition: opacity .3s ease-in;
 
   &--show { opacity: 1; }
+
+  &--show .dice-shadow { animation: shadow-fly 1.25s cubic-bezier(.6, .15, .6, .8); }
 }
 
 .dice-container {
@@ -19,7 +20,18 @@
   top: 0;
   bottom: 0;
   transform-style: preserve-3d;
-  transition: all .75s ease-in;
+  transition: transform .75s ease-in;
+}
+
+.dice-shadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 10%;
+  box-shadow: 0 0 .5rem 0 $shadow-color-black;
+  background-color: mix($shadow-color-black, transparent, 55%);
 }
 
 .dice {
@@ -69,7 +81,7 @@
   }
 
   &--rolling {
-    animation: fly-and-rotate 1s cubic-bezier(.6, .15, .6, .8);
+    animation: fly-and-rotate 1.25s cubic-bezier(.6, .15, .6, .8);
   }
 }
 
@@ -79,4 +91,22 @@
   60% { transform: translateZ(.5em) rotate3d(1, 1, 0.5, 400deg); }
   80% { transform: rotate3d(1, 1, 0, 340deg); }
   100% { transform: rotate3d(1, 1, 0, 360deg); }
+}
+$inFlyShadowColor: mix($shadow-color-black, transparent, 25%);
+@keyframes shadow-fly {
+  30% {
+    border-radius: 40%;
+    box-shadow: 0 0 2rem .5rem $inFlyShadowColor;
+    background-color: mix($inFlyShadowColor, transparent, 55%);
+  }
+  60% {
+    border-radius: 15%;
+    box-shadow: 0 0 .75rem 0 mix($shadow-color-black, $inFlyShadowColor, 90%);
+    background-color: mix($shadow-color-black, transparent, 45%);
+  }
+  80% {
+    border-radius: 10%;
+    box-shadow: 0 0 .5rem 0 $shadow-color-black;
+    background-color: mix($shadow-color-black, transparent, 55%);
+  }
 }

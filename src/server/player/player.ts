@@ -86,8 +86,8 @@ export class Player {
     return cards;
   }
 
-  async castCard(card: ICard): Promise<void> {
-    const message: ICastCard = { playerId: this.id, card };
+  async castCard(card: ICard, addon = false): Promise<void> {
+    const message: ICastCard = { playerId: this.id, card, addon };
     this.connection.sendOthers(HubEventsClient.CastCard, message);
     await race(this.connection.dispatch(HubEventsClient.CastCard, message));
   }
@@ -119,6 +119,7 @@ export class Player {
   }
 
   async takeHeal(heal: number): Promise<void> {
+    if (this.hitPoints <= 0) return;
     this.hitPointsValue += heal;
     if (this.hitPointsValue > MAX_HEALTH) {
       this.hitPointsValue = MAX_HEALTH;
@@ -160,7 +161,8 @@ export class Player {
     return result;
   }
 
-  addSpellCards(cardIds: Array<string>): void {
+  private addSpellCards(cardIds: Array<string>): void {
+    if (this.spell !== PlayerSpell.Empty) return;
     // create new spell (only with cards which contains in hand)
     const spellCards = cardIds.filter((cardId) => this.handCards.findIndex((card) => card.id === cardId) >= 0)
       .map((cardId) => <ICard> this.handCards.find((card) => card.id === cardId));

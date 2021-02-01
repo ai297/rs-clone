@@ -37,13 +37,13 @@ export class GameService {
   constructor(
     private readonly connection: ServerConnection,
     private readonly onGameCreated?: (isCreator: boolean) => void,
-    private readonly onGameStarted?: () => void,
+    private readonly onGameStarted?: (showTimer: boolean) => void,
     private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => void,
     private readonly onGoOut?: () => void,
   ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
     connection.addEventListener(HubEventsClient.StartGame, () => {
-      if (this.onGameStarted) this.onGameStarted();
+      if (this.onGameStarted) this.onGameStarted(true);
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.EndGame, (alivePlayers: Array<IPlayerInfo>) => {
@@ -100,7 +100,7 @@ export class GameService {
 
   onSpellCast?: (playerInfo: IPlayerInfo, spellCards: Array<ICard>) => Promise<void>;
 
-  onCardCast?: (playerInfo: IPlayerInfo, card: ICard) => Promise<void>;
+  onCardCast?: (playerInfo: IPlayerInfo, card: ICard, addon: boolean) => Promise<void>;
 
   async newGame(): Promise<void> {
     this.clearState();
@@ -125,7 +125,7 @@ export class GameService {
     this.playerId = joinResponse.playerId;
     this.playerCards = joinResponse.playerCards;
 
-    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted();
+    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted(false);
     else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId);
   }
 
@@ -224,7 +224,6 @@ export class GameService {
 
   private async getCards(cards: Array<ICard>): Promise<IHubResponse<null>> {
     this.playerCards.push(...cards);
-    this.isCastingStep = false;
     if (this.onGetCards) await this.onGetCards(cards);
     return HubResponse.Ok();
   }
@@ -245,6 +244,8 @@ export class GameService {
   }
 
   private async castSpell(message: ICastSpell): Promise<IHubResponse<null>> {
+    this.isCastingStep = true;
+
     if (message.playerId === this.currentPlayerId) {
       const castCardsId = message.cards.map((card) => card.id);
       this.playerCards = this.playerCards.filter((card) => !castCardsId.includes(card.id));
@@ -258,7 +259,7 @@ export class GameService {
 
   private async castCard(message: ICastCard): Promise<IHubResponse<null>> {
     if (this.onCardCast) {
-      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card);
+      await this.onCardCast(<IPlayerInfo> this.getPlayerInfo(message.playerId), message.card, message.addon);
     }
     return HubResponse.Ok();
   }

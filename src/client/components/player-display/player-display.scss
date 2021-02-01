@@ -1,13 +1,19 @@
 .game-player {
+  &--selected &__avatar {
+    box-shadow: 0 0 1.5rem 0 $accent-color, inset 0 0 .5rem 0 $accent-color;
+  }
+
   &__container {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    max-width: 23.5rem;
+    max-width: 28rem;
+    min-width: 23rem;
     min-height: 6.7rem;
     margin: 1rem 1rem 1rem 2rem;
     padding-left: 5.9rem;
+    border-radius: 1.5rem;
 
     &--dead {
       &.game-player__container--opponent {
@@ -20,7 +26,6 @@
     }
 
     &--opponent {
-      border-radius: 1.5rem;
       background-color: $shadow-color-darkest;
 
       .game-player__health {
@@ -61,6 +66,7 @@
     height: 7.5rem;
     border: 0.2rem solid $primary-dark-color;
     border-radius: 50%;
+    transition: all .3s ease-out;
   }
 
   &__name,
@@ -105,33 +111,28 @@
   &--container {
     position: absolute;
     z-index: 100;
+    top: 50%;
+    left: 50%;
+    height: 1px;
+    width: 1px;
     font-weight: bold;
     font-family: $headers-font;
+    font-size: 3rem;
     -webkit-text-stroke: 0.1rem $shadow-color-extra-light;
+    opacity: 0;
+    transition: opacity .5s linear, all 2s ease-in;
   }
 
   &--recovery {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 1px;
-    width: 1px;
-    font-size: 3rem;
     color: $accent-color;
+    opacity: 1;
     transform: scale(2);
-    transition: all 2s ease-in;
   }
 
   &--damage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 1px;
-    width: 1px;
-    font-size: 3rem;
     color: $secondary-attention-color;
+    opacity: 1;
     transform: scale(2);
-    transition: all 2s ease-in;
   }
 }
 
@@ -139,7 +140,6 @@
   .game-player__animation--damage,
   .game-player__animation--recovery {
     transform: scale(3) translate(-50px, -50px);
-    transition: all 2s ease-in;
   }
 }
 

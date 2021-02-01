@@ -1,6 +1,6 @@
 import { BaseComponent } from '../base-component';
 import { CSSClasses, ImagesPaths, Tags } from '../../enums';
-import { TargetForSelection } from '../../../common/interfaces/target-for-selection';
+import { TargetForSelection } from './target-for-selection';
 import {
   createElement, SELECT_TARGET_TIME, TARGET_ALL,
 } from '../../../common';

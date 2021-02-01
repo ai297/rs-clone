@@ -10,7 +10,7 @@ export class CastingSpells {
     private players: Array<Player>,
     private game: IGameForCasting,
   ) {
-    this.spells = new Spells(this.players, game);
+    this.spells = new Spells([...this.players], game);
   }
 
   public async castSpells(): Promise<void> {
@@ -18,6 +18,8 @@ export class CastingSpells {
     // TODO: пофиксить одинаковую инициативу
 
     await forEachAsync(queue, async (player, index, breakCast) => {
+      if (!player.isAlive) return;
+
       const cards: Array<ICard> = await player.startSpellCasting();
       const positionPlayer: number = this.players.findIndex((current) => player === current);
 

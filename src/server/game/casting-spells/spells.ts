@@ -29,11 +29,12 @@ async function makePowerDiceRoll(player: Player, magicSign: MagicSigns): Promise
 type RollResult = { player: Player, rolls: Array<number> };
 
 async function makeDiceRolls(players: Array<Player>, diceNumber = 1): Promise<RollResult[]> {
-  async function rollDecorator(player:Player): Promise<RollResult> {
+  const rollResults: Array<RollResult> = [];
+  // игроки бросают кубики по-очереди
+  await forEachAsync(players, async (player) => {
     const rolls = await player.makeDiceRoll(diceNumber);
-    return { player, rolls };
-  }
-  const rollResults = await Promise.all(players.map(rollDecorator));
+    rollResults.push({ player, rolls });
+  });
   return rollResults;
 }
 
@@ -419,8 +420,10 @@ export class Spells {
 
     await forEachAsync(qualityCards, async (curCard) => {
       const handler = await this.getHandler(curCard.id);
-      await player.castCard(curCard);
-      if (handler) await handler(positionPlayer, curCard);
+      if (handler) {
+        await player.castCard(curCard, true);
+        await handler(positionPlayer, curCard);
+      }
     });
 
     this.game.usedCardHandler(fourCards);
