@@ -141,4 +141,11 @@ export enum CSSClasses {
   Popup = 'popup',
   PopupText = 'popup__text',
   PopupButton = 'popup__button',
+  // rules screen
+  RulesScreen = 'rules-screen',
+  RulesContainer = 'rules-screen__container',
+  RulesHeaderImage = 'rules-screen__header-image',
+  RulesTitle = 'rules-screen__title',
+  RulesText = 'rules-screen__text',
+  RulesScreenButton = 'rules-screen__button',
 }
