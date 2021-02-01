@@ -122,5 +122,13 @@
     border: none;
     width: calc(100% - 10rem);
     @include link-input;
+
+    &--valid {
+      border: 2px solid $primary-success-color;
+    }
+
+    &--invalid {
+      border: 2px solid $primary-attention-color;
+    }
   }
 }
