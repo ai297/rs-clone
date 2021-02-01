@@ -1,8 +1,6 @@
-import { delay } from '../../../common';
+import { delay, AnimationTimes } from '../../../common';
 import { CSSClasses } from '../../enums';
 import { BaseComponent } from '../base-component';
-
-const ANIMATION_DELAY = 1250;
 
 export class Dice extends BaseComponent {
   constructor(value?: number) {
@@ -32,7 +30,7 @@ export class Dice extends BaseComponent {
 
   async roll(): Promise<void> {
     this.element.classList.add(CSSClasses.DiceRollingAnimation);
-    await delay(ANIMATION_DELAY);
+    await delay(AnimationTimes.Dice);
     this.element.classList.remove(CSSClasses.DiceRollingAnimation);
   }
 }

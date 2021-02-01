@@ -5,13 +5,12 @@ import {
   LOW_HEALTH_PERСENT,
   createElement,
   delay,
+  AnimationTimes,
 } from '../../../common';
 import { BaseComponent } from '../base-component';
 import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 
 const DEAD_WIZARD = 'R. I. P.';
-const RECOVERY_ANIMATION_DELAY = 2000;
-const DAMAGE_ANIMATION_DELAY = 2000;
 
 const PRIMARY_SUCCESS_COLOR = '#0EB70B';
 const PRIMARY_SUCCESS_COLOR_OPACITY = 'rgba(14, 183, 11, 0.5)';
@@ -120,9 +119,9 @@ export class GamePlayerDisplay extends BaseComponent {
       this.health = MAX_HEALTH;
     }
 
-    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    await delay(AnimationTimes.Heal / 2);
     this.updateHealth();
-    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    await delay(AnimationTimes.Heal / 2);
     pointsAnimation.remove();
   };
 
@@ -142,9 +141,9 @@ export class GamePlayerDisplay extends BaseComponent {
       this.health = 0;
     }
 
-    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    await delay(AnimationTimes.Damage / 2);
     this.updateHealth();
-    await delay(DAMAGE_ANIMATION_DELAY / 2);
+    await delay(AnimationTimes.Damage / 2);
     pointsAnimation.remove();
   };
 }
