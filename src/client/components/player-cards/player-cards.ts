@@ -1,5 +1,6 @@
 import {
   MAX_CARDS_IN_HAND,
+  AnimationTimes,
   CardTypes,
   createElement,
   delay,
@@ -11,7 +12,6 @@ import { BaseComponent } from '../base-component';
 import { CardBase, CardSpell, CardFake } from '../card-spell';
 
 const MAX_CARDS_IN_HAND_ROTATION = 30;
-const ANIMATION_HAND_TIME = 500;
 const ANIMATION_SELECTED_TIME = 300;
 
 export class PlayerCards extends BaseComponent {
@@ -47,7 +47,7 @@ export class PlayerCards extends BaseComponent {
   };
 
   clearHand = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(ANIMATION_HAND_TIME));
+    const beforeRemoveCallbacks = this.handCards.map((card) => card.beforeRemove(AnimationTimes.AddCard));
     this.handCards.splice(0, this.handCards.length);
     await Promise.all(beforeRemoveCallbacks);
     this.handElement.innerHTML = '';
@@ -97,7 +97,7 @@ export class PlayerCards extends BaseComponent {
     this.handCards.splice(selectCardIndex, 1);
 
     card.clearTransform();
-    await card.beforeRemove(ANIMATION_HAND_TIME);
+    await card.beforeRemove(AnimationTimes.AddCard);
     card.element.remove();
     await card.onRemoved();
 
@@ -141,7 +141,7 @@ export class PlayerCards extends BaseComponent {
     this.isCardSelecting = false;
   };
 
-  private async addToHand(cards: CardSpell[], timeout = ANIMATION_HAND_TIME): Promise<void> {
+  private async addToHand(cards: CardSpell[], timeout = AnimationTimes.AddCard): Promise<void> {
     if (cards.length === 0) return;
     const card = <CardSpell> cards.pop();
     this.handCards.push(card);

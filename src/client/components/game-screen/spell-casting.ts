@@ -1,13 +1,12 @@
 import {
   delay,
   forEachAsync,
+  AnimationTimes,
   ICard,
 } from '../../../common';
 import { CSSClasses } from '../../enums';
 import { CardSpell } from '../card-spell/card-spell';
 import { ActionLayer } from './action-layer';
-
-const CARD_ANIMATION_TIME = 500;
 
 export class SpellCasting extends ActionLayer {
   private cards: Array<CardSpell> = [];
@@ -39,7 +38,7 @@ export class SpellCasting extends ActionLayer {
     }
     if (spellCard) this.completeCards.push(spellCard);
     spellCard?.element.classList.add(CSSClasses.CardActive);
-    await delay(CARD_ANIMATION_TIME / 2);
+    await delay(AnimationTimes.SpellCard / 2);
   }
 
   async clearSpell(): Promise<void> {
@@ -48,13 +47,13 @@ export class SpellCasting extends ActionLayer {
     this.completeCards = [];
     if (allCards.length === 0) return;
 
-    const timeOut = CARD_ANIMATION_TIME / allCards.length;
+    const timeOut = AnimationTimes.SpellCard / allCards.length;
     await forEachAsync(allCards, async (card) => {
       card.beforeRemove();
       setTimeout(() => {
         card.element.remove();
         card.onRemoved();
-      }, CARD_ANIMATION_TIME);
+      }, AnimationTimes.SpellCard);
       await delay(timeOut);
     });
     this.element.innerHTML = '';
@@ -65,7 +64,7 @@ export class SpellCasting extends ActionLayer {
     spellCard.flip();
     await spellCard.beforeAppend();
     this.element.insertBefore(spellCard.element, after?.nextSibling || null);
-    await spellCard.onAppended(CARD_ANIMATION_TIME);
+    await spellCard.onAppended(AnimationTimes.SpellCard);
     spellCard.flip();
     return spellCard;
   }

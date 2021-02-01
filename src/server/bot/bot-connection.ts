@@ -12,11 +12,13 @@ import {
   AnimationTimes,
   ISelectTarget,
   SELECT_TARGET_TIME,
+  ICastSpell,
+  ICastCard,
 } from '../../common';
 import { ClientConnection, ConnectionService } from '../connection';
 
 const MIN_BOT_DELAY = 1000;
-const MAX_BOT_DELAY = 3000;
+const MAX_BOT_DELAY = 5000;
 
 type EventHandler = (...args: any[]) => any;
 
@@ -48,13 +50,16 @@ export class SimpleBotConnection extends ClientConnection {
   }
 
   private diceRoll = async (): Promise<void> => {
-    const timeout = AnimationTimes.Dice + AnimationTimes.DiceRoller + AnimationTimes.DiceRollShowTime;
+    const timeout = AnimationTimes.ShowMessage * 2
+      + AnimationTimes.Dice
+      + AnimationTimes.DiceRoller
+      + AnimationTimes.DiceRollShowTime;
     await delay(timeout);
   };
 
   private getCards = async (cards: Array<ICard>): Promise<void> => {
     this.handCards.push(...cards);
-    // todo: card getting delay
+    await delay(cards.length * AnimationTimes.AddCard);
     await delay(getRandomInteger(MIN_BOT_DELAY, MAX_BOT_DELAY));
     if (this.health > 0) this.selectSpell();
   };
@@ -74,12 +79,16 @@ export class SimpleBotConnection extends ClientConnection {
     return randomResult;
   };
 
-  private castSpell = async (): Promise<void> => {
-    await delay(0);
+  private castSpell = async (message: ICastSpell): Promise<void> => {
+    const timeout = AnimationTimes.SpellCard
+      + AnimationTimes.ShowMessage * 2
+      + message.cards.length * AnimationTimes.SpellCard;
+    await delay(timeout);
   };
 
-  private castCard = async (): Promise<void> => {
-    await delay(0);
+  private castCard = async (message: ICastCard): Promise<void> => {
+    if (message.addon) await delay(AnimationTimes.SpellCard);
+    await delay(AnimationTimes.SpellCard);
   };
 
   setGameId(gameId: string): void { this.gameId = gameId; }

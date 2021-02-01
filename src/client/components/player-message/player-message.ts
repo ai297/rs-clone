@@ -1,9 +1,12 @@
-import { createElement, delay, IPlayerInfo } from '../../../common';
+import {
+  createElement,
+  delay,
+  AnimationTimes,
+  IPlayerInfo,
+} from '../../../common';
 import { CSSClasses, Tags } from '../../enums';
 import { BaseComponent } from '../base-component';
 import { Avatar } from '../avatar';
-
-const ANIMATIN_DELAY = 500;
 
 export class PlayerMessage extends BaseComponent {
   private readonly messageContainer: HTMLElement;
@@ -23,7 +26,7 @@ export class PlayerMessage extends BaseComponent {
 
   async beforeRemove(): Promise<void> {
     this.element.classList.add(CSSClasses.PlayerMessageInit);
-    await delay(ANIMATIN_DELAY);
+    await delay(AnimationTimes.ShowMessage);
   }
 
   onRemoved(): Promise<void> {
@@ -39,6 +42,6 @@ export class PlayerMessage extends BaseComponent {
   async onAppended(): Promise<void> {
     await delay(50);
     this.element.classList.remove(CSSClasses.PlayerMessageInit);
-    await delay(ANIMATIN_DELAY);
+    await delay(AnimationTimes.ShowMessage);
   }
 }
