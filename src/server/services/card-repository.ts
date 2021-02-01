@@ -1,16 +1,17 @@
 import * as fs from 'fs';
+import path from 'path';
 import { ICard } from '../../common/interfaces';
 import { CardTypes, MagicSigns } from '../../common/enums';
 
 export class CardRepository {
   private pathPublic: string;
 
-  private fileCards = '\\cards.json';
+  private fileCards = 'cards.json';
 
   private cardsArray: Array<ICard> = [];
 
-  constructor(path: string) {
-    this.pathPublic = path;
+  constructor(publicPath: string) {
+    this.pathPublic = publicPath;
   }
 
   getData = (): Array<ICard> => {
@@ -21,7 +22,8 @@ export class CardRepository {
   };
 
   loadData = (): void => {
-    const cardsJSON = fs.readFileSync(`${this.pathPublic}${this.fileCards}`, 'utf-8');
+    const filePath = path.join(this.pathPublic, this.fileCards);
+    const cardsJSON = fs.readFileSync(filePath, 'utf-8');
 
     const cards: Array<{id: string;
       title: string;
