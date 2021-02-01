@@ -1,0 +1,10 @@
+.timer {
+  &--big {
+    font-family: $headers-font;
+    font-size: 8rem;
+    color: $primary-attention-color;
+    text-shadow: .5rem 0 0 $primary-dark-color, -.5rem 0 0 $primary-dark-color, 0 .5rem 0 $primary-dark-color,
+                  0 -.5rem 0 $primary-dark-color, .25rem .25rem $primary-dark-color, -.25rem -.25rem 0 $primary-dark-color,
+                  .25rem -.25rem 0 $primary-dark-color, -.25rem .25rem 0 $primary-dark-color;
+  }
+}

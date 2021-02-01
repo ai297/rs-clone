@@ -6,6 +6,7 @@ export class Timer extends BaseComponent {
 
   constructor(
     classes: Array<CSSClasses> = [],
+    private readonly showMinutes = true,
   ) {
     super([CSSClasses.Timer, ...classes]);
   }
@@ -27,7 +28,7 @@ export class Timer extends BaseComponent {
       const minutes = Math.floor(this.secondsValue / 60).toString();
       const seconds = Math.floor(this.secondsValue % 60).toString().padStart(2, '0');
 
-      this.element.innerText = `${minutes}:${seconds}`;
+      this.element.innerText = this.showMinutes ? `${minutes}:${seconds}` : `${this.secondsValue}`;
       setTimeout(this.countdownSeconds, 1000);
     }
   };

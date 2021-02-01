@@ -37,13 +37,13 @@ export class GameService {
   constructor(
     private readonly connection: ServerConnection,
     private readonly onGameCreated?: (isCreator: boolean) => void,
-    private readonly onGameStarted?: () => void,
+    private readonly onGameStarted?: (showTimer: boolean) => void,
     private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => void,
     private readonly onGoOut?: () => void,
   ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
     connection.addEventListener(HubEventsClient.StartGame, () => {
-      if (this.onGameStarted) this.onGameStarted();
+      if (this.onGameStarted) this.onGameStarted(true);
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.EndGame, (alivePlayers: Array<IPlayerInfo>) => {
@@ -125,7 +125,7 @@ export class GameService {
     this.playerId = joinResponse.playerId;
     this.playerCards = joinResponse.playerCards;
 
-    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted();
+    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted(false);
     else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId);
   }
 

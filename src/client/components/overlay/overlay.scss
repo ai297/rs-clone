@@ -6,6 +6,10 @@
   top: 0;
   bottom: 0;
   right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   background-color: $shadow-color-darkest;
   z-index: 1000;
   transition: all .3s;
