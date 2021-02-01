@@ -16,6 +16,7 @@ export class PlayerList extends BaseComponent {
     this.element.append(this.playerList);
     for (let i = 0; i < MAX_PLAYERS; i++) {
       const emptyItem = new EmptyItem(this.gameCreator, this.addBot);
+      emptyItem.addBotButtonIsDisabled = true;
       this.emptyItems.push(emptyItem);
       this.playerList.append(emptyItem.element);
     }
@@ -23,9 +24,9 @@ export class PlayerList extends BaseComponent {
 
   addPlayer(id: string, name: string, hero: string, avatar: string): void {
     if (this.emptyItems.length === 0) return;
+    this.emptyItems.forEach((item) => { item.addBotButtonIsDisabled = false; });
     const emptyItem = <EmptyItem> this.emptyItems.shift();
     const newPlayer: PlayerListItem = new PlayerListItem(id, name, hero, avatar);
-
     this.players[id] = newPlayer;
     this.playerList.replaceChild(newPlayer.element, emptyItem.element);
   }
@@ -34,6 +35,9 @@ export class PlayerList extends BaseComponent {
     if (!this.players[id]) return;
     const emptyItem = new EmptyItem(this.gameCreator, this.addBot);
     this.emptyItems.push(emptyItem);
+    if (this.emptyItems.length === MAX_PLAYERS) {
+      this.emptyItems.forEach((item) => { item.addBotButtonIsDisabled = true; });
+    }
     this.players[id]?.element.remove();
     delete this.players[id];
     this.playerList.append(emptyItem.element);
