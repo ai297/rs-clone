@@ -87,13 +87,12 @@ export class PlayerCards extends BaseComponent {
     if (delayTime > 0) await delay(delayTime);
   };
 
-  selectCard = async (cardId: string): Promise<void> => {
+  selectCard = async (card: CardSpell): Promise<void> => {
     if (this.isCardSelecting) return;
     this.isCardSelecting = true;
-    const selectCardIndex = this.handCards.findIndex((card) => card.id === cardId);
+    const selectCardIndex = this.handCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
-    const card = <CardSpell> this.handCards[selectCardIndex];
     if (this.spellCards.findIndex((spellCard) => (<CardSpell> spellCard)?.cardType === card.cardType) >= 0) return;
     this.handCards.splice(selectCardIndex, 1);
 
@@ -123,14 +122,14 @@ export class PlayerCards extends BaseComponent {
     this.isCardSelecting = false;
   };
 
-  private returnToHand = async (cardId: string): Promise<void> => {
+  private returnToHand = async (card: CardSpell): Promise<void> => {
     if (this.isCardSelecting) return;
 
     this.isCardSelecting = true;
-    const selectCardIndex = this.spellCards.findIndex((card) => (<CardSpell> card)?.id === cardId);
+    const selectCardIndex = this.spellCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
-    const card = <CardSpell> this.spellCards.splice(selectCardIndex, 1)[0];
+    this.spellCards.splice(selectCardIndex, 1);
     if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
     await card.beforeRemove(ANIMATION_SELECTED_TIME);

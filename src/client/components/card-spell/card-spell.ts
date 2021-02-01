@@ -2,7 +2,6 @@ import {
   ICard,
   CardTypes,
   MagicSigns,
-  ICallbackHandler,
 } from '../../../common';
 import { CSSClasses, ImagesPaths } from '../../enums';
 import { CardBase } from './card-base';
@@ -12,12 +11,12 @@ const LOCALE_ELEMENTS = ['тайна', 'тьма', 'природа', 'стихи
 const IMG_PATH = ImagesPaths.CardsSpells;
 
 export class CardSpell extends CardBase {
-  constructor(private card: ICard, public onClick?: ICallbackHandler) {
+  constructor(private card: ICard, public onClick?: (card: CardSpell) => void) {
     super();
 
     this.element.addEventListener('click', (event) => {
       event.preventDefault();
-      if (!this.disabled && this.onClick) this.onClick(this.id);
+      if (!this.disabled && this.onClick) this.onClick(this);
     });
 
     this.createMarkup(card);
