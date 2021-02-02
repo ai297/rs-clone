@@ -9,6 +9,7 @@
 }
 
 .lobby {
+  position: relative;
   flex: 0 0 100%;
   display: flex;
   flex-direction: column;
@@ -19,10 +20,10 @@
   background-repeat: no-repeat;
   padding: 2rem 4rem;
 
-  &-header { 
+  &-header {
     display: flex;
     align-items: center;
-    flex: 0 0 4rem; 
+    flex: 0 0 4rem;
     margin-bottom: 1rem;
   }
 
@@ -42,12 +43,12 @@
       & > .hero-selection { max-height: calc(100% - 3.5rem); }
     }
 
-    &__right { 
+    &__right {
       flex: 0 0 40%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      max-width: 30rem; 
+      max-width: 30rem;
 
       & > .player-list-wrapper { max-height: calc(100% - 3.5rem); }
     }
@@ -75,7 +76,7 @@
     color: $primary-attention-color;
     text-shadow: 2px 0 0 $primary-dark-color, -2px 0 0 $primary-dark-color, 0 2px 0 $primary-dark-color,
                   0 -2px 0 $primary-dark-color, 1px 1px $primary-dark-color, -1px -1px 0 $primary-dark-color,
-                  1px -1px 0 $primary-dark-color, -1px 1px 0 $primary-dark-color; 
+                  1px -1px 0 $primary-dark-color, -1px 1px 0 $primary-dark-color;
   }
 
   &__game-link {
@@ -90,7 +91,7 @@
       height: 1.5rem;
       width: 1.5rem;
       right: .25rem;
-      bottom: .5rem; 
+      bottom: .5rem;
 
       svg {
         display: block;
@@ -130,5 +131,16 @@
     &--invalid {
       border: 2px solid $primary-attention-color;
     }
+  }
+
+  & > .timer {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    color: $cold-font-color;
+    font-family: $primary-font;
+    font-size: 2rem;
+    letter-spacing: .1em;
   }
 }

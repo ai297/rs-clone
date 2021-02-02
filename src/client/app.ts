@@ -1,3 +1,9 @@
+import {
+  delay,
+  IPlayerInfo,
+  START_GAME_DELAY,
+  START_GAME_TIMEOUT,
+} from '../common';
 import
 {
   IComponent,
@@ -13,7 +19,6 @@ import { CSSClasses, StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
-import { delay, IPlayerInfo, START_GAME_DELAY } from '../common';
 import { Popup } from './components/popup/popup';
 import { Timer } from './components/timer/timer';
 import { SplashScreen } from './components/splash-screen/splash-screen';
@@ -60,12 +65,18 @@ class App implements IRootComponent {
     window.history.replaceState(null, '', this.baseURL);
   };
 
-  showLobby = async (gameCreator = false): Promise<void> => {
+  showLobby = async (gameCreator = false, timeout = 0): Promise<void> => {
     window.history.replaceState(null, '', this.getGameUrl(this.gameService.currentGameId));
-    await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
+    const lobby = new LobbyScreen(
+      gameCreator,
+      timeout,
+      this.heroesRepository,
+      this.gameService,
+    );
+    await this.show(lobby);
   };
 
-  showGame = async (showTimer = true): Promise<void> => {
+  showGame = async (showTimer = true, timeout = 0): Promise<void> => {
     if (showTimer) {
       const overlay = new Overlay();
       const timer = new Timer([CSSClasses.BigTimer], false);
@@ -77,7 +88,7 @@ class App implements IRootComponent {
       ]);
       timer.stop();
       overlay.hide();
-    } else await this.show(new GameScreen(this.gameService, this.heroesRepository));
+    } else await this.show(new GameScreen(this.gameService, this.heroesRepository, timeout));
   };
 
   showGameEnd = async (alivePlayers: Array<IPlayerInfo>): Promise<void> => {
@@ -138,8 +149,8 @@ class App implements IRootComponent {
   private createGameService(connection: ServerConnection): void {
     this.gameService = new GameService(
       connection,
-      (isCreator) => this.showLobby(isCreator),
-      (showTimer) => this.showGame(showTimer),
+      (isCreator, timeout) => this.showLobby(isCreator, timeout),
+      (showTimer, timeout) => this.showGame(showTimer, timeout),
       (alivePlayers: Array<IPlayerInfo>) => this.showGameEnd(alivePlayers),
       () => this.showStatic(StaticScreens.Start),
     );

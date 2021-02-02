@@ -8,4 +8,5 @@ export interface IJoinGameResponse {
   players: Array<IPlayerInfo>,
   playerId: string,
   playerCards: Array<ICard>,
+  timeout: number,
 }

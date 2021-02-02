@@ -37,6 +37,7 @@ export class CardBase extends BaseComponent {
     await delay(50);
     this.element.classList.remove(CSSClasses.CardBeforeAppend);
     await delay(duration);
+    this.element.classList.add(CSSClasses.CardUsed);
   }
 
   async beforeRemove(duration = 0): Promise<void> {

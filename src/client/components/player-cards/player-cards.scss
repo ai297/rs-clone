@@ -33,7 +33,6 @@
       &--before-remove {
         max-width: 0%;
         opacity: 0;
-        transform: translateX(-25vw) translateY(100%);
       }
 
       &:hover {
@@ -74,6 +73,7 @@
       }
       &--before-append.card-container--used {
         max-width: 0%;
+        transform: translateX(25vw) translateY(-110%);
         & > .card { transform: rotateY(90deg); }
       }
       &--before-remove {

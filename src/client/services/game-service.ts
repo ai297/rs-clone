@@ -36,8 +36,8 @@ export class GameService {
 
   constructor(
     private readonly connection: ServerConnection,
-    private readonly onGameCreated?: (isCreator: boolean) => void,
-    private readonly onGameStarted?: (showTimer: boolean) => void,
+    private readonly onGameCreated?: (isCreator: boolean, timeout?: number) => void,
+    private readonly onGameStarted?: (showTimer: boolean, timeout?: number) => void,
     private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => void,
     private readonly onGoOut?: () => void,
   ) {
@@ -125,8 +125,8 @@ export class GameService {
     this.playerId = joinResponse.playerId;
     this.playerCards = joinResponse.playerCards;
 
-    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted(false);
-    else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId);
+    if (joinResponse.isStarted && this.onGameStarted) this.onGameStarted(false, joinResponse.timeout);
+    else if (this.onGameCreated) this.onGameCreated(savedGameId === joinResponse.gameId, joinResponse.timeout);
   }
 
   async startGame(): Promise<void> {

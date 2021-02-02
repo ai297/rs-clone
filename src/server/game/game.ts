@@ -7,6 +7,9 @@ import {
   ICard,
   shuffleArray,
   delay,
+  START_GAME_TIMEOUT,
+  SERVER_DELAY,
+  SELECT_SPELL_TIME,
 } from '../../common';
 import { CastingSpells } from './casting-spells';
 import { IGameForCasting } from './interface';
@@ -25,21 +28,30 @@ export class Game implements IGameForCasting {
 
   private isCastingStep = false;
 
+  private timerId: NodeJS.Timeout;
+
+  private timerStarted = 0;
+
   constructor(
     cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
     private readonly onNextMove?: () => void,
+    private readonly onBreak?: () => void,
   ) {
     const spell = new Spells(this.players, this);
     const madeCards = cardDeck.filter((card) => spell.checkCardInDeck(card.id));
     this.activeDeck = [...madeCards, ...madeCards];
+
+    this.timerId = setTimeout(() => {
+      if (this.onBreak) this.onBreak();
+    }, START_GAME_TIMEOUT + SERVER_DELAY);
+    this.timerStarted = Date.now();
   }
 
   public addPlayer(player: Player): void {
     if (this.playersValue.length >= MAX_PLAYERS) throw new Error('There are no places in the game');
     this.playersValue.push(player);
-    // проклятый es-lint =)
-    this.playersValue[this.playersValue.length - 1].onSpellSelected = () => this.cardSelectionHandler();
+    player.onSpellSelected = () => this.cardSelectionHandler();
   }
 
   public get players(): Array<Player> {
@@ -50,10 +62,14 @@ export class Game implements IGameForCasting {
 
   get isCasting(): boolean { return this.isCastingStep; }
 
+  get timeout(): number { return this.timerStarted > 0 ? Date.now() - this.timerStarted : 0; }
+
   startGame(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.players.length < MIN_PLAYERS) reject(Error('Few players to start the game'));
 
+      clearTimeout(this.timerId);
+      this.timerStarted = 0;
       this.isGameStarted = true;
       resolve();
 
@@ -88,7 +104,10 @@ export class Game implements IGameForCasting {
     });
 
     await Promise.race(giveCardTasks);
-    // TODO: Run timer here
+
+    // card selection timer start
+    this.timerId = setTimeout(() => this.castSpells(), SELECT_SPELL_TIME + SERVER_DELAY);
+    this.timerStarted = Date.now();
   }
 
   private cardSelectionHandler(): void {
@@ -101,6 +120,8 @@ export class Game implements IGameForCasting {
 
   private async castSpells(): Promise<void> {
     this.isCastingStep = true;
+    clearTimeout(this.timerId);
+    this.timerStarted = 0;
 
     const activePlayers = this.players.filter((current: Player) => current.isAlive);
     const casting = new CastingSpells(activePlayers, this);
