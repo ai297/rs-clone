@@ -53,6 +53,7 @@ main {
 @import '../components/game-end-screen/game-end-screen.scss';
 @import '../components/rules-screen/rules-screen.scss';
 @import '../components/about-screen/about-screen.scss';
+@import '../components/splash-screen/splash-screen.scss';
 
 @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
   html {
