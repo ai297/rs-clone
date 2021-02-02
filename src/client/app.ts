@@ -149,10 +149,15 @@ class App implements IRootComponent {
   }
 
   private joinGame(gameId: string): void {
-    this.gameService.joinGame(gameId).catch((e) => {
-      // TODO: show join game error screen here
-      console.log((<Error> e).message);
-      this.showStatic(StaticScreens.Start);
+    this.gameService.joinGame(gameId).catch(() => {
+      const overlay = new Overlay();
+      overlay.show(new Popup(
+        () => {
+          overlay.hide();
+          this.showStatic(StaticScreens.Start);
+        },
+        'Не удалось присоединиться к игре...',
+      ));
     });
   }
 }

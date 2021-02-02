@@ -10,4 +10,4 @@ const createGameUrl = (gameId: string): string => `${serverUrl}/${GAME_ROUT_PREF
 const gameId = (locationPath.startsWith(GAME_ROUT_PREFIX)) ? locationPath.slice(GAME_ROUT_PREFIX.length) : '';
 const main = document.getElementById('main');
 
-if (main) new App(main, serverUrl, createGameUrl).start(gameId).catch((e) => console.log((<Error> e).message));
+if (main) new App(main, serverUrl, createGameUrl).start(gameId);

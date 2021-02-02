@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import { ConnectionEvents, ConnectionService } from './connection';
+import { ConnectionService } from './connection';
 import { CardRepository, GameService } from './services';
 
 export default class App {
