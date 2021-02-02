@@ -82,6 +82,8 @@ export enum CSSClasses {
   CopyTooltip = 'copy-tooltip',
   NameLabel = 'lobby__name-label',
   NameInput = 'lobby__name-input',
+  NameInputValid = 'lobby__name-input--valid',
+  NameInputInvalid = 'lobby__name-input--invalid',
   SelectHeroButton = 'lobby__select-hero',
   StartGameButton = 'lobby__start-game',
   StartGameButtonDisabled = 'lobby__start-game--disabled',

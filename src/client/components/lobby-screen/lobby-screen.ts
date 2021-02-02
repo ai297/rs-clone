@@ -15,6 +15,12 @@ import { GameService } from '../../services/game-service';
 import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localization';
 import { HeroesRepository } from '../../services';
 
+const VALIDATION_REGEX = /^[a-zA-ZА-Яа-я0-9-_]+ ?[a-zA-ZА-Яа-я0-9-_]+$/;
+
+function validateName(value: string) {
+  return VALIDATION_REGEX.test(value) && value.length > 2 && value.length < 19;
+}
+
 export class LobbyScreen extends BaseComponent {
   private heroSelection! : HeroSelection;
 
@@ -136,7 +142,8 @@ export class LobbyScreen extends BaseComponent {
     const nameLabel = createElement(Tags.Label, [CSSClasses.LobbySubtitle], this.loc.EnterYourName);
     this.nameInput = createElement(Tags.Input, [CSSClasses.NameInput]) as HTMLInputElement;
     this.nameInput.setAttribute('type', 'text');
-    this.nameInput.oninput = this.readyToSelect.bind(this);
+    this.nameInput.setAttribute('spellcheck', 'false');
+    this.nameInput.oninput = this.onInput.bind(this);
     nameLabel.append(this.nameInput);
     lobbyMainLeft.append(nameLabel, this.heroSelection.element);
 
@@ -209,9 +216,20 @@ export class LobbyScreen extends BaseComponent {
     playSound(Sounds.onSelectCharacter);
   }
 
+  private onInput() {
+    this.playerName = this.nameInput.value;
+    if (validateName(this.playerName)) {
+      this.nameInput.classList.remove(CSSClasses.NameInputInvalid);
+      this.nameInput.classList.add(CSSClasses.NameInputValid);
+    } else {
+      this.nameInput.classList.remove(CSSClasses.NameInputValid);
+      this.nameInput.classList.add(CSSClasses.NameInputInvalid);
+    }
+    this.readyToSelect();
+  }
+
   private readyToSelect(): void {
-    this.playerName = this.nameInput.value.trim();
-    if (this.playerName && this.currentHero) {
+    if (validateName(this.playerName) && this.currentHero) {
       this.heroSelectionButton.disabled = false;
     } else {
       this.heroSelectionButton.disabled = true;
