@@ -36,15 +36,14 @@ export class Game implements IGameForCasting {
     cardDeck: Array<ICard>,
     private readonly onGameEnd?: (winners: Player[]) => void,
     private readonly onNextMove?: () => void,
+    private readonly onBreak?: () => void,
   ) {
     const spell = new Spells(this.players, this);
     const madeCards = cardDeck.filter((card) => spell.checkCardInDeck(card.id));
     this.activeDeck = [...madeCards, ...madeCards];
 
     this.timerId = setTimeout(() => {
-      this.players.forEach((player) => player.goOut());
-      this.playersValue = [];
-      this.endGame();
+      if (this.onBreak) this.onBreak();
     }, START_GAME_TIMEOUT + SERVER_DELAY);
     this.timerStarted = Date.now();
   }

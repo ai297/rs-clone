@@ -65,9 +65,15 @@ class App implements IRootComponent {
     window.history.replaceState(null, '', this.baseURL);
   };
 
-  showLobby = async (gameCreator = false, timeout = START_GAME_TIMEOUT): Promise<void> => {
+  showLobby = async (gameCreator = false, timeout = 0): Promise<void> => {
     window.history.replaceState(null, '', this.getGameUrl(this.gameService.currentGameId));
-    await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
+    const lobby = new LobbyScreen(
+      gameCreator,
+      timeout,
+      this.heroesRepository,
+      this.gameService,
+    );
+    await this.show(lobby);
   };
 
   showGame = async (showTimer = true, timeout = 0): Promise<void> => {

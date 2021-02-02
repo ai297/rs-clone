@@ -62,6 +62,10 @@ export class GameService {
       this.getCards(),
       (winners) => this.endGame(gameId, winners),
       () => this.connectionService.dispatch(gameId, HubEventsClient.NextMove),
+      () => {
+        this.connectionService.dispatch(gameId, HubEventsClient.GoOut);
+        this.games.delete(gameId);
+      },
     );
     this.games.set(gameId, game);
 
@@ -80,7 +84,7 @@ export class GameService {
 
     const currentPlayer = game.players.find((player) => player.id === playerId);
     currentPlayer?.changeConnection(connection);
-    if (currentPlayer) connection.setGameId(gameId);
+    connection.setGameId(gameId);
 
     const playersInfo = game.players.map(GameService.getPlayerInfo);
 
@@ -94,7 +98,7 @@ export class GameService {
       timeout: game.timeout,
     };
 
-    console.log(currentPlayer?.name, 'joined', game.timeout);
+    // console.log(currentPlayer?.name, 'joined', game.timeout);
 
     return HubResponse.Success(response);
   }
@@ -106,7 +110,7 @@ export class GameService {
       await game.startGame();
       // TODO: return any data about game?
       this.connectionService.dispatch(gameId, HubEventsClient.StartGame);
-      console.log('game start', gameId);
+      // console.log('game start', gameId);
       return HubResponse.Ok();
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
@@ -115,7 +119,7 @@ export class GameService {
 
   endGame(gameId: string, winners: Player[]): void {
     if (!this.games.has(gameId)) return;
-    console.log('game end', gameId);
+    // console.log('game end', gameId);
     this.games.delete(gameId);
     const data = winners.map((player, index) => GameService.getPlayerInfo(player, index));
     this.connectionService.dispatch(gameId, HubEventsClient.EndGame, data);
@@ -124,9 +128,9 @@ export class GameService {
   createPlayer(request: ICreatePlayerRequest, connection: ClientConnection): IHubResponse<IPlayerInfo | string> {
     if (!this.games.has(request.gameId)) return GameService.notFound();
 
-    if (connection.currentGameId === request.gameId) {
-      return HubResponse.Error('You are already selected a hero');
-    }
+    // if (connection.currentGameId === request.gameId) {
+    //   return HubResponse.Error('You are already selected a hero');
+    // }
 
     const game = <Game>(this.games.get(request.gameId));
 
@@ -144,7 +148,6 @@ export class GameService {
       game.addPlayer(player);
       const playerPosition = game.players.length - 1;
       const playerInfo = GameService.getPlayerInfo(player, playerPosition);
-      connection.setGameId(request.gameId);
       this.connectionService.dispatch(request.gameId, HubEventsClient.AddPlayer, playerInfo);
       return HubResponse.Success<IPlayerInfo>(playerInfo);
     } catch (err: unknown) {
