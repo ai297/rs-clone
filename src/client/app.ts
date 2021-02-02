@@ -41,9 +41,7 @@ class App implements IRootComponent {
   get baseURL(): string { return this.appURL; }
 
   show = async (component: IComponent): Promise<void> => {
-    console.log('show');
     if (this.currentScreen && this.currentScreen?.beforeRemove) {
-      console.log('beforeRemove');
       await this.currentScreen?.beforeRemove();
     }
     this.currentScreen?.element.remove();
