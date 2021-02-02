@@ -6,7 +6,6 @@ import {
   delay,
   ICard,
   forEachAsync,
-  ICallbackHandler,
   playSound,
   Sounds,
 } from '../../../common';
@@ -22,7 +21,7 @@ export class PlayerCards extends BaseComponent {
 
   private readonly spellCards: CardBase[] = [];
 
-  private isCardSelecting = false;
+  private isCardTaked = false;
 
   private readonly handElement: HTMLElement;
 
@@ -37,12 +36,14 @@ export class PlayerCards extends BaseComponent {
   }
 
   getSelectedCardsId(): Array<string> {
+    this.isCardTaked = true;
     return this.spellCards.filter((card) => card as CardSpell).map((card) => (<CardSpell> card).id);
   }
 
   clearSpell = async (): Promise<void> => {
-    const beforeRemoveCallbacks = this.spellCards.map((card) => card.beforeRemove(ANIMATION_SELECTED_TIME));
-    this.spellCards.splice(0, this.spellCards.length);
+    if (!this.isCardTaked) return;
+    const cards = this.spellCards.splice(0, this.spellCards.length);
+    const beforeRemoveCallbacks = cards.map((card) => card.beforeRemove(ANIMATION_SELECTED_TIME));
     this.updateHandState();
     if (this.onSpellChange) this.onSpellChange(0);
     await Promise.all(beforeRemoveCallbacks);
@@ -57,6 +58,7 @@ export class PlayerCards extends BaseComponent {
   };
 
   addCards = async (cardsInfo: ICard[], noTimeout = false): Promise<void> => {
+    this.isCardTaked = false;
     const cards = cardsInfo.map((cardInfo) => new CardSpell(cardInfo));
     cards.forEach((card) => card.flip());
     if (noTimeout) await this.addToHand(cards, 0);
@@ -79,7 +81,6 @@ export class PlayerCards extends BaseComponent {
   }
 
   setDisable = async (disable = true): Promise<void> => {
-    this.updateHandState(undefined, disable);
     this.element.classList.toggle(CSSClasses.PlayerCardsDisabled, disable);
     let delayTime = ANIMATION_SELECTED_TIME;
     await forEachAsync(this.spellCards, async (card) => {
@@ -88,11 +89,10 @@ export class PlayerCards extends BaseComponent {
       delayTime -= (ANIMATION_SELECTED_TIME / 3);
     });
     if (delayTime > 0) await delay(delayTime);
+    this.updateHandState(undefined, disable);
   };
 
   selectCard = async (card: CardSpell): Promise<void> => {
-    if (this.isCardSelecting) return;
-    this.isCardSelecting = true;
     const selectCardIndex = this.handCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
@@ -120,16 +120,11 @@ export class PlayerCards extends BaseComponent {
     if (this.onSpellChange) this.onSpellChange(this.spellCards.length);
 
     this.selectedCardsElement.insertBefore(card.element, afterElement || null);
-    await card.onAppended();
-
-    this.isCardSelecting = false;
-    await playSound(Sounds.playingCardSpell);
+    playSound(Sounds.playingCardSpell);
+    await card.onAppended(ANIMATION_SELECTED_TIME);
   };
 
   private returnToHand = async (card: CardSpell): Promise<void> => {
-    if (this.isCardSelecting) return;
-
-    this.isCardSelecting = true;
     const selectCardIndex = this.spellCards.indexOf(card);
     if (selectCardIndex < 0) return;
 
@@ -142,7 +137,6 @@ export class PlayerCards extends BaseComponent {
 
     this.updateHandState(card.cardType);
     await this.addToHand([card]);
-    this.isCardSelecting = false;
   };
 
   private async addToHand(cards: CardSpell[], timeout = AnimationTimes.AddCard): Promise<void> {

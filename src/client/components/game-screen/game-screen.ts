@@ -76,7 +76,7 @@ export class GameScreen extends BaseComponent {
   constructor(
     private readonly gameService: GameService,
     private readonly heroesRepository: HeroesRepository,
-    timeout = 0,
+    timeout = -1,
     localization?: IGameScreenLocalization,
   ) {
     super([CSSClasses.GameScreen]);
@@ -95,7 +95,10 @@ export class GameScreen extends BaseComponent {
     this.gameService.onSelectTarget = (targets) => this.showTargetSelection(targets);
 
     const spellLength = this.gameService.getPlayerInfo(this.gameService.currentPlayerId)?.spellLength || 0;
-    this.addCards(this.gameService.currentPlayerCards, 0, spellLength);
+    this.addCards(this.gameService.currentPlayerCards, 0, spellLength)
+      .then(() => {
+        if (this.gameService.isCasting) this.playerCards.setDisable(true);
+      });
     this.disableControls = true;
     this.readyButton.disabled = true;
 
@@ -107,7 +110,7 @@ export class GameScreen extends BaseComponent {
     //   this.showDiceRoll(player, [1, 2, 3]);
     //   this.spellCasting.showCard(cards[1]);
     // }, 2000);
-    if (!this.gameService.isCasting) {
+    if (!this.gameService.isCasting && timeout >= 0) {
       setTimeout(() => this.timer.start((SELECT_SPELL_TIME - timeout - 1000) / 1000), 1000);
     }
   }
@@ -154,6 +157,7 @@ export class GameScreen extends BaseComponent {
     this.overlay.hide();
     this.timer.stop();
     this.disableControls = true;
+    await this.playerCards.clearSpell();
     await this.setSpellCast(true);
 
     if (this.castingMessage) await this.messages.removeMessage(<PlayerMessage> this.castingMessage);
@@ -224,6 +228,8 @@ export class GameScreen extends BaseComponent {
       if (playerInfo.health <= 0) {
         this.readyButton.element.remove(); // current player loose.
         this.playerCards.clearHand();
+        this.playerCards.getSelectedCardsId();
+        this.playerCards.clearSpell();
       }
       await this.currentPlayerDisplay?.bringDamage(playerInfo.health, damage);
     }
@@ -251,9 +257,10 @@ export class GameScreen extends BaseComponent {
 
   private async selectSpell(): Promise<void> {
     this.readyButton.disabled = true;
+    const cardIds = this.playerCards.getSelectedCardsId();
     await this.playerCards.setDisable();
     try {
-      await this.gameService.selectSpell(this.playerCards.getSelectedCardsId());
+      await this.gameService.selectSpell(cardIds);
       this.opponentsCardsContainer.classList.remove(CSSClasses.GameOpponentCardsHide);
     } catch {
       await showAlert(this.loc.SelectSpellError);

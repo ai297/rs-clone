@@ -77,7 +77,7 @@ class App implements IRootComponent {
       overlay.show(timer);
       timer.start(Math.floor(START_GAME_DELAY / 1000));
       await Promise.all([
-        this.show(new GameScreen(this.gameService, this.heroesRepository, timeout)),
+        this.show(new GameScreen(this.gameService, this.heroesRepository)),
         delay(START_GAME_DELAY - 500),
       ]);
       timer.stop();
