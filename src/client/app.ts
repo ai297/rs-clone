@@ -97,7 +97,7 @@ class App implements IRootComponent {
           else this.showStatic(StaticScreens.Start);
         },
         () => {
-          this.mainContainer.innerHTML = 'Connection error.';
+          this.mainContainer.innerHTML = '';
           const overlay = new Overlay();
           overlay.show(new Popup(
             () => {
