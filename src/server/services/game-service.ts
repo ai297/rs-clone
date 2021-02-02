@@ -65,7 +65,7 @@ export class GameService {
     );
     this.games.set(gameId, game);
 
-    console.log(`New game was created with id ${gameId}. Games now: ${this.games.size}`);
+    // console.log(`New game was created with id ${gameId}. Games now: ${this.games.size}`);
     return HubResponse.Success(gameId);
   }
 
@@ -111,7 +111,7 @@ export class GameService {
 
   endGame(gameId: string, winners: Player[]): void {
     if (!this.games.has(gameId)) return;
-    console.log('game end', gameId);
+    // console.log('game end', gameId);
     this.games.delete(gameId);
     const data = winners.map((player, index) => GameService.getPlayerInfo(player, index));
     this.connectionService.dispatch(gameId, HubEventsClient.EndGame, data);
