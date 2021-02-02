@@ -13,16 +13,16 @@ export default class App {
     this.gameService = new GameService(cardsRepository, this.connectionService);
 
     // TODO: don't forget delete console logs
-    this.connectionService.addEventListener(
-      ConnectionEvents.Connect,
-      (con) => {
-        console.log(`a user connected with id ${con.id}`);
-      },
-    );
-    this.connectionService.addEventListener(
-      ConnectionEvents.Disconnect,
-      (con) => console.log(`a user with id ${con.id} disconnected`),
-    );
+    // this.connectionService.addEventListener(
+    //   ConnectionEvents.Connect,
+    //   (con) => {
+    //     console.log(`a user connected with id ${con.id}`);
+    //   },
+    // );
+    // this.connectionService.addEventListener(
+    //   ConnectionEvents.Disconnect,
+    //   (con) => console.log(`a user with id ${con.id} disconnected`),
+    // );
     this.connectionService.attachToServer(this.server);
   }
 
