@@ -78,6 +78,8 @@ export class Player {
     await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
   }
 
+  goOut(): Promise<void> { return this.connection.dispatch(HubEventsClient.GoOut); }
+
   async startSpellCasting(): Promise<ICard[]> {
     const cards = [...this.spell];
     const message: ICastSpell = { playerId: this.id, cards };
