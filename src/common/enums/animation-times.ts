@@ -7,4 +7,5 @@ export enum AnimationTimes {
   DiceRoller = 300,
   DiceRollShowTime = 1500,
   ShowMessage = 500,
+  SplashScreenRemove = 2000,
 }

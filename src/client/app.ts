@@ -16,6 +16,7 @@ import { BaseComponent } from './components/base-component';
 import { delay, IPlayerInfo, START_GAME_DELAY } from '../common';
 import { Popup } from './components/popup/popup';
 import { Timer } from './components/timer/timer';
+import { SplashScreen } from './components/splash-screen/splash-screen';
 
 class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
@@ -40,7 +41,9 @@ class App implements IRootComponent {
   get baseURL(): string { return this.appURL; }
 
   show = async (component: IComponent): Promise<void> => {
+    console.log('show');
     if (this.currentScreen && this.currentScreen?.beforeRemove) {
+      console.log('beforeRemove');
       await this.currentScreen?.beforeRemove();
     }
     this.currentScreen?.element.remove();
@@ -86,20 +89,17 @@ class App implements IRootComponent {
 
   start(gameId?: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // TODO: show preloader before connect to server here
-      this.mainContainer.innerHTML = 'Loading...';
+      this.show(new SplashScreen());
+
       const connection = new ServerConnection(
         this.baseURL,
         () => {
-          // TODO: hide preloader here
-          this.mainContainer.innerHTML = '';
           resolve();
           if (gameId) this.joinGame(String(gameId));
           else this.showStatic(StaticScreens.Start);
         },
         () => {
-          // show connection error screen here
-          // this.mainContainer.innerHTML = 'Connection error.';
+          this.mainContainer.innerHTML = 'Connection error.';
           const overlay = new Overlay();
           overlay.show(new Popup(
             () => {
