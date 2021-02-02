@@ -67,8 +67,7 @@ export class Player {
 
   changeConnection(connection: ClientConnection): void {
     if (connection.id === this.connection.id) return;
-    this.removeConnectionListeners();
-    this.connection.dispatch(HubEventsClient.GoOut);
+    this.goOut();
     this.connection = connection;
     this.addConnectionListeners();
   }
@@ -78,7 +77,11 @@ export class Player {
     await race(this.connection.dispatch(HubEventsClient.GetCards, cards));
   }
 
-  goOut(): Promise<void> { return this.connection.dispatch(HubEventsClient.GoOut); }
+  goOut(): Promise<void> {
+    this.removeConnectionListeners();
+    this.connection.setGameId('');
+    return this.connection.dispatch(HubEventsClient.GoOut);
+  }
 
   async startSpellCasting(): Promise<ICard[]> {
     const cards = [...this.spell];

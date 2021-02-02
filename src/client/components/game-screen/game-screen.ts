@@ -76,6 +76,7 @@ export class GameScreen extends BaseComponent {
   constructor(
     private readonly gameService: GameService,
     private readonly heroesRepository: HeroesRepository,
+    timeout = 0,
     localization?: IGameScreenLocalization,
   ) {
     super([CSSClasses.GameScreen]);
@@ -106,6 +107,9 @@ export class GameScreen extends BaseComponent {
     //   this.showDiceRoll(player, [1, 2, 3]);
     //   this.spellCasting.showCard(cards[1]);
     // }, 2000);
+    if (!this.gameService.isCasting) {
+      setTimeout(() => this.timer.start((SELECT_SPELL_TIME - timeout - 1000) / 1000), 1000);
+    }
   }
 
   get disableControls(): boolean { return this.controlsContainer.classList.contains(CSSClasses.GameControlsDisabled); }

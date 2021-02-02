@@ -91,7 +91,10 @@ export class GameService {
       isCasting: game.isCasting,
       players: playersInfo,
       playerCards: currentPlayer?.handCards || [],
+      timeout: game.timeout,
     };
+
+    console.log(currentPlayer?.name, 'joined', game.timeout);
 
     return HubResponse.Success(response);
   }
@@ -103,6 +106,7 @@ export class GameService {
       await game.startGame();
       // TODO: return any data about game?
       this.connectionService.dispatch(gameId, HubEventsClient.StartGame);
+      console.log('game start', gameId);
       return HubResponse.Ok();
     } catch (err: unknown) {
       return HubResponse.Error((<Error> err)?.message);
@@ -111,7 +115,7 @@ export class GameService {
 
   endGame(gameId: string, winners: Player[]): void {
     if (!this.games.has(gameId)) return;
-    // console.log('game end', gameId);
+    console.log('game end', gameId);
     this.games.delete(gameId);
     const data = winners.map((player, index) => GameService.getPlayerInfo(player, index));
     this.connectionService.dispatch(gameId, HubEventsClient.EndGame, data);

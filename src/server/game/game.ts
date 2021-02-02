@@ -30,7 +30,7 @@ export class Game implements IGameForCasting {
 
   private timerId: NodeJS.Timeout;
 
-  private timerStarted: number;
+  private timerStarted = 0;
 
   constructor(
     cardDeck: Array<ICard>,
@@ -49,11 +49,10 @@ export class Game implements IGameForCasting {
     this.timerStarted = Date.now();
   }
 
-  public addPlayer(player: Player): number {
+  public addPlayer(player: Player): void {
     if (this.playersValue.length >= MAX_PLAYERS) throw new Error('There are no places in the game');
     this.playersValue.push(player);
     player.onSpellSelected = () => this.cardSelectionHandler();
-    return this.timeout;
   }
 
   public get players(): Array<Player> {
@@ -64,13 +63,14 @@ export class Game implements IGameForCasting {
 
   get isCasting(): boolean { return this.isCastingStep; }
 
-  get timeout(): number { return Date.now() - this.timerStarted; }
+  get timeout(): number { return this.timerStarted > 0 ? Date.now() - this.timerStarted : 0; }
 
   startGame(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.players.length < MIN_PLAYERS) reject(Error('Few players to start the game'));
 
       clearTimeout(this.timerId);
+      this.timerStarted = 0;
       this.isGameStarted = true;
       resolve();
 
@@ -122,6 +122,7 @@ export class Game implements IGameForCasting {
   private async castSpells(): Promise<void> {
     this.isCastingStep = true;
     clearTimeout(this.timerId);
+    this.timerStarted = 0;
 
     const activePlayers = this.players.filter((current: Player) => current.isAlive);
     const casting = new CastingSpells(activePlayers, this);
