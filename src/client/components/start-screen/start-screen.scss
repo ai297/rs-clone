@@ -8,9 +8,19 @@
   transition: all 0.5s ease-in-out;
 
   &__logo {
+    margin-top: 1rem;
     margin-bottom: -5rem;
     z-index: 10;
     pointer-events: none;
+    width: 30rem;
+    max-width: 100%;
+
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: auto;
+      margin: 0 auto;
+    }
   }
 
   &__buttons {
@@ -19,7 +29,7 @@
     justify-content: center;
     margin-top: -2rem;
     background: linear-gradient(180deg, #000 0%, transparent 100%);
-    padding: 5rem 3rem;
+    padding: 6rem 3rem;
   }
 
   &__button:not(:last-child) {
@@ -28,5 +38,15 @@
   
   &--hidden {
     opacity: 0;
+  }
+}
+
+@media (min-width: $large-screen-width), (min-height: $large-screen-height) {
+  .start-screen__logo {
+    width: 22rem;
+    margin-top: 3rem;
+  }
+  .start-screen__buttons {
+    padding: 7rem 2rem;
   }
 }
