@@ -168,4 +168,6 @@ export enum CSSClasses {
   RulesTitle = 'rules-screen__title',
   RulesText = 'rules-screen__text',
   RulesScreenButton = 'rules-screen__button',
+  Footer = 'footer',
+  PG = 'pg',
 }
