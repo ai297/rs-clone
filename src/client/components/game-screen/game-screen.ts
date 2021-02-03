@@ -32,7 +32,6 @@ async function playSpellSound(cards: Array<ICard>): Promise<void> {
   const quality = cards.filter((qual) => qual.type === CardTypes.quality);
   const action = cards.filter((qual) => qual.type === CardTypes.action);
   const source = cards.filter((qual) => qual.type === CardTypes.source);
-
   if (quality.length === 1) await playSound(Sounds[`${quality[0].id}` as keyof typeof Sounds]);
   if (action.length === 1) await playSound(Sounds[`${action[0].id}` as keyof typeof Sounds]);
   if (source.length === 1) await playSound(Sounds[`${source[0].id}` as keyof typeof Sounds]);
@@ -209,7 +208,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerHeal(playerInfo: IPlayerInfo, heal: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${heal} очков лечения (${playerInfo?.health})`);
-    await playSound(Sounds.heal);
+    playSound(Sounds.heal);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       await this.currentPlayerDisplay?.addHealth(playerInfo.health, heal);
@@ -222,7 +221,7 @@ export class GameScreen extends BaseComponent {
 
   async showPlayerDamage(playerInfo: IPlayerInfo, damage: number): Promise<void> {
     // console.log(`${playerInfo?.userName} получает ${damage} очков урона (${playerInfo?.health})`);
-    await playSound(Sounds.damage);
+    playSound(Sounds.damage);
 
     if (playerInfo.id === this.gameService.currentPlayerId) {
       if (playerInfo.health <= 0) {
