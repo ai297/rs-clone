@@ -82,10 +82,13 @@ export class CastingSpells {
 
     const resultQueue: Player[] = [];
     await forEachAsync(groups, async (group) => {
-      const rolls = await makeDiceRolls(group);
-      const groupQueue = rolls.sort((a, b) => sumArray(b.rolls) - sumArray(a.rolls))
-        .map((rollResult) => rollResult.player);
-      resultQueue.push(...groupQueue);
+      if (group.length < 2) resultQueue.push(...group);
+      else {
+        const rolls = await makeDiceRolls(group);
+        const groupQueue = rolls.sort((a, b) => sumArray(b.rolls) - sumArray(a.rolls))
+          .map((rollResult) => rollResult.player);
+        resultQueue.push(...groupQueue);
+      }
     });
     return resultQueue;
   }
