@@ -7,7 +7,7 @@ import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localizati
 export class EmptyItem extends BaseComponent {
   private loc: ILobbyLocalization;
 
-  private addBotButton!: BaseButton;
+  private addBotButton?: BaseButton;
 
   constructor(private gameCreator: boolean, private addBot: () => void, localization?: ILobbyLocalization) {
     super([CSSClasses.PlayerListItem, CSSClasses.EmptyItem]);
@@ -21,10 +21,6 @@ export class EmptyItem extends BaseComponent {
   }
 
   public set addBotButtonIsDisabled(value: boolean) {
-    if (value) {
-      this.addBotButton.disabled = true;
-    } else {
-      this.addBotButton.disabled = false;
-    }
+    if (this.addBotButton) this.addBotButton.disabled = value;
   }
 }

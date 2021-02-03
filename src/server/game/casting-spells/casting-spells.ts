@@ -2,6 +2,7 @@ import { Player } from '../../player';
 import { forEachAsync, ICard, MAX_WINNERS } from '../../../common';
 import { Spells } from './spells';
 import { IGameForCasting } from '../interface';
+import { makeDiceRolls, sumArray } from './utils';
 
 export class CastingSpells {
   private spells: Spells;
@@ -14,8 +15,7 @@ export class CastingSpells {
   }
 
   public async castSpells(): Promise<void> {
-    const queue: Array<Player> = this.players.slice().sort((a, b) => b.spell.initiative - a.spell.initiative);
-    // TODO: пофиксить одинаковую инициативу
+    const queue = await this.getCastingQueue();
 
     await forEachAsync(queue, async (currentPlayer, index, breakCast) => {
       if (!currentPlayer.isAlive) {
@@ -61,5 +61,32 @@ export class CastingSpells {
       return true;
     }
     return false;
+  }
+
+  async getCastingQueue(): Promise<Player[]> {
+    const players = this.players.slice().sort((a, b) => b.spell.initiative - a.spell.initiative);
+    let index = 0;
+    let groupIndex = -1;
+    let prevInitiative = -1;
+    const groups: Player[][] = [];
+    while (index < players.length) {
+      const player = players[index];
+      if (player.spell.initiative !== prevInitiative) {
+        groupIndex++;
+        groups[groupIndex] = [];
+      }
+      groups[groupIndex].push(player);
+      prevInitiative = player.spell.initiative;
+      index++;
+    }
+
+    const resultQueue: Player[] = [];
+    await forEachAsync(groups, async (group) => {
+      const rolls = await makeDiceRolls(group);
+      const groupQueue = rolls.sort((a, b) => sumArray(b.rolls) - sumArray(a.rolls))
+        .map((rollResult) => rollResult.player);
+      resultQueue.push(...groupQueue);
+    });
+    return resultQueue;
   }
 }
