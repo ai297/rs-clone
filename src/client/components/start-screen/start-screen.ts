@@ -4,7 +4,7 @@ import { BaseButton } from '../base-button/base-button';
 import { IStartScreenLocalization, START_SCREEN_DEFAULT_LOCALIZATION } from '../../localization';
 import { GameService } from '../../services';
 import {
-  createElement, delay, getRandomInteger, playSound, Sounds,
+  createElement, delay, getRandomInteger,
 } from '../../../common';
 import { showAlert } from '../show-alert';
 
