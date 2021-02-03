@@ -5,7 +5,7 @@ import {
   ICreatePlayerRequest,
   IHero,
   IPlayerInfo,
-  getRandomInteger, playSound, Sounds,
+  getRandomInteger, playSound, Sounds, START_GAME_TIMEOUT,
 } from '../../../common';
 import { HeroSelection } from '../hero-selection/hero-selection';
 import { PlayerList } from '../player-list/player-list';
@@ -14,6 +14,8 @@ import { Tags, CSSClasses, ImagesPaths } from '../../enums';
 import { GameService } from '../../services/game-service';
 import { ILobbyLocalization, LOBBY_DEFAULT_LOCALIZATION } from '../../localization';
 import { HeroesRepository } from '../../services';
+import { showAlert } from '../show-alert';
+import { Timer } from '../timer/timer';
 
 const VALIDATION_REGEX = /^[a-zA-ZА-Яа-я0-9-_]+ ?[a-zA-ZА-Яа-я0-9-_]+$/;
 
@@ -43,9 +45,10 @@ export class LobbyScreen extends BaseComponent {
   private disabledHeroes: Array<string> = [];
 
   constructor(
-    private gameCreator: boolean,
-    private heroesRepository: HeroesRepository,
-    private gameService: GameService,
+    private readonly gameCreator: boolean,
+    timeout: number,
+    private readonly heroesRepository: HeroesRepository,
+    private readonly gameService: GameService,
     localization?: ILobbyLocalization,
   ) {
     super([CSSClasses.Lobby]);
@@ -71,6 +74,11 @@ export class LobbyScreen extends BaseComponent {
       }
       this.readyToStart();
     }
+
+    const timer = new Timer();
+    this.element.append(timer.element);
+    // Почему-то без задержки не хочет таймер запускаться нормально)
+    setTimeout(() => timer.start((START_GAME_TIMEOUT - timeout - 1000) / 1000), 1000);
   }
 
   private onPlayerJoined(playerInfo: IPlayerInfo): void {
@@ -113,18 +121,18 @@ export class LobbyScreen extends BaseComponent {
     });
   }
 
-  private async addBot() {
+  private async addBot(): Promise<void> {
     const heroes = await this.heroesRepository.getAllHeroes();
     this.createBot(heroes);
   }
 
-  private async createBot(heroes: Array<IHero>) {
+  private async createBot(heroes: Array<IHero>): Promise<void> {
     const hero = heroes[getRandomInteger(0, heroes.length - 1)];
     if (this.disabledHeroes.indexOf(hero.id) === -1) {
       try {
         await this.gameService.createBot(hero.id);
-      } catch (e: unknown) {
-        alert((e as Error)?.message);
+      } catch {
+        await showAlert('Не удалось создать бота...'); // TODO: Заменить на локализацию...
       }
     } else {
       this.createBot(heroes);
@@ -179,8 +187,8 @@ export class LobbyScreen extends BaseComponent {
             gameLinkElement.append(tooltip);
             setTimeout(() => tooltip.remove(), 500);
           })
-          .catch((e) => {
-            alert(`Something went wrong: ${e}`);
+          .catch(() => {
+            // alert(`Something went wrong: ${e}`);
           });
       });
       gameLinkElement.append(copyIcon);
@@ -205,8 +213,8 @@ export class LobbyScreen extends BaseComponent {
   private async startGameHandler(): Promise<void> {
     try {
       await this.gameService.startGame();
-    } catch (error) {
-      alert(error);
+    } catch {
+      await showAlert('Не удалось запустить игру...'); // TODO: заменить на локализацию
     }
   }
 
@@ -260,7 +268,7 @@ export class LobbyScreen extends BaseComponent {
       try {
         await this.gameService.createHero(request);
       } catch (err: unknown) {
-        alert(`Не удалось создать игрока: ${(<Error> err)?.message}`);
+        showAlert('Не удалось создать игрока'); // TODO: заменить на локализацию
         this.disableLobby(false);
       }
     }

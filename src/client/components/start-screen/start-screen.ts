@@ -36,11 +36,6 @@ export class StartScreen extends BaseComponent {
       () => this.startNewGame(),
       [CSSClasses.StartScreenButton],
     );
-    const joinButton = new BaseButton(
-      this.loc.Join,
-      () => console.log('Join'),
-      [CSSClasses.StartScreenButton],
-    );
     const rulesButton = new BaseButton(
       this.loc.Rules,
       () => this.showRulesScreen(),
@@ -54,7 +49,6 @@ export class StartScreen extends BaseComponent {
 
     buttonsContainer.append(
       newGameButton.element,
-      joinButton.element,
       rulesButton.element,
       aboutButton.element,
     );

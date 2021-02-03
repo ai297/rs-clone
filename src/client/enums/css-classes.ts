@@ -5,6 +5,9 @@ export enum CSSClasses {
   Avatar = 'avatar',
   Timer = 'timer',
   BigTimer = 'timer--big',
+  // splash screen
+  SplashScreen = 'splash-screen',
+  SplashScreenSkullAway = 'splash-screen__skull-away',
   // start screen
   StartScreen = 'start-screen',
   StartScreenHidden = 'start-screen--hidden',

@@ -704,8 +704,5 @@ export class Spells {
     await Promise.race(damageTasks);
   };
 
-  private useEmpty = async (): Promise<void> => {
-    console.log('No card handler!');
-    return Promise.resolve();
-  };
+  private useEmpty = (): Promise<void> => Promise.resolve();
 }

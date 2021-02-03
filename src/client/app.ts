@@ -1,3 +1,9 @@
+import {
+  delay,
+  IPlayerInfo,
+  START_GAME_DELAY,
+  START_GAME_TIMEOUT,
+} from '../common';
 import
 {
   IComponent,
@@ -13,9 +19,9 @@ import { CSSClasses, StaticScreens } from './enums';
 import { GameService, HeroesRepository, ServerConnection } from './services';
 import { IRootComponent } from './root-component';
 import { BaseComponent } from './components/base-component';
-import { delay, IPlayerInfo, START_GAME_DELAY } from '../common';
 import { Popup } from './components/popup/popup';
 import { Timer } from './components/timer/timer';
+import { SplashScreen } from './components/splash-screen/splash-screen';
 
 class App implements IRootComponent {
   private staticScreens: Map<StaticScreens, IComponent> = new Map<StaticScreens, IComponent>();
@@ -59,12 +65,18 @@ class App implements IRootComponent {
     window.history.replaceState(null, '', this.baseURL);
   };
 
-  showLobby = async (gameCreator = false): Promise<void> => {
+  showLobby = async (gameCreator = false, timeout = 0): Promise<void> => {
     window.history.replaceState(null, '', this.getGameUrl(this.gameService.currentGameId));
-    await this.show(new LobbyScreen(gameCreator, this.heroesRepository, this.gameService));
+    const lobby = new LobbyScreen(
+      gameCreator,
+      timeout,
+      this.heroesRepository,
+      this.gameService,
+    );
+    await this.show(lobby);
   };
 
-  showGame = async (showTimer = true): Promise<void> => {
+  showGame = async (showTimer = true, timeout = 0): Promise<void> => {
     if (showTimer) {
       const overlay = new Overlay();
       const timer = new Timer([CSSClasses.BigTimer], false);
@@ -76,7 +88,7 @@ class App implements IRootComponent {
       ]);
       timer.stop();
       overlay.hide();
-    } else await this.show(new GameScreen(this.gameService, this.heroesRepository));
+    } else await this.show(new GameScreen(this.gameService, this.heroesRepository, timeout));
   };
 
   showGameEnd = async (alivePlayers: Array<IPlayerInfo>): Promise<void> => {
@@ -86,20 +98,16 @@ class App implements IRootComponent {
 
   start(gameId?: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // TODO: show preloader before connect to server here
-      this.mainContainer.innerHTML = 'Loading...';
+      this.show(new SplashScreen());
+
       const connection = new ServerConnection(
         this.baseURL,
         () => {
-          // TODO: hide preloader here
-          this.mainContainer.innerHTML = '';
           resolve();
           if (gameId) this.joinGame(String(gameId));
           else this.showStatic(StaticScreens.Start);
         },
         () => {
-          // show connection error screen here
-          // this.mainContainer.innerHTML = 'Connection error.';
           const overlay = new Overlay();
           overlay.show(new Popup(
             () => {
@@ -141,18 +149,23 @@ class App implements IRootComponent {
   private createGameService(connection: ServerConnection): void {
     this.gameService = new GameService(
       connection,
-      (isCreator) => this.showLobby(isCreator),
-      (showTimer) => this.showGame(showTimer),
+      (isCreator, timeout) => this.showLobby(isCreator, timeout),
+      (showTimer, timeout) => this.showGame(showTimer, timeout),
       (alivePlayers: Array<IPlayerInfo>) => this.showGameEnd(alivePlayers),
       () => this.showStatic(StaticScreens.Start),
     );
   }
 
   private joinGame(gameId: string): void {
-    this.gameService.joinGame(gameId).catch((e) => {
-      // TODO: show join game error screen here
-      console.log((<Error> e).message);
-      this.showStatic(StaticScreens.Start);
+    this.gameService.joinGame(gameId).catch(() => {
+      const overlay = new Overlay();
+      overlay.show(new Popup(
+        () => {
+          overlay.hide();
+          this.showStatic(StaticScreens.Start);
+        },
+        'Не удалось присоединиться к игре...',
+      ));
     });
   }
 }
