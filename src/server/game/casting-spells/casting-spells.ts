@@ -18,8 +18,10 @@ export class CastingSpells {
     // TODO: пофиксить одинаковую инициативу
 
     await forEachAsync(queue, async (currentPlayer, index, breakCast) => {
-      if (!currentPlayer.isAlive) return;
-
+      if (!currentPlayer.isAlive) {
+        // this.checkForEndGame(); // на всякий случай, против бага по зависанию игры..
+        return;
+      }
       const cards: Array<ICard> = await currentPlayer.startSpellCasting();
       const positionPlayer: number = this.players.findIndex((player) => player === currentPlayer);
 
@@ -40,20 +42,15 @@ export class CastingSpells {
           breakCast();
         }
       });
-
-      const deadThisCast: Array<Player> = this.players.filter((current: Player) => !current.isAlive);
-      // если есть покойничек то запускаем его отработку
-      if (deadThisCast.length > 0) {
-        // обновляем состояние списка игроков
-        this.players = this.players.filter((current: Player) => current.isAlive);
-        // потрошим с покойничка карты и отдаем их в отбой
-        this.removeCardsFromCorpse(deadThisCast);
-      }
     });
 
     this.players.forEach((player) => {
       const usedCards: Array<ICard> = player.transferSpellCards();
       this.game.usedCardHandler(usedCards);
+      if (!player.isAlive) {
+        const handCardss = player.transferHandsCards();
+        this.game.usedCardHandler(handCardss);
+      }
     });
   }
 
@@ -64,14 +61,5 @@ export class CastingSpells {
       return true;
     }
     return false;
-  }
-
-  private removeCardsFromCorpse(deadThisCast: Array<Player>) {
-    // пробегаем по мертвым колдунам забираем карты из заклинания и руки и отдаем в отбой
-    deadThisCast.forEach((player) => {
-      const activeSpell = player.transferSpellCards();
-      const activeHand = player.transferHandsCards();
-      this.game.usedCardHandler([...activeSpell, ...activeHand]);
-    });
   }
 }
