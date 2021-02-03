@@ -107,19 +107,16 @@ export class Spells {
     return target;
   }
 
-  private async selectOpponents(playerPosition: number, targetIds: Array<string>, maxResults = 1): Promise<Player[]> {
-    // проверка входных данных
-    if (playerPosition > this.players.length - 1 || playerPosition < 0) return [];
-
-    const currentPlayer = this.players[playerPosition];
+  private async selectOpponents(currentPlayer: Player, targetIds: Array<string>, maxResults = 1): Promise<Player[]> {
     const allOpponents = this.players.filter((player) => player !== currentPlayer && player.isAlive);
-
+    // console.log(`${currentPlayer.name} выбирает цель...`);
     if (targetIds.length <= maxResults) {
       if (targetIds.includes(TARGET_ALL)) return allOpponents;
       return allOpponents.filter((player) => targetIds.includes(player.id));
     }
 
     const selectedTargets = await currentPlayer.selectTarget(targetIds, maxResults);
+    // console.log(`${currentPlayer.name} выбрал - ${selectedTargets.join(', ')}`);
     if (selectedTargets.includes(TARGET_ALL)) return allOpponents;
     return allOpponents.filter((player) => selectedTargets.includes(player.id));
   }
@@ -446,7 +443,7 @@ export class Spells {
       .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
-    const [target] = await this.selectOpponents(positionPlayer, targetIds);
+    const [target] = await this.selectOpponents(player, targetIds);
 
     const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
@@ -508,7 +505,7 @@ export class Spells {
       .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
-    const [target] = await this.selectOpponents(positionPlayer, targetIds);
+    const [target] = await this.selectOpponents(player, targetIds);
     const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
     const damageStrength = [1, 3, 4];
@@ -623,7 +620,7 @@ export class Spells {
       .filter((playerCur) => playerCur !== player && playerCur.isAlive)
       .map((playerCur) => playerCur.id);
 
-    const [target] = await this.selectOpponents(positionPlayer, targetIds);
+    const [target] = await this.selectOpponents(player, targetIds);
     const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
     const damageStrength = [0, 3, 5];

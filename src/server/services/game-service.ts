@@ -68,6 +68,7 @@ export class GameService {
       },
     );
     this.games.set(gameId, game);
+    connection.setGameId(gameId);
 
     // console.log(`New game was created with id ${gameId}. Games now: ${this.games.size}`);
     return HubResponse.Success(gameId);
