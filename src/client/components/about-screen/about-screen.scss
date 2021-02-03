@@ -38,11 +38,19 @@
                   0 2px $primary-dark-color,
                   2px 0 $primary-dark-color,
                   0 -2px $primary-dark-color;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 2.5rem;
+    }
   }
 
   &__text {
     @include primary-font;
     font-size: 1.25rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 1.6rem;
+    }
 
     & > p {
       margin-bottom: 1.1rem;
@@ -71,7 +79,6 @@
   &__team {
     display: grid;
     grid-template-columns: 1fr;
-    //grid-template-rows: 1fr repeat(4);
     gap: 0.7rem;
     min-width: 34rem;
   }
@@ -79,6 +86,11 @@
   &__button {
     align-self: center;
     margin-top: 3rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      padding: 1.3rem 2.6rem;
+      font-size: 1.75rem;
+    }
   }
 }
 
@@ -93,6 +105,12 @@
     padding-left: 5.9rem;
     justify-content: center;
 
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      min-height: 9rem;
+      margin: 0.9rem 1.3rem 0.9rem 2.6rem;
+      padding-left: 7.9rem;
+    }
+
     & a,
     & a:visited,
     & a:focus {
@@ -105,17 +123,27 @@
   &__avatar {
     position: absolute;
     top: -6%;
-    left: -5%;
+    left: -3rem;
     width: 7.5rem;
     height: 7.5rem;
     border: 0.2rem solid $secondary-font-color;
     border-radius: 50%;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      width: 10rem;
+      height: 10rem;
+      border: 0.25rem solid $secondary-font-color;
+    }
   }
 
   &__name,
   &__description {
     margin-left: 0.7rem;
     font-size: 1.25rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 1.7rem;
+    }
   }
 
   &__name {
@@ -129,10 +157,15 @@
     &::after {
       content: url('../assets/github-icon.svg');
       position: absolute;
-      top: 4px;
+      top: 7px;
       right: -36px;
       height: 1.5rem;
       width: 1.5rem;
+
+      @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+        height: 2rem;
+        width: 2rem;
+      }
     }
   }
 
