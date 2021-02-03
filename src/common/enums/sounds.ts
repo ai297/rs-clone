@@ -42,5 +42,5 @@ export enum Sounds {
   spiky = 'spiky.mp3',
   stunning = 'stunning.mp3',
   duel_hell = 'duel_hell.mp3',
+  sharp = 'sharp.mp3',
 }
-// await playSound(Sounds.damage);
