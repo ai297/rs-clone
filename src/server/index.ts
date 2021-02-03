@@ -21,7 +21,7 @@ exp.use((req, res, next) => {
     res.sendFile(path.join(PUBLIC_PATH, 'index.html'));
   } else if (!fs.existsSync(path.join(PUBLIC_PATH, req.originalUrl))) {
     res.statusCode = 404;
-    res.send('Sorry, this page is not found');
+    res.sendFile(path.join(PUBLIC_PATH, '404.html'));
   } else next();
 });
 
