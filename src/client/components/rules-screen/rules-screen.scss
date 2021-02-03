@@ -38,11 +38,19 @@
                   0 2px $primary-dark-color,
                   2px 0 $primary-dark-color,
                   0 -2px $primary-dark-color;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 2.5rem;
+    }
   }
 
   &__text {
     @include primary-font;
     font-size: 1.25rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 1.6rem;
+    }
 
     &--accent {
       font-weight: bold;
@@ -67,19 +75,8 @@
       position: relative;
       width: 80%;
 
-      &--icon::before {
-        content: '8';
-        position: absolute;
-        z-index: 100;
-        top: 123px;
-        right: -128px;
-        width: 5rem;
-        font-family: $headers-font;
-        font-size: 2rem;
-        color: $primary-dark-color;
-      }
       &--icon::after {
-        content: url('../assets/cards/initiative-icon.svg');
+        content: url('../assets/initiative-rules-icon.svg');
         position: absolute;
         top: 0px;
         right: -97px;
@@ -88,7 +85,7 @@
     }
 
     .screenshot {
-      max-width: 95%;
+      max-width: 100%;
       margin-top: 1rem;
       margin-bottom: 2rem;
       border-radius: 0.25rem;
@@ -99,12 +96,13 @@
     .card-types {
       display: flex;
       justify-content: space-between;
-      width: calc(95% - 2rem);
+      width: calc(60% - 3rem);
       margin-bottom: 1rem;
     }
 
     & .colored {
       position: relative;
+      margin-right: 4rem;
 
       &::after {
         position: absolute;
@@ -149,25 +147,26 @@
     }
 
     .elements__colored {
-      // position: relative;
-      // padding-left: 45px;
       line-height: 200%;
 
       &::before {
-        // position: absolute;
         display: inline-block;
-        // bottom: -5px;
-        // left: 0;
         width: 1.6rem;
         height: 1.6rem;
         transform: translateY(-5px);
-        margin-right: 0.2rem;
-        padding: 0.2rem;
+        margin-right: 0.2em;
+        padding: 0.2em;
         border: 2px solid $primary-dark-color;
         border-radius: 50%;
         background-color: currentColor;
         vertical-align: bottom;
         overflow: hidden;
+
+        @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+          width: 2.1rem;
+          height: 2.1rem;
+          transform: translateY(-1px);
+        }
       }
 
       &--mystery {
@@ -197,6 +196,11 @@
           padding: 0;
           border-color: $card-element-element;
           background-color: $primary-dark-color;
+
+          @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+            width: 2.6rem;
+            height: 2.6rem;
+          }
         }
       }
       &--illusion {
@@ -211,5 +215,10 @@
   &__button {
     align-self: center;
     margin-top: 3rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      padding: 1.3rem 2.6rem;
+      font-size: 1.75rem;
+    }
   }
 }
