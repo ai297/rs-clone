@@ -129,8 +129,11 @@ export class GameScreen extends BaseComponent {
   nextMove(): void {
     this.overlay.hide();
     const player = this.gameService.getPlayerInfo(this.gameService.currentPlayerId);
-    if (player?.health) this.playerCards.setDisable(false);
-    this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
+    if (player?.health) {
+      this.playerCards.setDisable(false);
+      this.opponentsCardsContainer.classList.add(CSSClasses.GameOpponentCardsHide);
+    } else this.messages.removeMessage(<PlayerMessage> this.castingMessage);
+
     // console.log('Следующий ход');
     this.setSpellCast(false);
   }

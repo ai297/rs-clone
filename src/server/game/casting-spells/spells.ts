@@ -44,7 +44,7 @@ export class Spells {
       .set('zmey_gorynych', this.useZmeyGorynych)
       .set('heat', this.useHeat)
       .set('chrono_walker', this.useChronoWalker)
-      .set('chuk_geck', this.useChukGeck)
+      // .set('chuk_geck', this.useChukGeck)
       .set('king_oberon', this.useKingOberon)
       .set('fallen_rose', this.useFallenRose)
       .set('wormy', this.useWormy)
@@ -344,7 +344,7 @@ export class Spells {
   private useZmeyGorynych = async (positionPlayer: number): Promise<void> => {
     const player = this.players[positionPlayer];
 
-    const targets = this.players.filter((playerCur) => playerCur !== player);
+    const targets = this.players.filter((playerCur) => playerCur !== player && playerCur.isAlive);
     const damage = getNumberUniqueMagicSign([...player.spell]);
 
     await Promise.race(targets.map((target) => target.takeDamage(damage)));
