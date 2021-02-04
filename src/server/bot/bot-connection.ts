@@ -19,6 +19,7 @@ import { ClientConnection, ConnectionService } from '../connection';
 
 const MIN_BOT_DELAY = 1000;
 const MAX_BOT_DELAY = 5000;
+const BOT_SPELL_SOUND_DELAY = 2000;
 
 type EventHandler = (...args: any[]) => any;
 
@@ -85,6 +86,7 @@ export class SimpleBotConnection extends ClientConnection {
       + AnimationTimes.ShowMessage * 2
       + message.cards.length * AnimationTimes.SpellCard;
     await delay(timeout);
+    await delay(BOT_SPELL_SOUND_DELAY * message.cards.length);
   };
 
   private castCard = async (message: ICastCard): Promise<void> => {
