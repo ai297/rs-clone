@@ -38,16 +38,12 @@ export class GameService {
     private readonly connection: ServerConnection,
     private readonly onGameCreated?: (isCreator: boolean, timeout?: number) => void,
     private readonly onGameStarted?: (showTimer: boolean, timeout?: number) => void,
-    private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => void,
-    private readonly onGoOut?: () => void,
+    private readonly onGameEnded?: (alivePlayers: Array<IPlayerInfo>) => Promise<void>,
+    private readonly onGoOut?: () => Promise<void>,
   ) {
     connection.addEventListener(HubEventsClient.GoOut, () => this.goOut());
     connection.addEventListener(HubEventsClient.StartGame, () => {
       if (this.onGameStarted) this.onGameStarted(true);
-      return HubResponse.Ok();
-    });
-    connection.addEventListener(HubEventsClient.EndGame, (alivePlayers: Array<IPlayerInfo>) => {
-      if (this.onGameEnded) this.onGameEnded(alivePlayers);
       return HubResponse.Ok();
     });
     connection.addEventListener(HubEventsClient.NextMove, () => {
@@ -55,6 +51,7 @@ export class GameService {
       if (this.onNextMove) this.onNextMove();
       return HubResponse.Ok();
     });
+    connection.addEventListener(HubEventsClient.EndGame, (alivePlayers: IPlayerInfo[]) => this.gameEnd(alivePlayers));
     connection.addEventListener(HubEventsClient.AddPlayer, (player: IPlayerInfo) => this.addPlayer(player));
     connection.addEventListener(HubEventsClient.RemovePlayer, (playerId: string) => this.removePlayer(playerId));
     connection.addEventListener(HubEventsClient.SpellSelected, (message: ISpellSelected) => this.spellSelect(message));
@@ -110,7 +107,6 @@ export class GameService {
   }
 
   async joinGame(gameId: string): Promise<void> {
-    this.clearState();
     const savedGameId = localStorage.getItem(StorageItems.GameCreator);
     const savedPlayerId = localStorage.getItem(StorageItems.PlayerId);
 
@@ -178,11 +174,19 @@ export class GameService {
     this.onSelectTarget = undefined;
     this.onSpellCast = undefined;
     this.onCardCast = undefined;
+    localStorage.removeItem(StorageItems.GameCreator);
+    localStorage.removeItem(StorageItems.PlayerId);
   }
 
-  private goOut(): IHubResponse<null> {
+  private async goOut(): Promise<IHubResponse<null>> {
+    if (this.onGoOut) await this.onGoOut();
     this.clearState();
-    if (this.onGoOut) this.onGoOut();
+    return HubResponse.Ok();
+  }
+
+  private async gameEnd(alivePlayers: Array<IPlayerInfo>): Promise<IHubResponse<null>> {
+    if (this.onGameEnded) await this.onGameEnded(alivePlayers);
+    this.clearState();
     return HubResponse.Ok();
   }
 
