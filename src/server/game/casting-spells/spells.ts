@@ -20,8 +20,6 @@ import { IGameForCasting } from '../interface';
 export class Spells {
   private readonly spells = new Map<string, CardHandler>();
 
-  private numberPlayers: number = this.players.length;
-
   constructor(
     private players: Array<Player>,
     private game: IGameForCasting,
@@ -165,7 +163,7 @@ export class Spells {
    */
   private usePhantomsCard = async (positionPlayer: number, cardCurrent: ICard): Promise<void> => {
     const player = this.players[positionPlayer];
-    const target = this.getLeftOpponent(positionPlayer);
+    const target = this.getRightOpponent(positionPlayer);
     const strongPower = await makePowerDiceRoll(player, cardCurrent.magicSign);
 
     const damageStrength = [1, 3, 4];
