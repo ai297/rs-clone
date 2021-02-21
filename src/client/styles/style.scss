@@ -1,0 +1,111 @@
+@import './fonts.scss';
+@import './constants.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  &:active, &:focus { outline: none; }
+}
+
+html {
+  font-size: 16px;
+}
+
+body { overflow: hidden; }
+
+main {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: $primary-dark-color;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+  font-style: inherit;
+}
+
+.component {
+  &::-webkit-scrollbar, & *::-webkit-scrollbar { width: .7rem; }
+  &::-webkit-scrollbar-track, & *::-webkit-scrollbar-track { background: none; }
+  &::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb {
+    background: $primary-dark-color;
+    border-radius: .35rem;
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: .5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include primary-font;
+  color: $cold-font-color;
+  & > div { margin: 0 .5rem; }
+
+  a { transition: all .3s; }
+
+  a:hover { color: $secondary-warning-color; }
+
+  &__logo-rsschool svg {
+    height: 1.75rem;
+    display: inline-block;
+  }
+}
+
+.pg {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $primary-font;
+  font-size: 2.5rem;
+  color: $cold-font-color;
+  border: solid .2rem $cold-font-color;
+  border-radius: 50%;
+}
+
+@import '../components/overlay/overlay.scss';
+@import '../components/timer/timer.scss';
+@import '../components/popup/popup.scss';
+@import '../components/base-button/base-button.scss';
+@import '../components/avatar/avatar.scss';
+@import '../components/player-message/player-message.scss';
+@import '../components/target-selection/target-selection.scss';
+@import '../components/start-screen/start-screen.scss';
+@import '../components/player-list/player-list.scss';
+@import '../components/card-spell/card-spell.scss';
+@import '../components/hero-selection/hero-selection.scss';
+@import '../components/game-screen/game-screen.scss';
+@import '../components/player-display/player-display.scss';
+@import '../components/opponents-cards/opponents-cards.scss';
+@import '../components/player-cards/player-cards.scss';
+@import '../components/dice-roller/dice-roller.scss';
+@import '../components/overlay/overlay.scss';
+@import '../components/base-button/base-button.scss';
+@import '../components/lobby-screen/lobby-screen.scss';
+@import '../components/game-end-screen/game-end-screen.scss';
+@import '../components/rules-screen/rules-screen.scss';
+@import '../components/about-screen/about-screen.scss';
+@import '../components/splash-screen/splash-screen.scss';
+
+@media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+  html {
+    font-size: 12px;
+  }
+}
+@media (min-width: $large-screen-width), (min-height: $large-screen-height) {
+  html {
+    font-size: 26px;
+  }
+}

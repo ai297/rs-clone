@@ -1,0 +1,158 @@
+.player-cards {
+  display: flex;
+  flex-direction: column;
+
+  &__selected-cards-container {
+    flex: 1 0 auto;
+    min-height: 20rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all .5s ease-in-out;
+
+    & > .card-container {
+      flex: 0 0 auto;
+      margin: 0 .25rem;
+      max-width: 30%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      font-size: inherit;
+      cursor: pointer;
+      transition: all .3s;
+
+      & > .card { flex-shrink: 0; }
+
+      &--before-append {
+        max-width: 0%;
+        & > .card { transform: rotateY(90deg); }
+      }
+      &--before-remove {
+        max-width: 0%;
+        opacity: 0;
+      }
+
+      &:hover {
+        z-index: 2;
+        transform: scale(1.1);
+        & > .card { box-shadow: $primary-dark-color 0 0 1.5em; }
+      }
+    }
+  }
+
+  &__hand-container {
+    position: relative;
+    flex: 0 1 auto;
+    max-height: 18rem;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all .3s ease-out;
+
+    & > .card-container {
+      flex: 1 1 12%;
+      max-width: 12%;
+      margin-left: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      font-size: inherit;
+      transition: all .5s;
+      z-index: 1;
+      cursor: pointer;
+
+      &--before-append:not(.card-container--used) {
+        max-width: 0%;
+        transform: translateX(-50vw) translateY(-120%);
+      }
+      &--before-append.card-container--used {
+        max-width: 0%;
+        transform: translateX(25vw) translateY(-110%);
+        & > .card { transform: rotateY(90deg); }
+      }
+      &--before-remove {
+        max-width: 0%;
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      &--disable {
+        z-index: 0;
+        pointer-events: none;
+        & > .card::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          border-radius: inherit;
+          background-color: black;
+          opacity: .5;
+        }
+      }
+
+      & > .card { flex-shrink: 0; }
+
+      &:hover {
+        z-index: 2;
+        transform: none !important;
+        &:not(.card-container--disable) > .card {
+          transform: translateY(-110%) scale(1.75);
+        }
+      }
+      &.card-element {
+        &--mystery:hover {
+          background-image: radial-gradient(closest-side, $card-element-mystery, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-mystery; }
+        }
+        &--dark:hover {
+          background-image: radial-gradient(closest-side, $card-element-dark, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-dark; }
+        }
+        &--nature:hover {
+          background-image: radial-gradient(closest-side, $card-element-nature, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-nature; }
+        }
+        &--element:hover {
+          background-image: radial-gradient(closest-side, $card-element-element, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-element; }
+        }
+        &--illusion:hover {
+          background-image: radial-gradient(closest-side, $card-element-illusion, transparent);
+          & > .card { box-shadow: 0 0 2em 0 $card-element-illusion; }
+        }
+      }
+    }
+  }
+
+  &--disabled > &__hand-container { transform: translateY(50%); }
+
+  &--disabled > &__selected-cards-container {
+    justify-content: flex-end;
+    transform: translateX(20%) translateY(50%);
+
+    & > .card-container {
+      max-width: 1%;
+      pointer-events: none;
+
+      &--before-remove {
+        opacity: 0;
+        transform: translateX(25vw);
+      }
+    }
+  }
+}
+
+@media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+  .player-cards {
+    // &__selected-cards-container { font-size: .9rem; }
+    &__hand-container { font-size: .85rem; }
+  }
+}

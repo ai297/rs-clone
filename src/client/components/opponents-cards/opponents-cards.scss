@@ -1,0 +1,17 @@
+.opponents-cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 9rem;
+
+  &__item {
+    width: 6.5rem;
+    margin: 0 3%;
+    background-image: url('../assets/cards/cover-card.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0.5rem;
+    filter: drop-shadow(0px -1px 4px $shadow-color-black);
+  }
+}

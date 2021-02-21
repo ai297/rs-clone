@@ -1,0 +1,234 @@
+.game-screen {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-image: url('../assets/images/backgrounds/game.jpg');
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+
+  &__opponent-cards {
+    position: relative;
+    z-index: 2;
+    flex: 0 1 30%;
+    max-height: 25rem;
+    min-height: 12rem;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-around;
+    transition: all .5s ease-out;
+
+    &--hidden {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+
+  &__play-section {
+    position: relative;
+    z-index: 3;
+    flex: 1 0 70%;
+    min-height: 22rem;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  &__vignette {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: radial-gradient(transparent, $primary-dark-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s ease-out;
+  }
+
+  &--casting &__vignette { opacity: .5; }
+
+  &__opponent-section { flex: 1 1 30%; }
+
+  &__card-section {
+    flex: 0 0 50%;
+    min-width: 48rem;
+    text-align: center;
+  }
+
+  &__ui-layer {
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  &__opponents-info-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  &__player-info-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30%;
+    min-width: 22rem;
+    padding-left: 0.3;
+  }
+
+  &__controls {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 20%;
+    min-width: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all .5s ease-in-out;
+
+    &--disabled {
+      transform: translateY(150%);
+    }
+
+    .timer {
+      margin: 1rem;
+      width: 10rem;
+      color: $accent-color;
+      font-family: $headers-font;
+      font-size: 4rem;
+      letter-spacing: .1em;
+      -webkit-text-stroke-width: .2rem;
+      -webkit-text-stroke-color: $primary-dark-color;
+      // text-shadow: .25rem 0 0 $primary-dark-color, -.25rem 0 0 $primary-dark-color, 0 .25rem 0 $primary-dark-color,
+      //             0 -.25rem 0 $primary-dark-color, .15rem .15rem $primary-dark-color, -.15rem -.15rem 0 $primary-dark-color,
+      //             .15rem -.15rem 0 $primary-dark-color, -.15rem .15rem 0 $primary-dark-color;
+    }
+  }
+
+  &__buttons-container {
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__action-layer {
+    position: absolute;
+    width: 80%;
+    height: 100%;
+    left: 10%;
+    top: -10%;
+    min-height: 25rem;
+    pointer-events: none;
+  }
+}
+
+.spell-casting {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 1.25rem;
+
+  & > .card-container {
+    flex: 0 0 auto;
+    max-width: 25%;
+    margin: 0 .5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: inherit;
+    transition: all .5s ease-out;
+
+    & > .card { flex-shrink: 0; }
+
+    &--active {
+      z-index: 2;
+      & > .card { transform: translateZ(5rem); }
+      &.card-type {
+        &--source > .card { box-shadow: 0 0 3rem .5rem $card-type-source, inset 0 0 .5rem $card-type-source; }
+        &--quality > .card { box-shadow: 0 0 3rem .5rem $card-type-quality, inset 0 0 .5rem $card-type-quality; }
+        &--action > .card { box-shadow: 0 0 3rem .5rem $card-type-action, inset 0 0 .5rem $card-type-action; }
+      }
+    }
+
+    &--before-append {
+      max-width: 0%;
+      opacity: 0;
+      & > .card { transform: translateX(50vw); }
+    }
+    &--before-remove {
+      max-width: 0%;
+      opacity: 0;
+      transform: translateX(50vw);
+    }
+  }
+}
+
+.dice-rolling {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 1rem;
+
+  &__wrapper {
+    margin: 0 1rem;
+    flex: 0 1 calc(50% - 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-100%);
+  }
+}
+
+.game-messages {
+  padding: 0 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+
+  &__item {
+    margin: 0 1rem;
+    height: calc(100% - 21em);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.game-button__ready { pointer-events: auto; }
+
+@media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+  .game-screen {
+    &__action-layer {
+      width: 90%;
+      height: 95%;
+      left: 5%;
+      top: -10%;
+    }
+  }
+  .spell-casting { font-size: 1.1rem; }
+  .game-messages {
+    padding: 0;
+    & > .component { margin: 0 .5rem; }
+  }
+}
+@media (min-width: $large-screen-width), (min-height: $large-screen-height) {
+  .dice-rolling {
+    &__wrapper { transform: translateY(-100%); }
+  }
+}

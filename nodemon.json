@@ -1,0 +1,7 @@
+{
+  "verbose": false,
+  "ignore": ["node_modules"],
+  "watch": ["src/server"],
+  "exec": "ts-node --project config/tsconfig.json",
+  "ext": "*"
+}

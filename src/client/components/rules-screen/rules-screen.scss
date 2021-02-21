@@ -1,0 +1,224 @@
+.rules-screen {
+  width: 100%;
+  background-image: url('../assets/images/backgrounds/about.jpg');
+  background-position: center;
+  background-size: cover;
+  overflow-y: scroll;
+
+  &__container {
+    @include primary-font;
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    width: 83%;
+    margin: 0 auto;
+    padding: 1rem 10% 2rem 10%;
+    border-left: 4px solid $secondary-warning-color;
+    border-right: 4px solid $secondary-warning-color;
+    background-color: $shadow-color-darkest;
+    color: $primary-font-color;
+  }
+
+  &__header-image {
+    height: 306px;
+    max-height: 50vh;
+    margin-bottom: 2rem;
+    background-image: url('../assets/images/about-header.jpg');
+    background-position: top;
+    background-size: cover;
+    box-shadow: 1px 1px 3px $shadow-color,
+               -1px -1px 3px $shadow-color;
+  }
+
+  &__title {
+    @include headers-font;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: -2px 0 $primary-dark-color,
+                  0 2px $primary-dark-color,
+                  2px 0 $primary-dark-color,
+                  0 -2px $primary-dark-color;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 2.5rem;
+    }
+  }
+
+  &__text {
+    @include primary-font;
+    font-size: 1.25rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      font-size: 1.6rem;
+    }
+
+    &--accent {
+      font-weight: bold;
+      color: $secondary-warning-color;
+    }
+
+    &--button {
+      font-weight: bold;
+      color: $primary-success-color;
+    }
+
+    & p {
+      margin-bottom: 1.1rem;
+    }
+
+    & > h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    & .narrow {
+      position: relative;
+      width: 80%;
+
+      &--icon::after {
+        content: url('../assets/initiative-rules-icon.svg');
+        position: absolute;
+        top: 0px;
+        right: -97px;
+        width: 5rem;
+      }
+    }
+
+    .screenshot {
+      max-width: 100%;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 0.25rem;
+      box-shadow: 1px 1px 3px $shadow-color,
+                -1px -1px 3px $shadow-color;
+    }
+
+    .card-types {
+      display: flex;
+      justify-content: space-between;
+      width: calc(60% - 3rem);
+      margin-bottom: 1rem;
+    }
+
+    & .colored {
+      position: relative;
+      margin-right: 4rem;
+
+      &::after {
+        position: absolute;
+        bottom: -5px;
+        left: 85px;
+        width: 1.6rem;
+        height: 1.6rem;
+        border: 4px solid $primary-dark-color;
+        font-family: $headers-font;
+        font-size: 1.6rem;
+        text-align: center;
+        text-transform: uppercase;
+        color: $primary-dark-color;
+      }
+
+      &--sourse {
+        color: $card-type-source;
+        font-weight: bold;
+      }
+      &.colored--sourse::after {
+          content: 'И';
+          background-color: $card-type-source;
+      }
+
+      &--quality {
+        color: $card-type-quality;
+        font-weight: bold;
+      }
+      &.colored--quality::after {
+          content: 'К';
+          background-color: $card-type-quality;
+      }
+
+      &--action {
+        color: $card-type-action;
+        font-weight: bold;
+      }
+      &.colored--action::after {
+          content: 'Д';
+          background-color: $card-type-action;
+      }
+    }
+
+    .elements__colored {
+      line-height: 200%;
+
+      &::before {
+        display: inline-block;
+        width: 1.6rem;
+        height: 1.6rem;
+        transform: translateY(-5px);
+        margin-right: 0.2em;
+        padding: 0.2em;
+        border: 2px solid $primary-dark-color;
+        border-radius: 50%;
+        background-color: currentColor;
+        vertical-align: bottom;
+        overflow: hidden;
+
+        @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+          width: 2.1rem;
+          height: 2.1rem;
+          transform: translateY(-1px);
+        }
+      }
+
+      &--mystery {
+        color: $card-element-mystery;
+          &::before {
+          content: url('../assets/cards/mystery-sign-icon.svg');
+        }
+      }
+      &--dark {
+        color: $card-element-dark;
+          &::before {
+          content: url('../assets/cards/dark-sign-icon.svg');
+        }
+      }
+      &--nature {
+        color: $card-element-nature;
+          &::before {
+          content: url('../assets/cards/nature-sign-icon.svg');
+        }
+      }
+      &--element {
+        color: $card-element-element;
+        &::before {
+          content: url('../assets/cards/element-sign-icon.svg');
+          width: 2rem;
+          height: 2rem;
+          padding: 0;
+          border-color: $card-element-element;
+          background-color: $primary-dark-color;
+
+          @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+            width: 2.6rem;
+            height: 2.6rem;
+          }
+        }
+      }
+      &--illusion {
+        color: $card-element-illusion;
+          &::before {
+          content: url('../assets/cards/illusion-sign-icon.svg');
+        }
+      }
+    }
+  }
+
+  &__button {
+    align-self: center;
+    margin-top: 3rem;
+
+    @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) {
+      padding: 1.3rem 2.6rem;
+      font-size: 1.75rem;
+    }
+  }
+}

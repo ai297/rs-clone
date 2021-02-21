@@ -1,0 +1,78 @@
+// fonts
+$primary-font: 'Neucha', cursive;
+$headers-font: 'VNI-Canun', sans-serif;
+
+// font colors
+$secondary-font-color: #FFD300; // желтые надписи
+$primary-font-color: #F8CFA9;
+$primary-font-color-light: mix($primary-font-color, transparent, 50%);
+$button-font-color: #5E0D0C;
+$selection-target-font-color: #C4D7E6;
+$cold-font-color: #C4D7E6;
+
+// ui colors
+$card-type-source: #FFD100;
+$card-type-quality: #FF6200;
+$card-type-action: #FC1C3F;
+$card-element-mystery: #FF007C;
+$card-element-dark:  #C4D7E6;
+$card-element-nature:  #00AA00;
+$card-element-element:  #FF0011;
+$card-element-illusion:  #00CDFF;
+
+$primary-dark-color: #1E1E1E;
+
+$primary-success-color: #0EB70B; // зеленый (шкала здоровья)
+
+$secondary-warning-color: #F5A404; // светлый оранжевый (низ кнопки и пр.)
+$secondary-warning-color-light: mix($secondary-warning-color, transparent, 50%);
+
+$primary-attention-color: #C81B44; // малиново-красный
+$primary-attention-color-light: mix($primary-attention-color, transparent, 50%);
+$secondary-attention-color: #F11721; // яркий красный
+
+$accent-color: #24FF00; // ядовито-зеленый (таймер)
+
+$shadow-color: #C4D7E6;
+$shadow-color-extra-light: #FFF;
+$shadow-color-light: mix($shadow-color-extra-light, transparent, 75%);
+$shadow-color-dark: mix($primary-dark-color, transparent, 50%);
+$shadow-color-darkest: mix($primary-dark-color, transparent, 75%);
+$shadow-color-black: mix(black, transparent, 75%);
+
+$button-color: linear-gradient(180deg, $primary-attention-color 0%, $secondary-warning-color 100%);
+$button-hover-color: linear-gradient(180deg,
+                    #EA8413 0%,
+                    $secondary-warning-color 50%,
+                    $primary-attention-color 60%,
+                    $secondary-warning-color 100%);
+
+$substrate-color: #453434;
+$substrate-color-light: mix($substrate-color, transparent, 50%);
+
+@mixin primary-font {
+  font-family: $primary-font;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.12em;
+  color: $primary-font-color;
+  letter-spacing: 0.06em;
+}
+
+@mixin headers-font {
+  font-family: $headers-font;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 120%;
+  color: $secondary-font-color;
+}
+
+$primary-border-radius: .5rem;
+
+// media
+$medium-screen-width: 1400px;
+$medium-screen-height: 760px;
+// example: @media (max-width: $medium-screen-width), (max-height: $medium-screen-height) { }
+$large-screen-width: 2160px;
+$large-screen-height: 1200px;
+// example: @media (min-width: $large-screen-width), (min-height: $large-screen-height) { }

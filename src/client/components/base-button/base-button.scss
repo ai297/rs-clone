@@ -1,0 +1,31 @@
+.button {
+  padding: 1rem 2rem;
+  background: $button-color;
+  border: 1px solid $primary-dark-color;
+  box-shadow: 0px 2px 4px $shadow-color-dark, inset 0px 2px 4px $shadow-color;
+  border-radius: 1rem;
+  font-family: $headers-font;
+  font-size: 1.5rem;
+  color: $button-font-color;
+  text-shadow: -2px 0 $shadow-color, 0 2px $shadow-color, 2px 0 $shadow-color, 0 -2px $shadow-color;
+  cursor: pointer;
+  transition: all 0.1s linear;
+  min-width: 12rem;
+
+  &:hover:not(:disabled) {
+    background: $button-hover-color;
+    text-shadow: -2px 0 $shadow-color-extra-light, 0 2px $shadow-color-extra-light, 2px 0 $shadow-color-extra-light, 0 -2px $shadow-color-extra-light;
+    box-shadow: 0px 0px .5em $shadow-color-extra-light, inset 0px -.25em .5em $shadow-color-light, inset 0px .25em .5em $shadow-color-light;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
+
+@media (min-width: $large-screen-width), (min-height: $large-screen-height) {
+  .button {
+    font-size: 1rem;
+  }
+}
